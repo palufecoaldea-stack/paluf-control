@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PALUF - Control de Funciones 2026</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+    <style>
+        :root {
+            --verde-oscuro: #1a3d2e;
+            --verde-medio: #2d5a45;
+            --verde-claro: #4a7c65;
+            --dorado: #c9a962;
+            --dorado-claro: #e8d5a0;
+            --marron: #5c4a3a;
+            --crema: #f5f0e6;
+            --blanco: #ffffff;
+            --rojo: #c0392b;
+            --verde-check: #27ae60;
+            --naranja: #e67e22;
+            --gris: #95a5a6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--crema);
+            color: var(--marron);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo h1 { color: var(--blanco); font-size: 24px; font-weight: 300; letter-spacing: 3px; }
+        .logo span { color: var(--dorado); font-weight: 600; }
+        .logo small { color: var(--crema); font-size: 12px; display: block; }
+
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .btn-primary { background: var(--dorado); color: var(--verde-oscuro); }
+        .btn-secondary { background: rgba(255,255,255,0.2); color: var(--blanco); }
+        .btn-success { background: var(--verde-check); color: var(--blanco); }
+        .btn-danger { background: var(--rojo); color: var(--blanco); }
+        .btn:hover { transform: scale(1.05); }
+
+        /* LOGIN */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .login-box h1 { color: var(--verde-oscuro); margin-bottom: 5px; }
+        .login-box h1 span { color: var(--dorado); }
+        .login-box .subtitle { color: var(--marron); margin-bottom: 30px; font-size: 14px; }
+
+        .user-select { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+
+        .user-btn {
+            padding: 15px;
+            background: var(--crema);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-btn:hover { border-color: var(--dorado); transform: scale(1.02); }
+        .avatar { font-size: 30px; margin-bottom: 8px; }
+        .name { font-weight: 600; font-size: 13px; }
+
+        /* MAIN LAYOUT */
+        .main-container { display: flex; min-height: calc(100vh - 70px); }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: white;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            max-height: calc(100vh - 70px);
+        }
+
+        .sidebar h3 { color: var(--verde-oscuro); margin-bottom: 15px; font-size: 14px; text-transform: uppercase; }
+
+        .person-item {
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .person-item:hover { background: var(--crema); }
+        .person-item.active { background: var(--verde-oscuro); color: white; }
+        .person-item .stats { background: var(--dorado); padding: 2px 8px; border-radius: 15px; font-size: 12px; }
+        .person-item.active .stats { background: white; color: var(--verde-oscuro); }
+
+        /* CONTENT */
+        .content { flex: 1; padding: 20px; overflow-x: auto; }
+
+        /* FILTERS */
+        .filters {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            overflow-x: auto;
+        }
+
+        .filter-chip {
+            padding: 6px 14px;
+            background: var(--crema);
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .filter-chip:hover, .filter-chip.active { background: var(--verde-medio); color: white; }
+
+        /* QUICK ACTIONS */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        /* CALENDAR HEADER */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .month-nav { display: flex; align-items: center; gap: 15px; }
+        .month-nav button { background: var(--verde-oscuro); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
+        .month-nav span { font-weight: 600; font-size: 18px; }
+
+        .stats-bar { display: flex; gap: 20px; background: white; padding: 10px 20px; border-radius: 10px; flex-wrap: wrap; }
+        .stat-item { text-align: center; }
+        .stat-item .value { font-size: 20px; font-weight: bold; color: var(--verde-oscuro); }
+        .stat-item .label { font-size: 11px; color: var(--gris); }
+
+        /* ATTENDANCE TABLE */
+        .attendance-table { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+
+        .attendance-header {
+            display: flex;
+            background: var(--verde-oscuro);
+            color: white;
+            padding: 10px 0;
+        }
+
+        .attendance-header > div:first-child { background: var(--verde-oscuro); color: white; }
+
+        .header-cell {
+            width: 35px;
+            min-width: 35px;
+            text-align: center;
+            font-size: 11px;
+            padding: 5px 0;
+        }
+
+        .header-cell.today { background: var(--dorado); color: var(--verde-oscuro); }
+        .header-cell.weekend { background: rgba(255,255,255,0.2); }
+
+        .task-cell {
+            width: 280px;
+            min-width: 280px;
+            padding: 0 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tarea-id-badge {
+            font-size: 10px;
+            background: var(--crema);
+            padding: 2px 6px;
+            border-radius: 5px;
+            color: var(--verde-medio);
+            white-space: nowrap;
+        }
+
+        .tarea-content { flex: 1; min-width: 0; }
+        .tarea-nombre { font-size: 13px; }
+        .tarea-meta { font-size: 11px; color: var(--gris); display: flex; gap: 10px; flex-wrap: wrap; margin-top: 3px; }
+
+        .meta-tag { padding: 1px 6px; border-radius: 10px; font-size: 10px; }
+        .p-alta { background: #ffebee; color: var(--rojo); }
+        .p-media { background: #fff8e1; color: var(--naranja); }
+        .p-baja { background: #e8f5e9; color: var(--verde-check); }
+
+        .attendance-row {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+
+        .attendance-row:hover { background: #fafafa; }
+
+        .day-cell {
+            width: 35px;
+            min-width: 35px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-left: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .day-cell.weekend { background: #f9f9f9; }
+        .day-cell.today { background: #fffef0; }
+
+        .attendance-cell {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .attendance-cell:hover { background: var(--verde-claro); color: white; }
+        .attendance-cell.si { background: var(--verde-check); color: white; }
+        .attendance-cell.no { background: var(--rojo); color: white; }
+        .attendance-cell.na { background: var(--gris); color: white; }
+        .attendance-cell.locked { cursor: not-allowed; opacity: 0.5; }
+
+        .task-actions {
+            display: flex;
+            gap: 5px;
+            padding: 0 10px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover { background: var(--crema); }
+        .btn-icon.delete:hover { background: #ffebee; }
+
+        /* DASHBOARD */
+        .dashboard-card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
+        .dashboard-card h3 { color: var(--verde-oscuro); margin-bottom: 15px; }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            background: var(--crema);
+        }
+
+        .ranking-item.high { background: #e8f5e9; }
+        .ranking-item.medium { background: #fff3e0; }
+        .ranking-item.low { background: #ffebee; }
+
+        .progress-bar { width: 200px; height: 10px; background: #ddd; border-radius: 5px; overflow: hidden; }
+
+        .progress-fill { height: 100%; border-radius: 5px; transition: width 0.5s; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; overflow-y: auto; }
+        .modal.visible { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; margin: 20px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { color: var(--verde-oscuro); }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; }
+        .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--verde-oscuro); }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 10px; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--verde-medio); }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--verde-oscuro); color: white; padding: 15px 25px; border-radius: 10px; opacity: 0; transition: opacity 0.3s; z-index: 10000; }
+        .toast.show { opacity: 1; }
+        .toast.error { background: var(--rojo); }
+
+        /* USER INFO */
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-welcome { color: white; font-size: 14px; }
+        .btn-logout { background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
+
+        /* COMMENTS */
+        .comments-section { background: white; border-radius: 15px; padding: 20px; margin-top: 20px; }
+        .comments-section h3 { color: var(--verde-oscuro); margin-bottom: 15px; }
+        .comment-input { display: flex; gap: 10px; margin-bottom: 15px; }
+        .comment-input input { flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 10px; }
+        .comment-list { max-height: 300px; overflow-y: auto; }
+        .comment-item { background: var(--crema); padding: 12px; border-radius: 10px; margin-bottom: 10px; }
+        .comment-header { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 12px; color: var(--gris); }
+        .comment-header strong { color: var(--verde-oscuro); }
+        .comment-badge { background: var(--dorado); color: var(--verde-oscuro); padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 10px; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; max-height: 200px; }
+            .header-cell, .day-cell { width: 30px; min-width: 30px; font-size: 10px; }
+            .task-cell { width: 200px; min-width: 200px; }
+        }
+
+        /* PRINT */
+        @media print {
+            .login-overlay, .sidebar, .filters, .quick-actions, .header-actions, .task-actions, .btn { display: none !important; }
+            .main-container { display: block; }
+            .content { padding: 0; }
+            .attendance-cell { cursor: default; }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h1>🌿 <span>PALUF</span></h1>
+            <p class="subtitle">Control de Funciones 2026</p>
+            <p style="margin-bottom: 20px;">Selecciona tu usuario:</p>
+            <div class="user-select" id="userSelect"></div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <h1>🌿 <span>PALUF</span></h1>
+            <small>Control de Funciones 2026</small>
+        </div>
+        <div class="header-actions">
+            <span class="user-welcome" id="userWelcome" style="display:none;"></span>
+            <button class="btn-logout" id="btnLogout" style="display:none;" onclick="logout()">Salir</button>
+            <button class="btn btn-primary" id="btnDashboard" style="display:none;" onclick="verDashboard()">📊 Dashboard</button>
+            <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir</button>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <div class="main-container" id="mainContainer" style="display:none;">
+        <div class="sidebar">
+            <h3>👥 Personal <span class="comment-badge" id="commentsBadge">0</span></h3>
+            <div id="personList"></div>
+            
+            <!-- COMMENTS -->
+            <div class="comments-section" style="margin-top: 20px;">
+                <h3>💬 Mensajes</h3>
+                <div class="comment-input">
+                    <input type="text" id="commentInput" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter')enviarComentario()">
+                    <button class="btn btn-primary" onclick="enviarComentario()">Enviar</button>
+                </div>
+                <div class="comment-list" id="commentList"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="filters" id="filtroFrecuencia"></div>
+            
+            <div class="quick-actions" id="quickMarkPanel" style="display:none;">
+                <button class="btn btn-success" onclick="marcarTodos('si')">✓ Todo hecho</button>
+                <button class="btn btn-danger" onclick="marcarTodos('no')">✗ Todo no hecho</button>
+                <button class="btn btn-secondary" onclick="marcarTodos('na')">- N/A</button>
+                <button class="btn btn-primary" onclick="abrirModalTarea()">➕ Nueva Tarea</button>
+            </div>
+
+            <div class="calendar-header">
+                <div class="month-nav">
+                    <button onclick="cambiarMes(-1)">◀</button>
+                    <span id="mesActual">Abril 2026</span>
+                    <button onclick="cambiarMes(1)">▶</button>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="value" id="statTareas">0</div>
+                        <div class="label">Tareas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="value" id="statCumplimiento">0%</div>
+                        <div class="label">Cumplimiento</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attendance-table">
+                <div class="attendance-header" id="attendanceHeader"></div>
+                <div id="attendanceGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TAREA -->
+    <div class="modal" id="modalTarea">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Nueva Tarea</h2>
+                <button class="modal-close" onclick="cerrarModal()">×</button>
+            </div>
+            <form id="formTarea">
+                <input type="hidden" id="tareaId">
+                <div class="form-group">
+                    <label>Persona</label>
+                    <select id="tareaPersona" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Nombre de la Tarea</label>
+                    <input type="text" id="tareaNombre" required placeholder="Ej: Revisión de inventario">
+                </div>
+                <div class="form-group">
+                    <label>Área</label>
+                    <select id="tareaArea">
+                        <option value="ADMINISTRACION">ADMINISTRACION</option>
+                        <option value="DIRECCION">DIRECCION</option>
+                        <option value="OPERACIONES">OPERACIONES</option>
+                        <option value="MARKETING">MARKETING</option>
+                        <option value="TERAPIAS">TERAPIAS</option>
+                        <option value="CAJA Y VENTAS">CAJA Y VENTAS</option>
+                    </select>
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>Prioridad</label>
+                        <select id="tareaPrioridad">
+                            <option value="Alta">Alta</option>
+                            <option value="Media">Media</option>
+                            <option value="Baja">Baja</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Frecuencia</label>
+                        <select id="tareaFrecuencia">
+                            <option value="Diaria">Diaria</option>
+                            <option value="Semanal">Semanal</option>
+                            <option value="Mensual">Mensual</option>
+                            <option value="Sabados">Sabados</option>
+                            <option value="Viernes">Viernes</option>
+                            <option value="Domingo">Domingo</option>
+                            <option value="Fin de semana">Fin de semana</option>
+                            <option value="Cuando aplica">Cuando aplica</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Tiempo</label>
+                        <input type="text" id="tareaTiempo" placeholder="Ej: 1 hora">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btnEliminar" style="display:none;" onclick="eliminarTarea()">🗑️ Eliminar</button>
+                    <button type="button" class="btn btn-secondary" id="btnDuplicar" style="display:none;" onclick="duplicarTarea()">📋 Duplicar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DASHBOARD -->
+    <div class="modal" id="modalDashboard">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2>📊 Dashboard</h2>
+                <button class="modal-close" onclick="cerrarDashboard()">×</button>
+            </div>
+            <div id="dashboardContent"></div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ==================== DATA ====================
+        const PERSONAS = ['Luisa Torres', 'Julieth Melo', 'María Paula', 'Jaidy', 'Fernando', 'Voluntarios Aseo', 'Voluntario Caja', 'Voluntario Marketing', 'Mantenimiento', 'Juan'];
+        const FRECUENCIAS = ['Todas', 'Diaria', 'Semanal', 'Mensual', 'Sabados', 'Viernes', 'Domingo', 'Fin de semana', 'Cuando aplica'];
+        const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const HOY = new Date(2026, 3, 14);
+
+        let mesActual = 3;
+        let anioActual = 2026;
+        let personaSeleccionada = null;
+        let filtroFrecuencia = 'Todas';
+        let usuarioActual = null;
+        let funcionesData = [];
+        let asistencia = {};
+        let comentarios = [];
+        let tareaEditando = null;
+
+        // Funciones default - 152 funciones completas
+        const funcionesDefault = [
+            // JULIETH MELO - 38 funciones
+            { id: "JUL-001", func: "Registrar abonos a drive", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "JUL-002", func: "Ingresar abonos al POS contable", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "JUL-003", func: "Dirigir personal y voluntarios", persona: "Julieth Melo", area: "DIRECCION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
+            { id: "JUL-004", func: "Realizar lista de compras semanal", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "JUL-005", func: "Supervision de metas realizadas por voluntarios", persona: "Julieth Melo", area: "DIRECCION", prioridad: "Media", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "JUL-006", func: "Elaboracion de microdosis", persona: "Julieth Melo", area: "OPERACIONES", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "JUL-007", func: "Inventario de productos", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "JUL-008", func: "Ingreso productos al sistema alegrama", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "JUL-009", func: "Recibir productos artesanales", persona: "Julieth Melo", area: "OPERACIONES", prioridad: "Media", frecuencia: "Semanal", tiempo: "30 min" },
+            { id: "JUL-010", func: "Revision de vitrinas", persona: "Julieth Melo", area: "CAJA Y VENTAS", prioridad: "Media", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "JUL-011", func: "Solicitud alimentacion a proveedores", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Semanal", tiempo: "30 min" },
+            { id: "JUL-012", func: "Recibir alimentacion del proveedor", persona: "Julieth Melo", area: "OPERACIONES", prioridad: "Media", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "JUL-013", func: "Balance y cierre diario", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
+            { id: "JUL-014", func: "Ingreso de gastos al sistema alegrama", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "30 min" },
+            { id: "JUL-015", func: "Revision facturas electronicas", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "30 min" },
+            { id: "JUL-016", func: "Elaboracion de nomina", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Mensual", tiempo: "2 horas" },
+            { id: "JUL-017", func: "Cuentas de cobro musicos y equipo", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "JUL-018", func: "Ingreso nomina al POS", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Mensual", tiempo: "1 hora" },
+            { id: "JUL-019", func: "Ingreso cuentas de cobro al POS", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "JUL-020", func: "Ingresar pagos sin factura electronica", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "15 min" },
+            { id: "JUL-021", func: "Terapia oracular", persona: "Julieth Melo", area: "TERAPIAS", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "JUL-022", func: "Terapia de rape", persona: "Julieth Melo", area: "TERAPIAS", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "JUL-023", func: "Limpieza energetica", persona: "Julieth Melo", area: "TERAPIAS", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "JUL-024", func: "Dirigir circulo de cacao", persona: "Julieth Melo", area: "TERAPIAS", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "JUL-025", func: "Alistar aromaticas y fruta altar", persona: "Julieth Melo", area: "OPERACIONES", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "JUL-026", func: "Acompanar en ceremonia sabados", persona: "Julieth Melo", area: "TERAPIAS", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "4 horas" },
+            { id: "JUL-027", func: "Actualizar listas mantenimiento", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "JUL-028", func: "Ensenar cabanas en arriendo", persona: "Julieth Melo", area: "OPERACIONES", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "JUL-029", func: "Coordinar cronograma fin de semana", persona: "Julieth Melo", area: "DIRECCION", prioridad: "Media", frecuencia: "Semanal", tiempo: "30 min" },
+            { id: "JUL-030", func: "Coordinar horarios personal", persona: "Julieth Melo", area: "DIRECCION", prioridad: "Media", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "JUL-031", func: "Surtir productos de aseo", persona: "Julieth Melo", area: "OPERACIONES", prioridad: "Media", frecuencia: "Semanal", tiempo: "30 min" },
+            { id: "JUL-032", func: "Grupos WhatsApp ceremonias", persona: "Julieth Melo", area: "MARKETING", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "30 min" },
+            { id: "JUL-033", func: "Crear nuevas herramientas sanacion", persona: "Julieth Melo", area: "TERAPIAS", prioridad: "Baja", frecuencia: "En desarrollo", tiempo: "8 horas" },
+            { id: "JUL-034", func: "Cobro clientes sabado manana", persona: "Julieth Melo", area: "CAJA Y VENTAS", prioridad: "Media", frecuencia: "Sabados", tiempo: "2 horas" },
+            { id: "JUL-035", func: "Revision de mesas viernes", persona: "Julieth Melo", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "30 min" },
+            { id: "JUL-036", func: "Manejar inventario ferreteria", persona: "Julieth Melo", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "JUL-037", func: "Supervisar respuestas WhatsApp", persona: "Julieth Melo", area: "MARKETING", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "JUL-038", func: "Revision semanal areas", persona: "Julieth Melo", area: "DIRECCION", prioridad: "Media", frecuencia: "Semanal", tiempo: "2 horas" },
+            // LUISA TORRES - 22 funciones
+            { id: "LUIS-001", func: "Guiar ceremonias grupales y privadas", persona: "Luisa Torres", area: "TERAPIAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "4 horas" },
+            { id: "LUIS-002", func: "Dirigir administradora", persona: "Luisa Torres", area: "DIRECCION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
+            { id: "LUIS-003", func: "Revisar pagos clientes y banco", persona: "Luisa Torres", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "LUIS-004", func: "Revisar anticipos en banco", persona: "Luisa Torres", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "LUIS-005", func: "Capacitar personal en ceremonias", persona: "Luisa Torres", area: "DIRECCION", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "LUIS-006", func: "Clases virtuales escuela chamnica", persona: "Luisa Torres", area: "TERAPIAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "LUIS-007", func: "Revisar grupos de paluf", persona: "Luisa Torres", area: "DIRECCION", prioridad: "Alta", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "LUIS-008", func: "Supervisar mensajes whatsapp", persona: "Luisa Torres", area: "DIRECCION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "LUIS-009", func: "Activar promociones redes sociales", persona: "Luisa Torres", area: "MARKETING", prioridad: "Alta", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "LUIS-010", func: "Balance y cierre de mes", persona: "Luisa Torres", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Mensual", tiempo: "4 horas" },
+            { id: "LUIS-011", func: "Realizar pagos proveedores", persona: "Luisa Torres", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "LUIS-012", func: "Realizar compras a paluf", persona: "Luisa Torres", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "LUIS-013", func: "Verificar cierres de caja diarios", persona: "Luisa Torres", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "LUIS-014", func: "Atencion al cliente", persona: "Luisa Torres", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "LUIS-015", func: "Elaborar cronogramas terapias", persona: "Luisa Torres", area: "DIRECCION", prioridad: "Alta", frecuencia: "Mensual", tiempo: "2 horas" },
+            { id: "LUIS-016", func: "Reportar pagos arriendos", persona: "Luisa Torres", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Mensual", tiempo: "30 min" },
+            { id: "LUIS-017", func: "Verificar reporte inventario", persona: "Luisa Torres", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Mensual", tiempo: "1 hora" },
+            { id: "LUIS-018", func: "Supervisar reportes DIAN", persona: "Luisa Torres", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Mensual", tiempo: "2 horas" },
+            { id: "LUIS-019", func: "Crear nuevas herramientas", persona: "Luisa Torres", area: "TERAPIAS", prioridad: "Baja", frecuencia: "En desarrollo", tiempo: "8 horas" },
+            { id: "LUIS-020", func: "Coordinacion con contador", persona: "Luisa Torres", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Mensual", tiempo: "1 hora" },
+            { id: "LUIS-021", func: "Supervisar areas marketing", persona: "Luisa Torres", area: "MARKETING", prioridad: "Alta", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "LUIS-022", func: "Seguimiento pacientes psicologia", persona: "Luisa Torres", area: "TERAPIAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            // MARIA PAULA - 15 funciones
+            { id: "MP-001", func: "Guiar ceremonias grupales", persona: "María Paula", area: "TERAPIAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "4 horas" },
+            { id: "MP-002", func: "Recopilar contenido ceremonias", persona: "María Paula", area: "MARKETING", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "MP-003", func: "Organizar videos por carpetas", persona: "María Paula", area: "MARKETING", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "MP-004", func: "Editar videos 4 al mes", persona: "María Paula", area: "MARKETING", prioridad: "Media", frecuencia: "Mensual", tiempo: "8 horas" },
+            { id: "MP-005", func: "Actualizar fechas publicaciones", persona: "María Paula", area: "MARKETING", prioridad: "Media", frecuencia: "Mensual", tiempo: "2 horas" },
+            { id: "MP-006", func: "Crear estrategias armonizacion", persona: "María Paula", area: "TERAPIAS", prioridad: "Baja", frecuencia: "En desarrollo", tiempo: "8 horas" },
+            { id: "MP-007", func: "Crear flyers redes sociales", persona: "María Paula", area: "MARKETING", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "MP-008", func: "Mirar tendencias redes sociales", persona: "María Paula", area: "MARKETING", prioridad: "Baja", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "MP-009", func: "Generar espacios de dialogo", persona: "María Paula", area: "TERAPIAS", prioridad: "Media", frecuencia: "Semanal", tiempo: "2 horas" },
+            { id: "MP-010", func: "Informar solicitudes habitantes", persona: "María Paula", area: "DIRECCION", prioridad: "Media", frecuencia: "Mensual", tiempo: "30 min" },
+            { id: "MP-011", func: "Supervisar redes y WhatsApp", persona: "María Paula", area: "MARKETING", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "MP-012", func: "Atencion al cliente", persona: "María Paula", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "MP-013", func: "Crear nuevas herramientas", persona: "María Paula", area: "TERAPIAS", prioridad: "Baja", frecuencia: "En desarrollo", tiempo: "8 horas" },
+            { id: "MP-014", func: "Subir videos a cuentas respaldo", persona: "María Paula", area: "MARKETING", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "MP-015", func: "Fijar eventos Instagram TikTok", persona: "María Paula", area: "MARKETING", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "30 min" },
+            // JAIDY - 6 funciones
+            { id: "JAIDY-001", func: "Guiar ceremonias grupales", persona: "Jaidy", area: "TERAPIAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "4 horas" },
+            { id: "JAIDY-002", func: "Realizar compras mercado", persona: "Jaidy", area: "ADMINISTRACION", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "3 horas" },
+            { id: "JAIDY-003", func: "Capacitar personal en ceremonias", persona: "Jaidy", area: "DIRECCION", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "JAIDY-004", func: "Reportar mejoras de paluf", persona: "Jaidy", area: "DIRECCION", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "30 min" },
+            { id: "JAIDY-005", func: "Atencion al cliente", persona: "Jaidy", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "JAIDY-006", func: "Crear nuevas herramientas", persona: "Jaidy", area: "TERAPIAS", prioridad: "Baja", frecuencia: "En desarrollo", tiempo: "8 horas" },
+            // FERNANDO - 10 funciones
+            { id: "FER-001", func: "Revision de mantenimiento", persona: "Fernando", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "FER-002", func: "Dirigir personal mantenimiento", persona: "Fernando", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
+            { id: "FER-003", func: "Verificar bombeo de agua", persona: "Fernando", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "FER-004", func: "Acompanar en ceremonias", persona: "Fernando", area: "TERAPIAS", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "4 horas" },
+            { id: "FER-005", func: "Hacer circulos de palabra", persona: "Fernando", area: "TERAPIAS", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "FER-006", func: "Reportar mejoras", persona: "Fernando", area: "DIRECCION", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "30 min" },
+            { id: "FER-007", func: "Supervisar alimentacion animales", persona: "Fernando", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "FER-008", func: "Supervisar herramientas", persona: "Fernando", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "FER-009", func: "Atencion al cliente", persona: "Fernando", area: "CAJA Y VENTAS", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "FER-010", func: "Estar atento a la madera", persona: "Fernando", area: "OPERACIONES", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "30 min" },
+            // VOLUNTARIOS ASEO - 12 funciones
+            { id: "VOL-ASE-001", func: "Aseo templos", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
+            { id: "VOL-ASE-002", func: "Organizar lavanderia", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Media", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "VOL-ASE-003", func: "Armonizar cabanas", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "VOL-ASE-004", func: "Armonizar containers", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "VOL-ASE-005", func: "Armonizar banos", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
+            { id: "VOL-ASE-006", func: "Armonizar kioscos", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "VOL-ASE-007", func: "Armonizar biblioteca", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Baja", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "VOL-ASE-008", func: "Armonizar comedores", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
+            { id: "VOL-ASE-009", func: "Armonizar cocina", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
+            { id: "VOL-ASE-010", func: "Entregar almuerzos", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "VOL-ASE-011", func: "Surtir elementos de aseo", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Media", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "VOL-ASE-012", func: "Preparacion aromaticas", persona: "Voluntarios Aseo", area: "OPERACIONES", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            // VOLUNTARIO CAJA - 18 funciones
+            { id: "VOL-CAJ-001", func: "Armonizacion vitrinas", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "VOL-CAJ-002", func: "Exhibicion productos", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "VOL-CAJ-003", func: "Atencion al cliente", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Diaria", tiempo: "4 horas" },
+            { id: "VOL-CAJ-004", func: "Recibir pagos", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "VOL-CAJ-005", func: "Imprimir consentimientos", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "15 min" },
+            { id: "VOL-CAJ-006", func: "Revisar consentimientos", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "30 min" },
+            { id: "VOL-CAJ-007", func: "Entregar consentimientos", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "15 min" },
+            { id: "VOL-CAJ-008", func: "Alistar cenas", persona: "Voluntario Caja", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "VOL-CAJ-009", func: "Empacar pedidos herbolaria", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "VOL-CAJ-010", func: "Realizar manillas viernes", persona: "Voluntario Caja", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Viernes", tiempo: "30 min" },
+            { id: "VOL-CAJ-011", func: "Abrir mesas viernes", persona: "Voluntario Caja", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Viernes", tiempo: "2 horas" },
+            { id: "VOL-CAJ-012", func: "Ayudar empaque envios", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "VOL-CAJ-013", func: "Limpieza vitrinas y caja", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "VOL-CAJ-014", func: "Cigarrillos herbales", persona: "Voluntario Caja", area: "OPERACIONES", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "VOL-CAJ-015", func: "Conteo inventario", persona: "Voluntario Caja", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "VOL-CAJ-016", func: "Preparar mermelada", persona: "Voluntario Caja", area: "OPERACIONES", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "VOL-CAJ-017", func: "Preparar jugos ceremonias", persona: "Voluntario Caja", area: "OPERACIONES", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "VOL-CAJ-018", func: "Tour a visitantes", persona: "Voluntario Caja", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            // VOLUNTARIO MARKETING - 10 funciones
+            { id: "VOL-MKT-001", func: "Mensajes Facebook Arriendos", persona: "Voluntario Marketing", area: "MARKETING", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "VOL-MKT-002", func: "Grabar videos Maria Paula", persona: "Voluntario Marketing", area: "MARKETING", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "VOL-MKT-003", func: "Edicion videos", persona: "Voluntario Marketing", area: "MARKETING", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "VOL-MKT-004", func: "Recibir pacientes ceremonias", persona: "Voluntario Marketing", area: "CAJA Y VENTAS", prioridad: "Media", frecuencia: "Domingo", tiempo: "2 horas" },
+            { id: "VOL-MKT-005", func: "Subir contenido redes", persona: "Voluntario Marketing", area: "MARKETING", prioridad: "Media", frecuencia: "Semanal", tiempo: "2 horas" },
+            { id: "VOL-MKT-006", func: "Subir videos respaldo", persona: "Voluntario Marketing", area: "MARKETING", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "VOL-MKT-007", func: "Tomar fotos ceremonias", persona: "Voluntario Marketing", area: "MARKETING", prioridad: "Alta", frecuencia: "Fin de semana", tiempo: "1 hora" },
+            { id: "VOL-MKT-008", func: "Actualizar pagina web", persona: "Voluntario Marketing", area: "MARKETING", prioridad: "Media", frecuencia: "Mensual", tiempo: "1 hora" },
+            { id: "VOL-MKT-009", func: "Hacer flyers", persona: "Voluntario Marketing", area: "MARKING", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "VOL-MKT-010", func: "Enviar videos grupos WhatsApp", persona: "Voluntario Marketing", area: "MARKETING", prioridad: "Alta", frecuencia: "Fin de semana", tiempo: "1 hora" },
+            // MANTENIMIENTO - 8 funciones
+            { id: "MANT-001", func: "Llenar tanques de agua", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "MANT-002", func: "Arreglar lenia templos", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "MANT-003", func: "Recoger basuras", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
+            { id: "MANT-004", func: "Arreglar shut", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "MANT-005", func: "Mantenimiento cabanas templos", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "4 horas" },
+            { id: "MANT-006", func: "Mantenimiento jardines", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Media", frecuencia: "Semanal", tiempo: "3 horas" },
+            { id: "MANT-007", func: "Arreglo huerta", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Media", frecuencia: "Semanal", tiempo: "3 horas" },
+            { id: "MANT-008", func: "Alimentar animales", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            // JUAN - 13 funciones
+            { id: "MSG-001", func: "Atencion WhatsApp", persona: "Juan", area: "MARKETING", prioridad: "Alta", frecuencia: "Diaria", tiempo: "4 horas" },
+            { id: "MSG-002", func: "Responder comentarios TikTok IG", persona: "Juan", area: "MARKETING", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+            { id: "MSG-003", func: "Entrega consentimientos", persona: "Juan", area: "CAJA Y VENTAS", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "30 min" },
+            { id: "MSG-004", func: "Ingreso pacientes Excel", persona: "Juan", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "MSG-005", func: "Elaboracion cotizaciones", persona: "Juan", area: "MARKETING", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "MSG-006", func: "Ingresar contactos drive", persona: "Juan", area: "ADMINISTRACION", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "MSG-007", func: "Elaboracion contratos", persona: "Juan", area: "ADMINISTRACION", prioridad: "Baja", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "MSG-008", func: "Seguimiento terapias privadas", persona: "Juan", area: "MARKETING", prioridad: "Alta", frecuencia: "Semanal", tiempo: "1 hora" },
+            { id: "MSG-009", func: "Ubicar personas cabanas", persona: "Juan", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Cuando aplica", tiempo: "1 hora" },
+            { id: "MSG-010", func: "Mensajes TikTok IG", persona: "Juan", area: "MARKETING", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "MSG-011", func: "Comentarios TikTok IG", persona: "Juan", area: "MARKETING", prioridad: "Alta", frecuencia: "Diaria", tiempo: "30 min" },
+            { id: "MSG-012", func: "Actualizar Google Calendar", persona: "Juan", area: "MARKETING", prioridad: "Alta", frecuencia: "Diaria", tiempo: "15 min" },
+            { id: "MSG-013", func: "Estar atento promociones", persona: "Juan", area: "MARKETING", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
+        ];
+
+        // ==================== HELPERS ====================
+        const formatFecha = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const getDiasMes = (m, a) => new Date(a, m+1, 0).getDate();
+        const estaBloqueado = (d) => d < HOY;
+        const generarId = () => 'T' + Date.now().toString(36).toUpperCase();
+        const esFinde = (d) => d.getDay() === 0 || d.getDay() === 5 || d.getDay() === 6;
+
+        // ==================== STORAGE ====================
+        const VERSION = 3;
+        
+        const guardar = () => {
+            localStorage.paluf_funciones = JSON.stringify({ v: VERSION, f: funcionesData, a: asistencia, c: comentarios });
+            if (usuarioActual) localStorage.paluf_usuario = usuarioActual;
+        };
+
+        const cargar = () => {
+            try {
+                const data = JSON.parse(localStorage.paluf_funciones);
+                if (!data.v || data.v < VERSION || !data.f?.length || data.f.length < funcionesDefault.length) {
+                    funcionesData = [...funcionesDefault];
+                    asistencia = {};
+                    comentarios = [];
+                    guardar();
+                } else {
+                    funcionesData = data.f;
+                    asistencia = data.a || {};
+                    comentarios = data.c || [];
+                }
+            } catch {
+                funcionesData = [...funcionesDefault];
+                asistencia = {};
+                comentarios = [];
+                guardar();
+            }
+        };
+
+        // ==================== RENDER ====================
+        const renderLogin = () => {
+            const avatares = ['👩‍💼', '👩‍💻', '👩‍🎨', '👩‍⚕️', '👨‍🔧', '🧹', '💰', '📱', '🔧', '💬'];
+            document.getElementById('userSelect').innerHTML = PERSONAS.map((p, i) => `
+                <div class="user-btn" onclick="login('${p}')">
+                    <div class="avatar">${avatares[i]}</div>
+                    <div class="name">${p}</div>
+                </div>
+            `).join('');
+        };
+
+        const renderPersonas = () => {
+            document.getElementById('personList').innerHTML = PERSONAS.map(p => {
+                const cant = funcionesData.filter(f => f.persona === p).length;
+                return `<div class="person-item ${personaSeleccionada === p ? 'active' : ''}" onclick="seleccionar('${p}')">
+                    <span>${p}</span><span class="stats">${cant}</span>
+                </div>`;
+            }).join('');
+        };
+
+        const renderFiltro = () => {
+            document.getElementById('filtroFrecuencia').innerHTML = FRECUENCIAS.map(f => 
+                `<div class="filter-chip ${filtroFrecuencia === f ? 'active' : ''}" onclick="setFiltro('${f}')">${f}</div>`
+            ).join('');
+        };
+
+        const renderCalendario = () => {
+            document.getElementById('mesActual').textContent = `${MESES[mesActual]} ${anioActual}`;
+            const dias = getDiasMes(mesActual, anioActual);
+            let html = '<div class="header-cell task-cell">Tarea</div>';
+            for (let d = 1; d <= dias; d++) {
+                const fecha = new Date(anioActual, mesActual, d);
+                let clase = esFinde(fecha) ? 'weekend' : '';
+                if (formatFecha(fecha) === formatFecha(HOY)) clase += ' today';
+                html += `<div class="header-cell ${clase}">${d}</div>`;
+            }
+            document.getElementById('attendanceHeader').innerHTML = html;
+        };
+
+        const renderTareas = () => {
+            const grid = document.getElementById('attendanceGrid');
+            document.getElementById('quickMarkPanel').style.display = personaSeleccionada ? 'flex' : 'none';
+
+            let tareas = personaSeleccionada ? funcionesData.filter(f => f.persona === personaSeleccionada) : [];
+            if (filtroFrecuencia !== 'Todas') tareas = tareas.filter(t => t.frecuencia === filtroFrecuencia);
+
+            if (!tareas.length) {
+                grid.innerHTML = '<p style="text-align:center;padding:40px;color:var(--verde-claro);">Selecciona una persona</p>';
+                return;
+            }
+
+            const dias = getDiasMes(mesActual, anioActual);
+            let html = '';
+
+            tareas.forEach(t => {
+                const prio = t.prioridad === 'Alta' ? 'p-alta' : t.prioridad === 'Media' ? 'p-media' : 'p-baja';
+                html += `<div class="attendance-row">
+                    <div class="header-cell task-cell">
+                        <span class="tarea-id-badge">${t.id}</span>
+                        <div class="tarea-content">
+                            <div class="tarea-nombre">${t.func}</div>
+                            <div class="tarea-meta">
+                                <span class="meta-tag ${prio}">${t.prioridad}</span>
+                                <span>⏱️ ${t.tiempo || '-'}</span>
+                                <span>📅 ${t.frecuencia}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                
+                for (let d = 1; d <= dias; d++) {
+                    const fecha = new Date(anioActual, mesActual, d);
+                    const fs = formatFecha(fecha);
+                    const key = `${personaSeleccionada}_${t.id}_${fs}`;
+                    const estado = asistencia[key] || '';
+                    const bloq = estaBloqueado(fecha);
+                    let clase = esFinde(fecha) ? 'weekend' : '';
+                    if (formatFecha(fecha) === formatFecha(HOY)) clase += ' today';
+                    if (bloq) clase += ' locked';
+                    html += `<div class="day-cell ${clase}">
+                        <button class="attendance-cell ${estado} ${bloq ? 'locked' : ''}" ${bloq ? 'disabled' : `onclick="marcar('${t.id}','${fs}')"`}>
+                            ${estado === 'si' ? '✓' : estado === 'no' ? '✗' : estado === 'na' ? '-' : ''}
+                        </button>
+                    </div>`;
+                }
+                html += '</div>';
+            });
+
+            grid.innerHTML = html;
+            actualizarStats(tareas);
+        };
+
+        const actualizarStats = (tareas) => {
+            const dias = getDiasMes(mesActual, anioActual);
+            let hechas = 0, total = 0;
+            tareas.forEach(t => {
+                for (let d = 1; d <= dias; d++) {
+                    const fecha = new Date(anioActual, mesActual, d);
+                    if (estaBloqueado(fecha)) continue;
+                    const key = `${personaSeleccionada}_${t.id}_${formatFecha(fecha)}`;
+                    if (asistencia[key]) { total++; if (asistencia[key] === 'si') hechas++; }
+                }
+            });
+            document.getElementById('statTareas').textContent = tareas.length;
+            document.getElementById('statCumplimiento').textContent = total ? Math.round(hechas/total*100) + '%' : '0%';
+        };
+
+        const renderComentarios = () => {
+            document.getElementById('commentsBadge').textContent = comentarios.length;
+            const lista = document.getElementById('commentList');
+            if (!comentarios.length) {
+                lista.innerHTML = '<p style="text-align:center;color:var(--gris);padding:20px;">No hay mensajes</p>';
+                return;
+            }
+            lista.innerHTML = comentarios.slice(0, 20).map(c => `
+                <div class="comment-item">
+                    <div class="comment-header"><strong>${c.autor}</strong><span>${c.fecha}</span></div>
+                    <div class="comment-text">${c.texto}</div>
+                </div>
+            `).join('');
+        };
+
+        // ==================== ACTIONS ====================
+        const login = (p) => {
+            usuarioActual = p;
+            localStorage.paluf_usuario = p;
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'flex';
+            document.getElementById('userWelcome').textContent = `👤 ${p}`;
+            document.getElementById('userWelcome').style.display = 'inline';
+            document.getElementById('btnLogout').style.display = 'inline-block';
+            if (['Luisa Torres', 'Julieth Melo', 'María Paula'].includes(p)) {
+                document.getElementById('btnDashboard').style.display = 'inline-block';
+            }
+            seleccionar(p);
+            renderComentarios();
+            toast(`¡Bienvenido/a ${p}! 🎉`);
+        };
+
+        const logout = () => {
+            if (!confirm('¿Salir?')) return;
+            localStorage.removeItem('paluf_usuario');
+            location.reload();
+        };
+
+        const seleccionar = (p) => {
+            personaSeleccionada = p;
+            localStorage.paluf_persona = p;
+            renderPersonas();
+            renderTareas();
+        };
+
+        const setFiltro = (f) => {
+            filtroFrecuencia = f;
+            renderFiltro();
+            renderTareas();
+        };
+
+        const cambiarMes = (d) => {
+            mesActual += d;
+            if (mesActual > 11) { mesActual = 0; anioActual++; }
+            if (mesActual < 0) { mesActual = 11; anioActual--; }
+            if (anioActual === 2026 && mesActual < 3) mesActual = 3;
+            renderCalendario();
+            renderTareas();
+        };
+
+        const marcar = (id, fecha) => {
+            if (!personaSeleccionada) return;
+            const key = `${personaSeleccionada}_${id}_${fecha}`;
+            const estados = ['', 'si', 'no', 'na'];
+            const idx = estados.indexOf(asistencia[key] || '');
+            asistencia[key] = estados[(idx + 1) % 4];
+            guardar();
+            renderTareas();
+        };
+
+        const marcarTodos = (estado) => {
+            if (!personaSeleccionada) return;
+            const dias = getDiasMes(mesActual, anioActual);
+            funcionesData.filter(f => f.persona === personaSeleccionada).forEach(t => {
+                for (let d = 1; d <= dias; d++) {
+                    const fecha = new Date(anioActual, mesActual, d);
+                    if (estaBloqueado(fecha)) continue;
+                    asistencia[`${personaSeleccionada}_${t.id}_${formatFecha(fecha)}`] = estado;
+                }
+            });
+            guardar();
+            renderTareas();
+            toast(`Marcado como ${estado === 'si' ? 'hecho' : estado === 'no' ? 'no hecho' : 'N/A'}`);
+        };
+
+        const limpiarMarcas = () => {
+            if (!personaSeleccionada) return;
+            const dias = getDiasMes(mesActual, anioActual);
+            funcionesData.filter(f => f.persona === personaSeleccionada).forEach(t => {
+                for (let d = 1; d <= dias; d++) {
+                    const fecha = new Date(anioActual, mesActual, d);
+                    if (estaBloqueado(fecha)) continue;
+                    delete asistencia[`${personaSeleccionada}_${t.id}_${formatFecha(fecha)}`];
+                }
+            });
+            guardar();
+            renderTareas();
+            toast('Marcas limpiadas');
+        };
+
+        const enviarComentario = () => {
+            if (!usuarioActual) return;
+            const texto = document.getElementById('commentInput').value.trim();
+            if (!texto) return;
+            comentarios.unshift({ autor: usuarioActual, texto, fecha: formatFecha(new Date()) });
+            guardar();
+            document.getElementById('commentInput').value = '';
+            renderComentarios();
+            toast('Mensaje enviado ✓');
+        };
+
+        // ==================== TAREA ====================
+        const abrirModalTarea = () => {
+            tareaEditando = null;
+            document.getElementById('modalTitulo').textContent = 'Nueva Tarea';
+            document.getElementById('formTarea').reset();
+            document.getElementById('tareaId').value = '';
+            document.getElementById('btnEliminar').style.display = 'none';
+            document.getElementById('btnDuplicar').style.display = 'none';
+            document.getElementById('tareaPersona').innerHTML = '<option value="">Seleccionar...</option>' + PERSONAS.map(p => `<option value="${p}">${p}</option>`).join('');
+            if (personaSeleccionada) document.getElementById('tareaPersona').value = personaSeleccionada;
+            document.getElementById('modalTarea').classList.add('visible');
+        };
+
+        const editarTarea = (id) => {
+            const t = funcionesData.find(f => f.id === id);
+            if (!t) return;
+            tareaEditando = id;
+            document.getElementById('modalTitulo').textContent = 'Editar Tarea';
+            document.getElementById('tareaId').value = t.id;
+            document.getElementById('tareaPersona').innerHTML = PERSONAS.map(p => `<option value="${p}" ${p === t.persona ? 'selected' : ''}>${p}</option>`).join('');
+            document.getElementById('tareaNombre').value = t.func;
+            document.getElementById('tareaArea').value = t.area;
+            document.getElementById('tareaPrioridad').value = t.prioridad;
+            document.getElementById('tareaFrecuencia').value = t.frecuencia;
+            document.getElementById('tareaTiempo').value = t.tiempo || '';
+            document.getElementById('btnEliminar').style.display = 'inline-block';
+            document.getElementById('btnDuplicar').style.display = 'inline-block';
+            document.getElementById('modalTarea').classList.add('visible');
+        };
+
+        const cerrarModal = () => {
+            document.getElementById('modalTarea').classList.remove('visible');
+            tareaEditando = null;
+        };
+
+        const duplicarTarea = () => {
+            if (!tareaEditando) return;
+            const t = funcionesData.find(f => f.id === tareaEditando);
+            if (!t) return;
+            funcionesData.push({ ...t, id: generarId(), func: t.func + ' (Copia)' });
+            guardar();
+            renderPersonas();
+            renderTareas();
+            cerrarModal();
+            toast('✓ Tarea duplicada');
+        };
+
+        const confirmarEliminar = (id) => {
+            if (confirm('¿Eliminar esta tarea?')) {
+                funcionesData = funcionesData.filter(f => f.id !== id);
+                guardar();
+                renderPersonas();
+                renderTareas();
+                cerrarModal();
+                toast('Tarea eliminada');
+            }
+        };
+
+        const eliminarTarea = () => {
+            if (!tareaEditando) return;
+            confirmarEliminar(tareaEditando);
+        };
+
+        document.getElementById('formTarea').onsubmit = (e) => {
+            e.preventDefault();
+            const data = {
+                id: document.getElementById('tareaId').value || generarId(),
+                func: document.getElementById('tareaNombre').value,
+                persona: document.getElementById('tareaPersona').value,
+                area: document.getElementById('tareaArea').value,
+                prioridad: document.getElementById('tareaPrioridad').value,
+                frecuencia: document.getElementById('tareaFrecuencia').value,
+                tiempo: document.getElementById('tareaTiempo').value
+            };
+            if (tareaEditando) {
+                const idx = funcionesData.findIndex(f => f.id === tareaEditando);
+                if (idx !== -1) funcionesData[idx] = data;
+            } else {
+                funcionesData.push(data);
+            }
+            guardar();
+            cerrarModal();
+            renderPersonas();
+            renderTareas();
+            toast('✓ Tarea guardada');
+        };
+
+        // ==================== DASHBOARD ====================
+        const verDashboard = () => {
+            const content = document.getElementById('dashboardContent');
+            let html = '<h3 style="color:var(--verde-oscuro);margin-bottom:15px;">🏆 Ranking de Desempeño</h3>';
+            let ranking = PERSONAS.map(p => {
+                let hechas = 0, total = 0;
+                funcionesData.filter(f => f.persona === p).forEach(t => {
+                    Object.keys(asistencia).forEach(k => {
+                        if (k.startsWith(`${p}_${t.id}_`)) {
+                            total++;
+                            if (asistencia[k] === 'si') hechas++;
+                        }
+                    });
+                });
+                return { persona: p, pct: total ? Math.round(hechas/total*100) : 0, hechas, total };
+            });
+            ranking.sort((a, b) => b.pct - a.pct);
+            
+            ranking.forEach((r, i) => {
+                const color = r.pct >= 80 ? 'var(--verde-check)' : r.pct >= 50 ? 'var(--naranja)' : 'var(--rojo)';
+                html += `<div class="ranking-item ${r.pct >= 80 ? 'high' : r.pct >= 50 ? 'medium' : 'low'}">
+                    <div><strong>${i+1}. ${r.persona}</strong><br><small>${r.hechas}/${r.total} tareas</small></div>
+                    <div>
+                        <div class="progress-bar"><div class="progress-fill" style="width:${r.pct}%; background:${color};"></div></div>
+                        <div style="text-align:right; font-weight:bold; color:${color}">${r.pct}%</div>
+                    </div>
+                </div>`;
+            });
+            content.innerHTML = html;
+            document.getElementById('modalDashboard').classList.add('visible');
+        };
+
+        const cerrarDashboard = () => document.getElementById('modalDashboard').classList.remove('visible');
+
+        // ==================== INIT ====================
+        const init = () => {
+            cargar();
+            renderLogin();
+            renderPersonas();
+            renderFiltro();
+            renderCalendario();
+            renderTareas();
+            renderComentarios();
+
+            const savedUser = localStorage.paluf_usuario;
+            if (savedUser && PERSONAS.includes(savedUser)) {
+                login(savedUser);
+            }
+        };
+
+        const toast = (msg, tipo = 'success') => {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast show ${tipo}`;
+            setTimeout(() => t.classList.remove('show'), 3000);
+        };
+
+        init();
+    </script>
+</body>
+</html>

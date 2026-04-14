@@ -1,0 +1,17 @@
+{
+  "name": "paluf-control",
+  "version": "1.0.0",
+  "description": "PALUF Ecoaldea - Control de Funciones 2026",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["paluf", "control", "funciones"],
+  "author": "PALUF Ecoaldea",
+  "license": "MIT",
+  "dependencies": {
+    "vite": "^5.0.0"
+  }
+}
