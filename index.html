@@ -316,6 +316,22 @@
         }
         .month-nav span { font-weight: 600; font-size: 18px; color: var(--verde-oscuro); }
 
+        .btn-hoy {
+            background: linear-gradient(135deg, var(--dorado) 0%, var(--dorado-oscuro) 100%) !important;
+            color: var(--verde-bosque) !important;
+            font-weight: 700 !important;
+            border: 2px solid var(--dorado-claro) !important;
+            animation: pulse-hoy 2s infinite;
+        }
+        .btn-hoy:hover {
+            animation: none;
+            transform: scale(1.05);
+        }
+        @keyframes pulse-hoy {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(201, 169, 98, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(201, 169, 98, 0); }
+        }
+
         .stats-bar { 
             display: flex; 
             gap: 20px; 
@@ -617,6 +633,7 @@
                     <button onclick="cambiarMes(-1)">◀</button>
                     <span id="mesActual">Abril 2026</span>
                     <button onclick="cambiarMes(1)">▶</button>
+                    <button class="btn-hoy" onclick="irAHoy()">📅 HOY</button>
                 </div>
                 <div class="stats-bar">
                     <div class="stat-item">
@@ -1082,6 +1099,7 @@
         const seleccionar = (p) => {
             personaSeleccionada = p;
             localStorage.paluf_persona = p;
+            document.getElementById('quickMarkPanel').style.display = 'flex';
             renderPersonas();
             renderTareas();
         };
@@ -1099,6 +1117,28 @@
             if (anioActual === 2026 && mesActual < 3) mesActual = 3;
             renderCalendario();
             renderTareas();
+        };
+
+        const irAHoy = () => {
+            const hoy = new Date();
+            const mesHoy = hoy.getMonth();
+            const anioHoy = hoy.getFullYear();
+            
+            // Solo permite volver a meses desde abril 2026
+            if (anioHoy === 2026 && mesHoy < 3) {
+                toast('No se puede ir a fechas anteriores a abril 2026');
+                return;
+            }
+            
+            mesActual = mesHoy;
+            anioActual = anioHoy;
+            
+            // Mostrar panel de acciones rápidas
+            document.getElementById('quickMarkPanel').style.display = 'flex';
+            
+            renderCalendario();
+            renderTareas();
+            toast('📅 Hoy: ' + formatFecha(hoy));
         };
 
         const marcar = (id, fecha) => {
