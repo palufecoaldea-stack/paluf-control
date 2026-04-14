@@ -485,6 +485,49 @@
         .medal.bronze { filter: drop-shadow(0 0 5px #cd7f32); }
         .rank { font-weight: bold; color: var(--gris); min-width: 24px; display: inline-block; }
 
+        /* ÁREA STATS */
+        .area-stats-card { grid-column: 1 / -1; }
+        .area-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .area-card {
+            background: var(--blanco);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 10px var(--sombra-suave);
+        }
+        .area-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .area-icon { font-size: 24px; }
+        .area-name { font-weight: 700; color: var(--verde-oscuro); font-size: 14px; }
+        .area-stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .area-stat { text-align: center; }
+        .area-percent { font-size: 20px; font-weight: bold; }
+        .area-count { font-size: 16px; font-weight: bold; color: var(--marron); }
+        .area-label { display: block; font-size: 10px; color: var(--gris); }
+        .area-bar {
+            height: 8px;
+            background: var(--gris-claro);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .area-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
         /* ATTENDANCE TABLE */
         .attendance-table { 
             background: var(--blanco); 
@@ -1277,6 +1320,11 @@
             };
             
             chartsDiv.innerHTML = `
+                <!-- STATS POR ÁREA -->
+                <div class="chart-card area-stats-card">
+                    <h4>🏢 Estadísticas por Área (${MESES[mesActual]} ${anioActual})</h4>
+                    ${renderAreaStats(porPersona, funcionesData)}
+                </div>
                 <!-- PODIUM TOP 3 -->
                 <div class="chart-card podium-card">
                     <h4>🏆 Podio de Honor (${MESES[mesActual]} ${anioActual})</h4>
@@ -1320,6 +1368,81 @@
                             </div>
                             <div class="bar-chart-bar">
                                 <div class="bar-chart-fill ${nivel}" style="width: ${porPersona[p].porcentaje}%"></div>
+                            </div>
+                        </div>
+                    `}).join('')}
+                </div>
+            `;
+        };
+
+        const renderAreaStats = (porPersona, funcionesData) => {
+            const areas = ['ADMINISTRACION', 'DIRECCION', 'OPERACIONES', 'MARKETING', 'TERAPIAS', 'CAJA Y VENTAS'];
+            const areaColores = {
+                'ADMINISTRACION': '#3498db',
+                'DIRECCION': '#9b59b6',
+                'OPERACIONES': '#27ae60',
+                'MARKETING': '#e67e22',
+                'TERAPIAS': '#1abc9c',
+                'CAJA Y VENTAS': '#f39c12'
+            };
+            const areaIconos = {
+                'ADMINISTRACION': '📋',
+                'DIRECCION': '👑',
+                'OPERACIONES': '🔧',
+                'MARKETING': '📱',
+                'TERAPIAS': '💆',
+                'CAJA Y VENTAS': '💰'
+            };
+            
+            const areaStats = {};
+            areas.forEach(a => areaStats[a] = { total: 0, hechas: 0, personas: [] });
+            
+            // Calcular por área
+            funcionesData.forEach(t => {
+                if (areaStats[t.area]) {
+                    const dias = getDiasMes(mesActual, anioActual);
+                    for (let d = 1; d <= dias; d++) {
+                        const fecha = new Date(anioActual, mesActual, d);
+                        if (estaBloqueado(fecha)) continue;
+                        const key = `${t.persona}_${t.id}_${formatFecha(fecha)}`;
+                        if (asistencia[key]) {
+                            areaStats[t.area].total++;
+                            if (asistencia[key] === 'si') areaStats[t.area].hechas++;
+                        }
+                    }
+                    if (!areaStats[t.area].personas.includes(t.persona)) {
+                        areaStats[t.area].personas.push(t.persona);
+                    }
+                }
+            });
+            
+            return `
+                <div class="area-grid">
+                    ${areas.filter(a => areaStats[a].total > 0).map(a => {
+                        const pct = areaStats[a].total > 0 ? Math.round(areaStats[a].hechas / areaStats[a].total * 100) : 0;
+                        const nivel = pct >= 80 ? 'high' : pct >= 50 ? 'medium' : 'low';
+                        return `
+                        <div class="area-card" style="border-left: 4px solid ${areaColores[a]}">
+                            <div class="area-header">
+                                <span class="area-icon">${areaIconos[a]}</span>
+                                <span class="area-name">${a}</span>
+                            </div>
+                            <div class="area-stats-row">
+                                <div class="area-stat">
+                                    <span class="area-percent" style="color:${areaColores[a]}">${pct}%</span>
+                                    <span class="area-label">cumplimiento</span>
+                                </div>
+                                <div class="area-stat">
+                                    <span class="area-count">${areaStats[a].hechas}/${areaStats[a].total}</span>
+                                    <span class="area-label">marcas</span>
+                                </div>
+                                <div class="area-stat">
+                                    <span class="area-count">${areaStats[a].personas.length}</span>
+                                    <span class="area-label">personas</span>
+                                </div>
+                            </div>
+                            <div class="area-bar">
+                                <div class="area-bar-fill ${nivel}" style="width:${pct}%;background:${areaColores[a]}"></div>
                             </div>
                         </div>
                     `}).join('')}
