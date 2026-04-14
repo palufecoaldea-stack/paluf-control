@@ -331,6 +331,10 @@
             0%, 100% { box-shadow: 0 0 0 0 rgba(201, 169, 98, 0.4); }
             50% { box-shadow: 0 0 0 8px rgba(201, 169, 98, 0); }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .stats-bar { 
             display: flex; 
@@ -345,6 +349,97 @@
         .stat-item { text-align: center; }
         .stat-item .value { font-size: 24px; font-weight: bold; color: var(--verde-oscuro); }
         .stat-item .label { font-size: 11px; color: var(--gris); font-weight: 600; }
+
+        /* DASHBOARD */
+        .dashboard {
+            background: var(--blanco);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px var(--sombra-media);
+            border: 3px solid var(--dorado);
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--dorado-claro);
+        }
+        .dashboard-header h3 {
+            color: var(--verde-oscuro);
+            font-size: 18px;
+        }
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .dash-stat-card {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 15px var(--sombra-media);
+        }
+        .dash-stat-card.gold {
+            background: linear-gradient(135deg, var(--dorado-oscuro) 0%, var(--dorado) 100%);
+            color: var(--verde-bosque);
+        }
+        .dash-stat-card .value { font-size: 32px; font-weight: bold; }
+        .dash-stat-card .label { font-size: 12px; opacity: 0.9; margin-top: 5px; }
+        
+        .dashboard-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .chart-card {
+            background: var(--crema);
+            padding: 20px;
+            border-radius: 16px;
+            border: 2px solid var(--dorado-claro);
+        }
+        .chart-card h4 {
+            color: var(--verde-oscuro);
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .bar-chart-item {
+            margin-bottom: 12px;
+        }
+        .bar-chart-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: var(--marron);
+        }
+        .bar-chart-bar {
+            height: 24px;
+            background: var(--gris-claro);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        .bar-chart-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+        }
+        .bar-chart-fill.high { background: linear-gradient(90deg, var(--verde-check) 0%, var(--verde-menta) 100%); }
+        .bar-chart-fill.medium { background: linear-gradient(90deg, var(--naranja) 0%, var(--dorado) 100%); }
+        .bar-chart-fill.low { background: linear-gradient(90deg, var(--rojo) 0%, var(--rojo-claro) 100%); }
 
         /* ATTENDANCE TABLE */
         .attendance-table { 
@@ -645,6 +740,16 @@
                         <div class="label">Cumplimiento</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- DASHBOARD -->
+            <div class="dashboard" id="dashboard">
+                <div class="dashboard-header">
+                    <h3>📊 Dashboard de Rendimiento</h3>
+                    <button class="btn btn-secondary" onclick="toggleDashboard()">Ocultar</button>
+                </div>
+                <div class="dashboard-stats" id="dashboardStats"></div>
+                <div class="dashboard-charts" id="dashboardCharts"></div>
             </div>
 
             <div class="attendance-table">
@@ -1056,6 +1161,113 @@
             });
             document.getElementById('statTareas').textContent = tareas.length;
             document.getElementById('statCumplimiento').textContent = total ? Math.round(hechas/total*100) + '%' : '0%';
+            renderDashboard();
+        };
+
+        const renderDashboard = () => {
+            const statsDiv = document.getElementById('dashboardStats');
+            const chartsDiv = document.getElementById('dashboardCharts');
+            
+            // Calcular estadísticas generales
+            let totalTareas = 0, totalHechas = 0, totalNoHechas = 0, totalNA = 0;
+            const porPersona = {};
+            
+            PERSONAS.forEach(p => {
+                porPersona[p] = { total: 0, hechas: 0, porcentaje: 0 };
+            });
+            
+            const dias = getDiasMes(mesActual, anioActual);
+            funcionesData.forEach(t => {
+                for (let d = 1; d <= dias; d++) {
+                    const fecha = new Date(anioActual, mesActual, d);
+                    if (estaBloqueado(fecha)) continue;
+                    const key = `${t.persona}_${t.id}_${formatFecha(fecha)}`;
+                    if (asistencia[key]) {
+                        totalTareas++;
+                        porPersona[t.persona].total++;
+                        if (asistencia[key] === 'si') { totalHechas++; porPersona[t.persona].hechas++; }
+                        else if (asistencia[key] === 'no') totalNoHechas++;
+                        else if (asistencia[key] === 'na') totalNA++;
+                    }
+                }
+            });
+            
+            // Calcular porcentajes por persona
+            PERSONAS.forEach(p => {
+                if (porPersona[p].total > 0) {
+                    porPersona[p].porcentaje = Math.round(porPersona[p].hechas / porPersona[p].total * 100);
+                }
+            });
+            
+            const cumplimientoGeneral = totalTareas > 0 ? Math.round(totalHechas / totalTareas * 100) : 0;
+            
+            // Renderizar tarjetas de estadísticas
+            statsDiv.innerHTML = `
+                <div class="dash-stat-card">
+                    <div class="value">${totalTareas}</div>
+                    <div class="label">Total Marcas</div>
+                </div>
+                <div class="dash-stat-card gold">
+                    <div class="value">${cumplimientoGeneral}%</div>
+                    <div class="label">Cumplimiento General</div>
+                </div>
+                <div class="dash-stat-card">
+                    <div class="value" style="color:#27ae60">${totalHechas}</div>
+                    <div class="label">✓ Completadas</div>
+                </div>
+                <div class="dash-stat-card">
+                    <div class="value" style="color:#e74c3c">${totalNoHechas}</div>
+                    <div class="label">✗ Pendientes</div>
+                </div>
+            `;
+            
+            // Renderizar gráfico de barras por persona
+            const personasOrdenadas = PERSONAS.sort((a, b) => porPersona[b].porcentaje - porPersona[a].porcentaje);
+            
+            chartsDiv.innerHTML = `
+                <div class="chart-card">
+                    <h4>🏆 Rendimiento por Persona (${MESES[mesActual]} ${anioActual})</h4>
+                    ${personasOrdenadas.map(p => {
+                        const nivel = porPersona[p].porcentaje >= 80 ? 'high' : porPersona[p].porcentaje >= 50 ? 'medium' : 'low';
+                        return `
+                        <div class="bar-chart-item">
+                            <div class="bar-chart-label">
+                                <span>${p.split(' ')[0]}</span>
+                                <span>${porPersona[p].hechas}/${porPersona[p].total} (${porPersona[p].porcentaje}%)</span>
+                            </div>
+                            <div class="bar-chart-bar">
+                                <div class="bar-chart-fill ${nivel}" style="width: ${porPersona[p].porcentaje}%"></div>
+                            </div>
+                        </div>
+                    `}).join('')}
+                </div>
+                <div class="chart-card">
+                    <h4>📊 Distribución de Marcas</h4>
+                    <div style="display:flex;justify-content:center;gap:20px;margin-top:20px;flex-wrap:wrap;">
+                        <div style="text-align:center;">
+                            <div style="width:80px;height:80px;border-radius:50%;background:conic-gradient(#27ae60 0% ${cumplimientoGeneral}%, #e8e0d0 ${cumplimientoGeneral}%);display:flex;align-items:center;justify-content:center;">
+                                <div style="width:50px;height:50px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-weight:bold;color:var(--verde-oscuro);">${cumplimientoGeneral}%</div>
+                            </div>
+                            <div style="margin-top:10px;font-size:12px;color:var(--marron);">Cumplimiento</div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;">
+                            <div style="display:flex;align-items:center;gap:8px;"><span style="color:#27ae60;font-size:18px;">✓</span> Completadas: ${totalHechas}</div>
+                            <div style="display:flex;align-items:center;gap:8px;"><span style="color:#e74c3c;font-size:18px;">✗</span> Pendientes: ${totalNoHechas}</div>
+                            <div style="display:flex;align-items:center;gap:8px;"><span style="color:#95a5a6;font-size:18px;">-</span> N/A: ${totalNA}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        const toggleDashboard = () => {
+            const dash = document.getElementById('dashboard');
+            if (dash.style.display === 'none') {
+                dash.style.display = 'block';
+                dash.style.animation = 'fadeIn 0.3s ease';
+            } else {
+                dash.style.display = 'none';
+            }
         };
 
         const renderComentarios = () => {
