@@ -2041,6 +2041,15 @@
                 <button class="btn btn-warning" onclick="abrirProgramacionMasiva()" style="background:#c9a962;color:white;">📅 Programación Masiva</button>
             </div>
 
+            <!-- Banner especial para Voluntarios Aseo -->
+            <div id="bannerAseo" style="display:none;background:linear-gradient(135deg,#27ae60,#2ecc71);color:white;padding:15px;border-radius:12px;margin-bottom:15px;text-align:center;">
+                <div style="font-size:18px;margin-bottom:10px;">🧹 <strong>Grupo de Aseo - Tareas Diarias</strong></div>
+                <p style="margin:0 0 10px 0;font-size:13px;">Gestiona aquí las tareas de limpieza, armonización y organización del día.</p>
+                <button onclick="irAModuloAseo()" style="background:white;color:#27ae60;padding:12px 25px;border:none;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;">
+                    🧹 Ir a Grupo de Aseo
+                </button>
+            </div>
+
             <div class="calendar-header">
                 <div class="month-nav">
                     <button onclick="cambiarMes(-1)">◀</button>
@@ -2786,6 +2795,14 @@
         const renderTareas = () => {
             const grid = document.getElementById('attendanceGrid');
             document.getElementById('quickMarkPanel').style.display = personaSeleccionada ? 'flex' : 'none';
+            
+            // Mostrar banner especial para Voluntarios Aseo
+            const bannerAseo = document.getElementById('bannerAseo');
+            if (personaSeleccionada === 'Voluntarios Aseo') {
+                bannerAseo.style.display = 'block';
+            } else {
+                bannerAseo.style.display = 'none';
+            }
 
             let tareas = personaSeleccionada ? funcionesData.filter(f => f.persona === personaSeleccionada) : [];
             if (filtroFrecuencia !== 'Todas') tareas = tareas.filter(t => t.frecuencia === filtroFrecuencia);
@@ -3699,6 +3716,11 @@
                 }
             });
             renderTareas();
+        };
+
+        // Navegar al módulo de Grupo de Aseo
+        const irAModuloAseo = () => {
+            abrirAseo();
         };
 
         const cambiarMes = (d) => {
