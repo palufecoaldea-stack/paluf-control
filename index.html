@@ -172,6 +172,42 @@
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); 
             color: white; 
         }
+        .btn-notificaciones {
+            background: var(--rojo);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-notificaciones:hover { transform: scale(1.1); }
+        .btn-notificaciones.has-notif { animation: pulse-notif 1s infinite; }
+        .notif-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--dorado);
+            color: var(--verde-bosque);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes pulse-notif {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
         .btn-success { 
             background: linear-gradient(135deg, var(--verde-check) 0%, var(--verde-medio) 100%); 
             color: var(--blanco); 
@@ -1139,6 +1175,62 @@
         .evento-hora { font-size: 12px; color: var(--verde-medio); font-weight: 600; }
         .no-eventos { text-align: center; padding: 30px; color: var(--gris); }
 
+        /* NOTIFICACIONES */
+        .notif-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .notif-tab {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--verde-claro);
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .notif-tab.active {
+            background: var(--verde-oscuro);
+            color: white;
+            border-color: var(--verde-oscuro);
+        }
+        .notif-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--rojo);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .notif-item:hover { transform: translateX(5px); box-shadow: 0 4px 15px var(--sombra-suave); }
+        .notif-item.recordatorio { border-left-color: var(--dorado); }
+        .notif-item .icon { font-size: 24px; }
+        .notif-item .content { flex: 1; }
+        .notif-item .content strong { display: block; color: var(--verde-oscuro); margin-bottom: 4px; }
+        .notif-item .content span { font-size: 12px; color: var(--gris); }
+        .notif-item .mark-btn {
+            background: var(--verde-oscuro);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .notif-item .mark-btn:hover { background: var(--verde-medio); }
+        .notif-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--gris);
+        }
+        .notif-empty i { font-size: 48px; margin-bottom: 15px; color: var(--verde-menta); }
+
         /* PRINT */
         @media print {
             .login-overlay, .sidebar, .filters, .quick-actions, .header-actions, .task-actions, .btn { display: none !important; }
@@ -1224,6 +1316,10 @@
         </div>
         <div class="header-actions">
             <button class="btn-dark-mode" id="btnDarkMode" onclick="toggleDarkMode()" title="Modo Oscuro">🌙</button>
+            <button class="btn-notificaciones" id="btnNotificaciones" onclick="abrirModalNotificaciones()" style="display:none;">
+                <i class="fas fa-bell"></i>
+                <span class="notif-badge" id="notifBadge">0</span>
+            </button>
             <button class="btn btn-calendar" onclick="abrirModalCalendario()"><i class="fas fa-calendar-alt"></i> Calendario</button>
             <button class="btn btn-warning" onclick="abrirModalLinks()"><i class="fas fa-link"></i> Links</button>
             <button class="btn btn-success" id="btnExport" style="display:none;" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar</button>
@@ -1394,6 +1490,23 @@
                         <button class="btn btn-primary" onclick="guardarNota()"><i class="fas fa-save"></i> Guardar</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NOTIFICACIONES -->
+    <div class="modal" id="modalNotificaciones">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-bell"></i> Notificaciones</h2>
+                <button class="modal-close" onclick="cerrarModalNotificaciones()">×</button>
+            </div>
+            <div style="padding: 20px;">
+                <div class="notif-tabs">
+                    <button class="notif-tab active" onclick="cambiarTabNotif('pendientes')" id="tabPendientes">⚠️ Pendientes</button>
+                    <button class="notif-tab" onclick="cambiarTabNotif('recordatorios')" id="tabRecordatorios">🔔 Recordatorios</button>
+                </div>
+                <div class="notif-content" id="notifContent"></div>
             </div>
         </div>
     </div>
@@ -2179,8 +2292,9 @@
                 eventosLista.innerHTML = '<div class="no-eventos-hoy">No hay eventos programados para hoy 🎉</div>';
             }
             
-            // Mostrar modal
+            // Mostrar modal y actualizar notificaciones
             document.getElementById('modalBienvenida').classList.add('visible');
+            actualizarBadgeNotificaciones();
         };
 
         const cerrarModalBienvenida = () => {
@@ -2206,6 +2320,169 @@
         const atajoVerDashboard = () => {
             cerrarModalBienvenida();
             verDashboard();
+        };
+
+        // ==================== NOTIFICACIONES ====================
+        let notificacionesLeidas = [];
+        let tabNotifActual = 'pendientes';
+
+        const actualizarBadgeNotificaciones = () => {
+            if (!usuarioActual) return;
+            
+            // Contar tareas pendientes sin marcar de ayer
+            const ayer = new Date();
+            ayer.setDate(ayer.getDate() - 1);
+            const ayerStr = formatFecha(ayer);
+            
+            let pendientes = 0;
+            funcionesData.filter(f => f.persona === usuarioActual).forEach(t => {
+                const key = `${usuarioActual}_${t.id}_${ayerStr}`;
+                if (!asistencia[key]) pendientes++;
+            });
+            
+            const badge = document.getElementById('notifBadge');
+            const btn = document.getElementById('btnNotificaciones');
+            if (badge && btn) {
+                badge.textContent = pendientes;
+                btn.style.display = 'inline-flex';
+                if (pendientes > 0) {
+                    btn.classList.add('has-notif');
+                } else {
+                    btn.classList.remove('has-notif');
+                }
+            }
+        };
+
+        const abrirModalNotificaciones = () => {
+            tabNotifActual = 'pendientes';
+            document.getElementById('tabPendientes').classList.add('active');
+            document.getElementById('tabRecordatorios').classList.add('active');
+            document.getElementById('tabRecordatorios').classList.remove('active');
+            renderizarNotificaciones();
+            document.getElementById('modalNotificaciones').classList.add('visible');
+        };
+
+        const cerrarModalNotificaciones = () => {
+            document.getElementById('modalNotificaciones').classList.remove('visible');
+        };
+
+        const cambiarTabNotif = (tab) => {
+            tabNotifActual = tab;
+            document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+            renderizarNotificaciones();
+        };
+
+        const renderizarNotificaciones = () => {
+            const container = document.getElementById('notifContent');
+            
+            if (tabNotifActual === 'pendientes') {
+                // Tareas pendientes sin marcar
+                const ayer = new Date();
+                ayer.setDate(ayer.getDate() - 1);
+                const ayerStr = formatFecha(ayer);
+                const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                
+                let pendientes = [];
+                funcionesData.filter(f => f.persona === usuarioActual).forEach(t => {
+                    const key = `${usuarioActual}_${t.id}_${ayerStr}`;
+                    if (!asistencia[key]) {
+                        pendientes.push(t);
+                    }
+                });
+                
+                if (pendientes.length === 0) {
+                    container.innerHTML = `
+                        <div class="notif-empty">
+                            <i class="fas fa-check-circle"></i>
+                            <p>¡Todo al día! No tienes tareas pendientes sin marcar.</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = pendientes.map(t => `
+                        <div class="notif-item" onclick="irATarea('${t.id}')">
+                            <div class="icon">⚠️</div>
+                            <div class="content">
+                                <strong>${t.func}</strong>
+                                <span>Sin marcar - ${diasSemana[ayer.getDay()]}</span>
+                            </div>
+                            <button class="mark-btn" onclick="event.stopPropagation(); marcarPendiente('${t.id}')">Marcar ✓</button>
+                        </div>
+                    `).join('');
+                }
+            } else {
+                // Recordatorios - tareas de hoy sin marcar
+                const hoy = new Date();
+                const hoyStr = formatFecha(hoy);
+                const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                
+                let recordatorios = [];
+                funcionesData.filter(f => f.persona === usuarioActual && esAplicaFrecuencia(f.frecuencia, hoy)).forEach(t => {
+                    const key = `${usuarioActual}_${t.id}_${hoyStr}`;
+                    if (!asistencia[key]) {
+                        recordatorios.push(t);
+                    }
+                });
+                
+                if (recordatorios.length === 0) {
+                    container.innerHTML = `
+                        <div class="notif-empty">
+                            <i class="fas fa-bell-slash"></i>
+                            <p>No hay recordatorios pendientes para hoy.</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = recordatorios.map(t => `
+                        <div class="notif-item recordatorio" onclick="irATarea('${t.id}')">
+                            <div class="icon">🔔</div>
+                            <div class="content">
+                                <strong>${t.func}</strong>
+                                <span>Recordatorio - Hoy (${diasSemana[hoy.getDay()]})</span>
+                            </div>
+                            <button class="mark-btn" onclick="event.stopPropagation(); marcarPendiente('${t.id}')">Marcar ✓</button>
+                        </div>
+                    `).join('');
+                }
+            }
+        };
+
+        const esAplicaFrecuencia = (frecuencia, fecha) => {
+            const dia = fecha.getDay();
+            switch (frecuencia) {
+                case 'Diaria': return true;
+                case 'Semanal': return dia === 1;
+                case 'Mensual': return fecha.getDate() === 1;
+                case 'Sabados': return dia === 6;
+                case 'Viernes': return dia === 5;
+                case 'Domingo': return dia === 0;
+                case 'Fin de semana': return dia === 0 || dia === 6;
+                case 'Cuando aplica': return true;
+                default: return false;
+            }
+        };
+
+        const marcarPendiente = (tareaId) => {
+            const hoy = new Date();
+            const hoyStr = formatFecha(hoy);
+            const key = `${usuarioActual}_${tareaId}_${hoyStr}`;
+            asistencia[key] = 'si';
+            guardar();
+            renderizarNotificaciones();
+            actualizarBadgeNotificaciones();
+            toast('✓ Tarea marcada');
+        };
+
+        const irATarea = (tareaId) => {
+            cerrarModalNotificaciones();
+            cerrarModalBienvenida();
+            mesActual = new Date().getMonth();
+            anioActual = new Date().getFullYear();
+            irAHoy();
+            // Scroll a la tarea
+            setTimeout(() => {
+                const row = document.querySelector(`[onclick*="'${tareaId}'"]`);
+                if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500);
         };
 
         const toggleDarkMode = () => {
