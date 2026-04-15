@@ -731,6 +731,47 @@
         .p-media { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); color: #f57c00; }
         .p-baja { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); color: var(--verde-check); }
         
+        /* BIENVENIDA / ATAJOS */
+        .stats-resumen {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-card.gold {
+            background: linear-gradient(135deg, var(--dorado-oscuro) 0%, var(--dorado) 100%);
+        }
+        .stat-card .value { font-size: 28px; font-weight: bold; }
+        .stat-card .label { font-size: 11px; opacity: 0.9; }
+        .stat-card.gold .label { color: var(--verde-bosque); }
+        
+        .evento-hoy-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--crema);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        .evento-hoy-item .icon { font-size: 24px; }
+        .evento-hoy-item .info { flex: 1; }
+        .evento-hoy-item .info strong { color: var(--verde-oscuro); display: block; }
+        .evento-hoy-item .info span { font-size: 12px; color: var(--gris); }
+        .no-eventos-hoy { 
+            text-align: center; 
+            padding: 20px; 
+            color: var(--gris); 
+            background: var(--crema);
+            border-radius: 10px;
+        }
+        
         .btn-nota {
             background: var(--crema-oscuro);
             border: 1px solid var(--gris-claro);
@@ -1124,6 +1165,44 @@
             <p style="margin-bottom: 20px; color: var(--gris);">Centro Holístico y Reserva Forestal</p>
             <p style="margin-bottom: 20px; font-weight: 600;">Selecciona tu usuario:</p>
             <div class="user-select" id="userSelect"></div>
+        </div>
+    </div>
+
+    <!-- MODAL BIENVENIDA / ATAJOS -->
+    <div class="modal" id="modalBienvenida">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 id="bienvenidaTitulo"><i class="fas fa-hand-sparkles"></i> ¡Buenos días!</h2>
+                <button class="modal-close" onclick="cerrarModalBienvenida()">×</button>
+            </div>
+            <div style="padding: 25px;">
+                <!-- Resumen de ayer -->
+                <div class="resumen-ayer" id="resumenAyer" style="margin-bottom:25px;">
+                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;"><i class="fas fa-chart-bar"></i> Resumen de Ayer</h3>
+                    <div class="stats-resumen" id="statsResumen"></div>
+                </div>
+                
+                <!-- Eventos de hoy -->
+                <div class="eventos-hoy" id="eventosHoySection" style="margin-bottom:25px;">
+                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;"><i class="fas fa-calendar-day"></i> Eventos de Hoy</h3>
+                    <div id="eventosHoyLista"></div>
+                </div>
+                
+                <!-- Atajos rápidos -->
+                <div class="atajos-rapidos">
+                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;"><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <button class="btn btn-success" onclick="atajoMarcarHoy()"><i class="fas fa-check-circle"></i> Marcar Hoy</button>
+                        <button class="btn btn-calendar" onclick="atajoVerCalendario()"><i class="fas fa-calendar"></i> Ver Calendario</button>
+                        <button class="btn btn-warning" onclick="atajoVerLinks()"><i class="fas fa-link"></i> Links</button>
+                        <button class="btn btn-primary" onclick="atajoVerDashboard()"><i class="fas fa-chart-pie"></i> Dashboard</button>
+                    </div>
+                </div>
+                
+                <div style="text-align:center;margin-top:25px;">
+                    <button class="btn btn-secondary" onclick="cerrarModalBienvenida()" style="padding:12px 40px;">Continuar a Tareas <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2019,6 +2098,11 @@
         const login = (p) => {
             usuarioActual = p;
             localStorage.paluf_usuario = p;
+            
+            // Mostrar modal de bienvenida con resumen
+            mostrarBienvenida(p);
+            
+            // Mostrar UI principal
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainContainer').style.display = 'flex';
             document.getElementById('userWelcome').textContent = `👤 ${p}`;
@@ -2030,7 +2114,98 @@
             }
             seleccionar(p);
             renderComentarios();
-            toast(`¡Bienvenido/a ${p}! 🎉`);
+        };
+
+        const mostrarBienvenida = (persona) => {
+            const hora = new Date().getHours();
+            let saludo = '¡Buenos días!';
+            if (hora >= 12 && hora < 18) saludo = '¡Buenas tardes!';
+            else if (hora >= 18) saludo = '¡Buenas noches!';
+            
+            document.getElementById('bienvenidaTitulo').innerHTML = `<i class="fas fa-hand-sparkles"></i> ${saludo} ${persona.split(' ')[0]}!`;
+            
+            // Resumen de ayer
+            const resumenDiv = document.getElementById('statsResumen');
+            const ayer = new Date();
+            ayer.setDate(ayer.getDate() - 1);
+            const ayerStr = formatFecha(ayer);
+            
+            // Calcular estadísticas de ayer
+            let totalTareas = 0, completadas = 0, pendientes = 0;
+            funcionesData.filter(f => f.persona === persona).forEach(t => {
+                const key = `${persona}_${t.id}_${ayerStr}`;
+                if (asistencia[key]) {
+                    totalTareas++;
+                    if (asistencia[key] === 'si') completadas++;
+                    else if (asistencia[key] === 'no') pendientes++;
+                }
+            });
+            
+            const pct = totalTareas > 0 ? Math.round(completadas / totalTareas * 100) : 0;
+            
+            resumenDiv.innerHTML = `
+                <div class="stat-card">
+                    <div class="value">${completadas}/${totalTareas}</div>
+                    <div class="label">Tareas</div>
+                </div>
+                <div class="stat-card gold">
+                    <div class="value">${pct}%</div>
+                    <div class="label">Cumplimiento</div>
+                </div>
+                <div class="stat-card" style="background:${pendientes > 0 ? 'linear-gradient(135deg, #e74c3c, #c0392b)' : 'linear-gradient(135deg, #27ae60, #229954)'}">
+                    <div class="value">${pendientes}</div>
+                    <div class="label">Pendientes</div>
+                </div>
+            `;
+            
+            // Eventos de hoy
+            const hoy = new Date();
+            const hoyStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+            const eventosHoy = eventos.filter(e => e.fecha === hoyStr);
+            const iconos = { ceremonia: '🎭', taller: '🛠️', retiro: '🏕️', reunion: '👥', mantenimiento: '🔧', especial: '⭐' };
+            
+            const eventosLista = document.getElementById('eventosHoyLista');
+            if (eventosHoy.length > 0) {
+                eventosLista.innerHTML = eventosHoy.map(e => `
+                    <div class="evento-hoy-item">
+                        <div class="icon">${iconos[e.tipo] || '📅'}</div>
+                        <div class="info">
+                            <strong>${e.titulo}</strong>
+                            <span>${e.hora ? e.hora : 'Sin hora'}${e.descripcion ? ' - ' + e.descripcion.substring(0, 30) : ''}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                eventosLista.innerHTML = '<div class="no-eventos-hoy">No hay eventos programados para hoy 🎉</div>';
+            }
+            
+            // Mostrar modal
+            document.getElementById('modalBienvenida').classList.add('visible');
+        };
+
+        const cerrarModalBienvenida = () => {
+            document.getElementById('modalBienvenida').classList.remove('visible');
+        };
+
+        const atajoMarcarHoy = () => {
+            cerrarModalBienvenida();
+            irAHoy();
+            toast('📅 Ve al día de hoy para marcar tareas');
+        };
+
+        const atajoVerCalendario = () => {
+            cerrarModalBienvenida();
+            abrirModalCalendario();
+        };
+
+        const atajoVerLinks = () => {
+            cerrarModalBienvenida();
+            abrirModalLinks();
+        };
+
+        const atajoVerDashboard = () => {
+            cerrarModalBienvenida();
+            verDashboard();
         };
 
         const toggleDarkMode = () => {
