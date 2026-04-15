@@ -1185,6 +1185,9 @@
         .evento-hora { font-size: 12px; color: var(--verde-medio); font-weight: 600; }
         .no-eventos { text-align: center; padding: 30px; color: var(--gris); }
 
+        .sync-info { font-size: 13px; }
+        .sync-info ol { margin: 0; }
+
         /* NOTIFICACIONES */
         .notif-tabs {
             display: flex;
@@ -1740,16 +1743,28 @@
             <div class="modal-header">
                 <h2><i class="fas fa-calendar-alt"></i> Calendario de Eventos</h2>
                 <div style="display:flex;gap:10px;">
-                    <button class="btn btn-calendar" onclick="abrirAgregarEvento()"><i class="fas fa-plus"></i> Agregar Evento</button>
-                    <button class="btn btn-secondary" style="background:var(--blanco);color:var(--verde-oscuro);" onclick="toggleGoogleCalendar()"><i class="fab fa-google"></i> Google Calendar</button>
+                    <button class="btn btn-calendar" onclick="abrirAgregarEvento()"><i class="fas fa-plus"></i> Agregar</button>
+                    <button class="btn btn-secondary" style="background:var(--blanco);color:var(--verde-oscuro);" onclick="exportarICS()"><i class="fas fa-download"></i> Exportar .ics</button>
+                    <button class="btn btn-secondary" style="background:var(--blanco);color:var(--verde-oscuro);" onclick="abrirGoogleCalendar()"><i class="fab fa-google"></i> Abrir en G.Calendar</button>
                     <button class="modal-close" onclick="cerrarModalCalendario()">×</button>
                 </div>
             </div>
             <div style="padding: 20px;">
+                <!-- Instrucciones de sincronización -->
+                <div class="sync-info" style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid var(--dorado);">
+                    <h4 style="color:var(--dorado-oscuro);margin-bottom:10px;"><i class="fas fa-info-circle"></i> ¿Cómo sincronizar con Google Calendar?</h4>
+                    <ol style="font-size:13px;color:var(--marron);padding-left:20px;margin:0;">
+                        <li style="margin-bottom:5px;">Click en <strong>"Exportar .ics"</strong> para descargar los eventos</li>
+                        <li style="margin-bottom:5px;">En Google Calendar, click en <strong>⚙️ Configuración</strong></li>
+                        <li style="margin-bottom:5px;">Ve a <strong>Importar y exportar</strong></li>
+                        <li style="margin-bottom:5px;">Selecciona el archivo .ics descargado</li>
+                        <li>¡Listo! Los eventos aparecerán en tu calendario</li>
+                    </ol>
+                </div>
                 <!-- Google Calendar Embed -->
                 <div id="googleCalendarSection" style="display:none;margin-bottom:20px;">
                     <iframe src="https://calendar.google.com/calendar/embed?src=paluecoaldea7%40gmail.com&ctz=America%2FBogota" style="border: 0" width="100%" height="400" frameborder="0" scrolling="no"></iframe>
-                    <p style="text-align:center;margin-top:10px;font-size:12px;color:var(--gris);">Conecta tu Google Calendar en Configuración</p>
+                    <p style="text-align:center;margin-top:10px;font-size:12px;color:var(--gris);">Calendario de PALUF (debes compartirlo públicamente en Google)</p>
                 </div>
                 <!-- Mini Calendario -->
                 <div class="calendario-container">
@@ -3602,6 +3617,61 @@
                 renderizarCalendario();
                 toast('Evento eliminado');
             }
+        };
+
+        // ==================== GOOGLE CALENDAR SYNC ====================
+        const exportarICS = () => {
+            // Generar archivo ICS con los eventos
+            let icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//PALUF Control//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:PALUF Eventos
+X-WR-TIMEZONE:America/Bogota
+`;
+            
+            eventos.forEach(e => {
+                const fechaParts = e.fecha.split('-');
+                const anio = fechaParts[0];
+                const mes = fechaParts[1];
+                const dia = fechaParts[2];
+                const hora = e.hora ? e.hora.replace(':', '') + '00' : '090000';
+                const finHora = e.hora ? (parseInt(e.hora.split(':')[0]) + 1).toString().padStart(2, '0') + e.hora.split(':')[1] + '00' : '100000';
+                
+                icsContent += `BEGIN:VEVENT
+DTSTART;TZID=America/Bogota:${anio}${mes}${dia}T${hora}
+DTEND;TZID=America/Bogota:${anio}${mes}${dia}T${finHora}
+SUMMARY:${e.titulo}
+DESCRIPTION:${e.descripcion || ''}
+LOCATION:PALUF Ecoaldea
+END:VEVENT
+`;
+            });
+            
+            icsContent += 'END:VCALENDAR';
+            
+            // Descargar archivo
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `PALUF_Eventos_${new Date().toISOString().split('T')[0]}.ics`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            toast('✓ Archivo .ics descargado');
+        };
+
+        const abrirGoogleCalendar = () => {
+            // Abrir Google Calendar en una nueva pestaña
+            window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text=PALUF+-+Nuevo+Evento&details=Agrega+este+evento+desde+PALUF+Control', '_blank');
+            toast('Se abrió Google Calendar. Para importar, ve a Configuración > Importar y exportar');
+        };
+
+        const toggleGoogleCalendar = () => {
+            googleCalendarVisible = !googleCalendarVisible;
+            document.getElementById('googleCalendarSection').style.display = googleCalendarVisible ? 'block' : 'none';
         };
 
         const eliminarTarea = () => {
