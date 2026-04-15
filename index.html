@@ -4088,34 +4088,105 @@
 
         const cerrarDashboard = () => document.getElementById('modalDashboard').classList.remove('visible');
 
-        // ==================== CHAT ====================
+        // ==================== CHAT CON JSONBIN ====================
+        const JSONBIN_KEY = '$2a$10$2yLO2iuRKDEseqijq.nkbOkVwSsJ3lD0rRRLPiCCCRawa6c69tiR.';
+        let JSONBIN_BIN_ID = localStorage.getItem('paluf_chat_bin');
+        const JSONBIN_API = 'https://api.jsonbin.io/v3/b';
+
         let chatMessages = [];
         let mediaRecorder = null;
         let audioChunks = [];
         let grabandoAudio = false;
         let audioElement = null;
 
-        const abrirChat = () => {
+        const abrirChat = async () => {
             document.getElementById('chatModal').classList.add('visible');
-            cargarChat();
+            await cargarChat();
             scrollChatBottom();
+            iniciarAutoRefresh();
         };
 
         const cerrarChat = () => {
             document.getElementById('chatModal').classList.remove('visible');
+            detenerAutoRefresh();
         };
 
-        const cargarChat = () => {
+        const cargarChat = async () => {
             try {
-                chatMessages = JSON.parse(localStorage.getItem('paluf_chat') || '[]');
-            } catch {
+                if (!JSONBIN_BIN_ID) {
+                    // Crear nuevo bin si no existe
+                    await crearBinChat();
+                    return;
+                }
+
+                const response = await fetch(`${JSONBIN_API}/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_KEY }
+                });
+
+                if (!response.ok) {
+                    // Si el bin no existe, crear uno nuevo
+                    await crearBinChat();
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.record && data.record.messages) {
+                    chatMessages = data.record.messages;
+                }
+            } catch (err) {
+                console.log('Error cargando chat, usando local:', err);
+                // Fallback a localStorage
+                try {
+                    chatMessages = JSON.parse(localStorage.getItem('paluf_chat') || '[]');
+                } catch {
+                    chatMessages = [];
+                }
+            }
+            renderChat();
+        };
+
+        const crearBinChat = async () => {
+            try {
+                const response = await fetch(JSONBIN_API, {
+                    method: 'POST',
+                    headers: {
+                        'X-Master-Key': JSONBIN_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ messages: [] })
+                });
+                const data = await response.json();
+                if (data.metadata && data.metadata.id) {
+                    JSONBIN_BIN_ID = data.metadata.id;
+                    localStorage.setItem('paluf_chat_bin', JSONBIN_BIN_ID);
+                }
+            } catch (err) {
+                console.log('Error creando bin, usando local:', err);
                 chatMessages = [];
             }
             renderChat();
         };
 
-        const guardarChat = () => {
-            localStorage.setItem('paluf_chat', JSON.stringify(chatMessages));
+        const guardarChat = async () => {
+            // Guardar en JSONBin (nube)
+            if (JSONBIN_BIN_ID) {
+                try {
+                    await fetch(`${JSONBIN_API}/${JSONBIN_BIN_ID}`, {
+                        method: 'PUT',
+                        headers: {
+                            'X-Master-Key': JSONBIN_KEY,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ messages: chatMessages })
+                    });
+                } catch (err) {
+                    console.log('Error guardando en nube, guardando local:', err);
+                    localStorage.setItem('paluf_chat', JSON.stringify(chatMessages));
+                }
+            } else {
+                // Fallback a localStorage
+                localStorage.setItem('paluf_chat', JSON.stringify(chatMessages));
+            }
         };
 
         const renderChat = () => {
@@ -4253,7 +4324,7 @@
             return icons[ext] || '📎';
         };
 
-        const enviarChat = () => {
+        const enviarChat = async () => {
             const input = document.getElementById('chatInput');
             const texto = input.value.trim();
             if (!texto) return;
@@ -4270,7 +4341,7 @@
             };
 
             chatMessages.push(msg);
-            guardarChat();
+            await guardarChat();
             renderChat();
             scrollChatBottom();
             input.value = '';
@@ -4287,12 +4358,12 @@
             el.style.height = Math.min(el.scrollHeight, 120) + 'px';
         };
 
-        const handleChatImage = (input) => {
+const handleChatImage = (input) => {
             if (!input.files || !input.files[0]) return;
             const file = input.files[0];
             const reader = new FileReader();
 
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 const ahora = new Date();
                 const msg = {
                     id: Date.now(),
@@ -4304,6 +4375,48 @@
                     hora: ahora.toTimeString().slice(0, 5),
                     timestamp: ahora.getTime()
                 };
+
+                chatMessages.push(msg);
+                await guardarChat();
+                renderChat();
+                scrollChatBottom();
+            };
+
+            reader.readAsDataURL(file);
+            input.value = '';
+        };
+
+        const handleChatFile = (input) => {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+
+            // Skip if it's an image/video (handled by other input)
+            if (file.type.startsWith('image') || file.type.startsWith('video')) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const ahora = new Date();
+                const msg = {
+                    id: Date.now(),
+                    autor: usuarioActual,
+                    tipo: 'archivo',
+                    url: e.target.result,
+                    nombre: file.name,
+                    size: formatearSize(file.size),
+                    fecha: ahora.toISOString().split('T')[0],
+                    hora: ahora.toTimeString().slice(0, 5),
+                    timestamp: ahora.getTime()
+                };
+
+                chatMessages.push(msg);
+                await guardarChat();
+                renderChat();
+                scrollChatBottom();
+            };
+
+            reader.readAsDataURL(file);
+            input.value = '';
+        };
 
                 chatMessages.push(msg);
                 guardarChat();
@@ -4378,10 +4491,10 @@
                         audioChunks.push(e.data);
                     };
 
-                    mediaRecorder.onstop = () => {
+                    mediaRecorder.onstop = async () => {
                         const blob = new Blob(audioChunks, { type: 'audio/webm' });
                         const reader = new FileReader();
-                        reader.onload = (e) => {
+                        reader.onload = async (e) => {
                             const ahora = new Date();
                             const msg = {
                                 id: Date.now(),
@@ -4394,7 +4507,7 @@
                                 timestamp: ahora.getTime()
                             };
                             chatMessages.push(msg);
-                            guardarChat();
+                            await guardarChat();
                             renderChat();
                             scrollChatBottom();
                         };
@@ -4442,6 +4555,23 @@
                 badge.style.display = 'flex';
             } else {
                 badge.style.display = 'none';
+            }
+        };
+
+        // Auto-refresh del chat cada 5 segundos
+        let chatInterval = null;
+        const iniciarAutoRefresh = () => {
+            if (chatInterval) clearInterval(chatInterval);
+            chatInterval = setInterval(async () => {
+                if (document.getElementById('chatModal').classList.contains('visible')) {
+                    await cargarChat();
+                }
+            }, 5000);
+        };
+        const detenerAutoRefresh = () => {
+            if (chatInterval) {
+                clearInterval(chatInterval);
+                chatInterval = null;
             }
         };
 
