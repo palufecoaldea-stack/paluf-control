@@ -176,6 +176,10 @@
             background: linear-gradient(135deg, #059669 0%, #047857 100%); 
             color: white; 
         }
+        .btn-equipo { 
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); 
+            color: white; 
+        }
         .btn-notificaciones {
             background: var(--rojo);
             border: none;
@@ -1322,6 +1326,87 @@
         .dia-stat-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--crema); }
         .dia-stat-row:last-child { border-bottom: none; }
 
+        /* VISTA EQUIPO */
+        .equipo-resumen {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .equipo-resumen .stat-card {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+        }
+        .equipo-resumen .stat-card.gold {
+            background: linear-gradient(135deg, var(--dorado-oscuro) 0%, var(--dorado) 100%);
+        }
+        .equipo-resumen .stat-card .value { font-size: 28px; font-weight: bold; }
+        .equipo-resumen .stat-card .label { font-size: 11px; opacity: 0.9; }
+        
+        .equipo-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .equipo-card {
+            background: var(--blanco);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--sombra-suave);
+            transition: transform 0.2s;
+        }
+        .equipo-card:hover { transform: translateY(-3px); }
+        .equipo-card-header {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .equipo-card-header i { font-size: 28px; color: var(--dorado); }
+        .equipo-card-header .nombre { font-weight: 600; font-size: 15px; }
+        .equipo-card-header .area { font-size: 11px; opacity: 0.8; }
+        .equipo-card-body { padding: 15px; }
+        .equipo-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--crema);
+        }
+        .equipo-stat-row:last-child { border-bottom: none; }
+        .equipo-stat-row .label { font-size: 13px; color: var(--gris); }
+        .equipo-stat-row .value { font-weight: 600; font-size: 14px; }
+        .equipo-stat-row .value.alto { color: var(--verde-check); }
+        .equipo-stat-row .value.medio { color: var(--naranja); }
+        .equipo-stat-row .value.bajo { color: var(--rojo); }
+        
+        .miembro-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .miembro-badge.hoy {
+            background: var(--verde-check);
+            color: white;
+        }
+        .miembro-badge.no-trabaja {
+            background: var(--gris-claro);
+            color: var(--gris);
+        }
+        .miembro-badge.ausente {
+            background: var(--rojo);
+            color: white;
+        }
+
         /* PRINT */
         @media print {
             .login-overlay, .sidebar, .filters, .quick-actions, .header-actions, .task-actions, .btn { display: none !important; }
@@ -1411,6 +1496,7 @@
                 <i class="fas fa-bell"></i>
                 <span class="notif-badge" id="notifBadge">0</span>
             </button>
+            <button class="btn btn-equipo" onclick="abrirModalEquipo()"><i class="fas fa-users"></i> Equipo</button>
             <button class="btn btn-semanal" onclick="abrirModalSemanal()"><i class="fas fa-calendar-week"></i> Semana</button>
             <button class="btn btn-calendar" onclick="abrirModalCalendario()"><i class="fas fa-calendar-alt"></i> Calendario</button>
             <button class="btn btn-warning" onclick="abrirModalLinks()"><i class="fas fa-link"></i> Links</button>
@@ -1599,6 +1685,25 @@
                     <button class="notif-tab" onclick="cambiarTabNotif('recordatorios')" id="tabRecordatorios">🔔 Recordatorios</button>
                 </div>
                 <div class="notif-content" id="notifContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL VISTA EQUIPO -->
+    <div class="modal" id="modalEquipo">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class="fas fa-users"></i> Vista de Equipo</h2>
+                <div style="display:flex;gap:10px;">
+                    <span id="equipoFecha" style="color:white;font-weight:600;"></span>
+                    <button class="modal-close" onclick="cerrarModalEquipo()">×</button>
+                </div>
+            </div>
+            <div style="padding: 20px;">
+                <!-- Resumen del día -->
+                <div class="equipo-resumen" id="equipoResumen"></div>
+                <!-- Lista de equipo -->
+                <div class="equipo-lista" id="equipoLista"></div>
             </div>
         </div>
     </div>
@@ -2741,6 +2846,123 @@
                     </div>
                 `;
             }).join('');
+        };
+
+        // ==================== VISTA EQUIPO ====================
+        const abrirModalEquipo = () => {
+            renderizarVistaEquipo();
+            document.getElementById('modalEquipo').classList.add('visible');
+        };
+
+        const cerrarModalEquipo = () => {
+            document.getElementById('modalEquipo').classList.remove('visible');
+        };
+
+        const renderizarVistaEquipo = () => {
+            const hoy = new Date();
+            const hoyStr = formatFecha(hoy);
+            const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            
+            // Título con fecha
+            document.getElementById('equipoFecha').textContent = `${diasSemana[hoy.getDay()]}, ${hoy.getDate()} de ${meses[hoy.getMonth()]} ${hoy.getFullYear()}`;
+            
+            // Calcular estadísticas generales del equipo
+            let totalMiembros = PERSONAS.length;
+            let miembrosActivos = 0;
+            let totalTareas = 0;
+            let totalCompletadas = 0;
+            let eventosHoy = eventos.filter(e => e.fecha === hoyStr).length;
+            
+            const statsMiembros = [];
+            
+            PERSONAS.forEach(persona => {
+                const tareasPersona = funcionesData.filter(f => f.persona === persona && esAplicaFrecuencia(f.frecuencia, hoy));
+                let completadas = 0;
+                let total = 0;
+                
+                tareasPersona.forEach(t => {
+                    const key = `${persona}_${t.id}_${hoyStr}`;
+                    total++;
+                    if (asistencia[key] === 'si') completadas++;
+                });
+                
+                totalTareas += total;
+                totalCompletadas += completadas;
+                if (total > 0) miembrosActivos++;
+                
+                statsMiembros.push({
+                    persona,
+                    tareas: total,
+                    completadas,
+                    pct: total > 0 ? Math.round(completadas / total * 100) : 0
+                });
+            });
+            
+            const pctGeneral = totalTareas > 0 ? Math.round(totalCompletadas / totalTareas * 100) : 0;
+            
+            // Resumen
+            const resumenDiv = document.getElementById('equipoResumen');
+            resumenDiv.innerHTML = `
+                <div class="stat-card">
+                    <div class="value">${miembrosActivos}/${totalMiembros}</div>
+                    <div class="label">Activos Hoy</div>
+                </div>
+                <div class="stat-card gold">
+                    <div class="value">${pctGeneral}%</div>
+                    <div class="label">Cumplimiento</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">${eventosHoy}</div>
+                    <div class="label">Eventos</div>
+                </div>
+            `;
+            
+            // Lista de miembros
+            const iconos = ['fa-user-tie', 'fa-user-edit', 'fa-user-cog', 'fa-user-nurse', 'fa-user-hard-hat', 'fa-user', 'fa-user-check', 'fa-user-tag', 'fa-user-astronaut', 'fa-user-shield'];
+            const listaDiv = document.getElementById('equipoLista');
+            
+            listaDiv.innerHTML = statsMiembros.map((m, i) => {
+                const nivelClass = m.pct >= 80 ? 'alto' : m.pct >= 50 ? 'medio' : 'bajo';
+                const badgeClass = m.tareas === 0 ? 'no-trabaja' : 'hoy';
+                const badgeText = m.tareas === 0 ? 'Sin tareas' : m.pct >= 80 ? '✓ Excelente' : m.pct >= 50 ? '⟳ En curso' : '⚠ Pendiente';
+                
+                return `
+                    <div class="equipo-card" onclick="seleccionarYIr('${m.persona}')">
+                        <div class="equipo-card-header">
+                            <i class="fas ${iconos[i % iconos.length]}"></i>
+                            <div>
+                                <div class="nombre">${m.persona}</div>
+                                <div class="area">${funcionesData.find(f => f.persona === m.persona)?.area || '-'}</div>
+                            </div>
+                        </div>
+                        <div class="equipo-card-body">
+                            <div class="equipo-stat-row">
+                                <span class="label">Estado</span>
+                                <span class="miembro-badge ${badgeClass}">${badgeText}</span>
+                            </div>
+                            <div class="equipo-stat-row">
+                                <span class="label">Tareas del día</span>
+                                <span class="value">${m.completadas}/${m.tareas}</span>
+                            </div>
+                            <div class="equipo-stat-row">
+                                <span class="label">Progreso</span>
+                                <span class="value ${nivelClass}">${m.pct}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        const seleccionarYIr = (persona) => {
+            cerrarModalEquipo();
+            seleccionar(persona);
+            irAHoy();
+            mesActual = new Date().getMonth();
+            anioActual = new Date().getFullYear();
+            renderCalendario();
+            renderTareas();
         };
 
         const toggleDarkMode = () => {
