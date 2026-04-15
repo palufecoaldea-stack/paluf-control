@@ -852,6 +852,7 @@
         </div>
         <div class="header-actions">
             <button class="btn-dark-mode" id="btnDarkMode" onclick="toggleDarkMode()" title="Modo Oscuro">🌙</button>
+            <button class="btn btn-success" id="btnExport" style="display:none;" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar</button>
             <span class="user-welcome" id="userWelcome" style="display:none;"></span>
             <button class="btn-logout" id="btnLogout" style="display:none;" onclick="logout()">Salir</button>
             <button class="btn btn-primary" id="btnDashboard" style="display:none;" onclick="verDashboard()"><i class="fas fa-chart-line"></i> Dashboard</button>
@@ -1562,6 +1563,7 @@
             document.getElementById('userWelcome').textContent = `👤 ${p}`;
             document.getElementById('userWelcome').style.display = 'inline';
             document.getElementById('btnLogout').style.display = 'inline-block';
+            document.getElementById('btnExport').style.display = 'inline-block';
             if (['Luisa Torres', 'Julieth Melo', 'María Paula'].includes(p)) {
                 document.getElementById('btnDashboard').style.display = 'inline-block';
             }
@@ -1582,6 +1584,43 @@
             if (!confirm('¿Salir?')) return;
             localStorage.removeItem('paluf_usuario');
             location.reload();
+        };
+
+        const exportarExcel = () => {
+            // Crear CSV con los datos del mes actual
+            let csv = 'PERSONA,TAREA,ÁREA,FRECUENCIA,PRIORIDAD';
+            const dias = getDiasMes(mesActual, anioActual);
+            
+            // Agregar columnas de fechas
+            for (let d = 1; d <= dias; d++) {
+                const fecha = new Date(anioActual, mesActual, d);
+                csv += `,${d}/${mesActual + 1}/${anioActual}`;
+            }
+            csv += '\n';
+            
+            // Agregar datos de cada persona y tarea
+            funcionesData.forEach(t => {
+                csv += `"${t.persona}","${t.func}","${t.area}","${t.frecuencia}","${t.prioridad}"`;
+                for (let d = 1; d <= dias; d++) {
+                    const fecha = new Date(anioActual, mesActual, d);
+                    const fs = formatFecha(fecha);
+                    const key = `${t.persona}_${t.id}_${fs}`;
+                    const estado = asistencia[key] || '';
+                    const marca = estado === 'si' ? '✓' : estado === 'no' ? '✗' : estado === 'na' ? 'N/A' : '';
+                    csv += `,${marca}`;
+                }
+                csv += '\n';
+            });
+            
+            // Crear y descargar archivo
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `PALUF_${MESES[mesActual]}_${anioActual}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+            toast(`Exportado: PALUF_${MESES[mesActual]}_${anioActual}.csv`);
         };
 
         const seleccionar = (p) => {
