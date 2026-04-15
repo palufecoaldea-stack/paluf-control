@@ -1175,6 +1175,8 @@
         .evento-item.retiro { border-left-color: #27ae60; }
         .evento-item.reunion { border-left-color: #f39c12; }
         .evento-item.mantenimiento { border-left-color: #e74c3c; }
+        .evento-item.publicacion { border-left-color: #3498db; }
+        .evento-item.promocion { border-left-color: #9b59b6; }
         .evento-item.especial { border-left-color: #1abc9c; }
         .evento-icon { font-size: 24px; }
         .evento-info { flex: 1; }
@@ -1793,6 +1795,8 @@
                         <option value="retiro">🏕️ Retiro</option>
                         <option value="reunion">👥 Reunión</option>
                         <option value="mantenimiento">🔧 Mantenimiento</option>
+                        <option value="publicacion">📝 Publicación</option>
+                        <option value="promocion">📣 Promoción de Evento</option>
                         <option value="especial">⭐ Especial</option>
                     </select>
                 </div>
@@ -2496,7 +2500,7 @@
             const hoy = new Date();
             const hoyStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
             const eventosHoy = eventos.filter(e => e.fecha === hoyStr);
-            const iconos = { ceremonia: '🎭', taller: '🛠️', retiro: '🏕️', reunion: '👥', mantenimiento: '🔧', especial: '⭐' };
+            const iconos = { ceremonia: '🎭', taller: '🛠️', retiro: '🏕️', reunion: '👥', mantenimiento: '🔧', publicacion: '📝', promocion: '📣', especial: '⭐' };
             
             const eventosLista = document.getElementById('eventosHoyLista');
             if (eventosHoy.length > 0) {
@@ -3471,7 +3475,7 @@
 
         const renderizarEventos = () => {
             const lista = document.getElementById('eventosLista');
-            const iconos = { ceremonia: '🎭', taller: '🛠️', retiro: '🏕️', reunion: '👥', mantenimiento: '🔧', especial: '⭐' };
+            const iconos = { ceremonia: '🎭', taller: '🛠️', retiro: '🏕️', reunion: '👥', mantenimiento: '🔧', publicacion: '📝', promocion: '📣', especial: '⭐' };
             
             // Agrupar por fecha
             const eventosOrdenados = [...eventos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
