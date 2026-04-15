@@ -4926,26 +4926,66 @@
         };
 
         const subirFotoAseo = (tareaId) => {
+            // Crear modal de opciones
+            const modal = document.createElement('div');
+            modal.id = 'modalFotoAseo';
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:100000;display:flex;justify-content:center;align-items:center;';
+            modal.innerHTML = `
+                <div style="background:white;border-radius:20px;padding:30px;width:90%;max-width:350px;text-align:center;">
+                    <h3 style="color:var(--verde-oscuro);margin:0 0 20px 0;">📷 Subir Evidencia</h3>
+                    <div style="display:flex;flex-direction:column;gap:15px;">
+                        <button onclick="tomarFotoAseo('${tareaId}')" style="padding:20px;background:linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);color:white;border:none;border-radius:15px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">
+                            📸 Tomar Foto
+                        </button>
+                        <button onclick="seleccionarFotoAseo('${tareaId}')" style="padding:20px;background:linear-gradient(135deg, #3498db 0%, #2980b9 100%);color:white;border:none;border-radius:15px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">
+                            🖼️ Seleccionar de Galería
+                        </button>
+                    </div>
+                    <button onclick="cerrarModalFotoAseo()" style="margin-top:20px;padding:12px 30px;background:#ddd;color:var(--marron);border:none;border-radius:10px;cursor:pointer;font-size:14px;">Cancelar</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        };
+
+        const cerrarModalFotoAseo = () => {
+            const modal = document.getElementById('modalFotoAseo');
+            if (modal) modal.remove();
+        };
+
+        const tomarFotoAseo = (tareaId) => {
+            cerrarModalFotoAseo();
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = 'image/*';
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = async (ev) => {
-                    const tarea = aseoData.tareas.find(t => t.id == tareaId);
-                    if (tarea) {
-                        if (!tarea.evidencia) tarea.evidencia = [];
-                        tarea.evidencia.push(ev.target.result);
-                        await guardarAseoData();
-                        renderTareasAseo();
-                        toast('Foto subida', 'success');
-                    }
-                };
-                reader.readAsDataURL(file);
-            };
+            input.capture = 'environment'; // Abre la cámara directamente
+            input.onchange = async (e) => procesarFotoAseo(e, tareaId);
             input.click();
+        };
+
+        const seleccionarFotoAseo = (tareaId) => {
+            cerrarModalFotoAseo();
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async (e) => procesarFotoAseo(e, tareaId);
+            input.click();
+        };
+
+        const procesarFotoAseo = async (e, tareaId) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const tarea = aseoData.tareas.find(t => t.id == tareaId);
+                if (tarea) {
+                    if (!tarea.evidencia) tarea.evidencia = [];
+                    tarea.evidencia.push(ev.target.result);
+                    await guardarAseoData();
+                    renderTareasAseo();
+                    toast('📷 Foto subida', 'success');
+                }
+            };
+            reader.readAsDataURL(file);
         };
 
         const marcarHechoAseo = async (tareaId) => {
