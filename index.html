@@ -722,6 +722,20 @@
         .p-alta { background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); color: var(--rojo); }
         .p-media { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); color: #f57c00; }
         .p-baja { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); color: var(--verde-check); }
+        
+        .btn-nota {
+            background: var(--crema-oscuro);
+            border: 1px solid var(--gris-claro);
+            border-radius: 12px;
+            padding: 2px 8px;
+            cursor: pointer;
+            font-size: 10px;
+            color: var(--gris);
+            transition: all 0.2s;
+        }
+        .btn-nota:hover { background: var(--dorado-luz); border-color: var(--dorado); }
+        .btn-nota.has-note { background: var(--dorado-luz); border-color: var(--dorado); color: var(--dorado-oscuro); }
+        .btn-nota i { margin-right: 3px; }
 
         .attendance-row {
             display: flex;
@@ -1060,6 +1074,27 @@
         </div>
     </div>
 
+    <!-- MODAL NOTA -->
+    <div class="modal" id="modalNota">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-sticky-note"></i> Nota de Tarea</h2>
+                <button class="modal-close" onclick="cerrarModalNota()">×</button>
+            </div>
+            <div style="padding: 20px;">
+                <p id="notaTareaNombre" style="font-weight:600;margin-bottom:15px;color:var(--verde-oscuro);"></p>
+                <textarea id="notaTexto" placeholder="Escribe una nota para esta tarea..." style="width:100%;min-height:120px;padding:12px;border-radius:12px;border:2px solid var(--verde-claro);font-size:14px;resize:vertical;"></textarea>
+                <div style="display:flex;justify-content:space-between;margin-top:15px;">
+                    <button class="btn btn-danger" onclick="eliminarNota()"><i class="fas fa-trash"></i> Eliminar</button>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn btn-secondary" onclick="cerrarModalNota()">Cancelar</button>
+                        <button class="btn btn-primary" onclick="guardarNota()"><i class="fas fa-save"></i> Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DASHBOARD -->
     <div class="modal" id="modalDashboard">
         <div class="modal-content" style="max-width: 900px;">
@@ -1089,6 +1124,7 @@
         let usuarioActual = null;
         let funcionesData = [];
         let asistencia = {};
+        let notasTarea = {}; // { "persona_tareaId_fecha": "nota" }
         let comentarios = [];
         let tareaEditando = null;
 
@@ -1280,17 +1316,26 @@
                     funcionesData = [...funcionesDefault];
                     asistencia = {};
                     comentarios = [];
+                    notasTarea = {};
                     guardar();
                 } else {
                     funcionesData = data.f;
                     asistencia = data.a || {};
                     comentarios = data.c || [];
+                    notasTarea = data.n || {};
                 }
             } catch {
                 funcionesData = [...funcionesDefault];
                 asistencia = {};
                 comentarios = [];
+                notasTarea = {};
                 guardar();
+            }
+            // Cargar notas separadas también
+            try {
+                notasTarea = JSON.parse(localStorage.paluf_notas || '{}');
+            } catch {
+                notasTarea = {};
             }
         };
 
@@ -1354,6 +1399,8 @@
 
             tareas.forEach(t => {
                 const prio = t.prioridad === 'Alta' ? 'p-alta' : t.prioridad === 'Media' ? 'p-media' : 'p-baja';
+                const notaKey = `${personaSeleccionada}_${t.id}`;
+                const tieneNota = notasTarea[notaKey];
                 html += `<div class="attendance-row">
                     <div class="header-cell task-cell">
                         <span class="tarea-id-badge">${t.id}</span>
@@ -1363,6 +1410,9 @@
                                 <span class="meta-tag ${prio}">${t.prioridad}</span>
                                 <span>⏱️ ${t.tiempo || '-'}</span>
                                 <span><i class="fas fa-clock"></i> ${t.frecuencia}</span>
+                                <button class="btn-nota ${tieneNota ? 'has-note' : ''}" onclick="abrirNota('${t.id}', '${t.func}')" title="${tieneNota ? 'Ver nota' : 'Agregar nota'}">
+                                    <i class="fas fa-sticky-note"></i> ${tieneNota ? '✓' : ''}
+                                </button>
                             </div>
                         </div>
                     </div>`;
@@ -1869,6 +1919,42 @@
                 cerrarModal();
                 toast('Tarea eliminada');
             }
+        };
+        
+        let notaActualTarea = null;
+        
+        const abrirNota = (tareaId, tareaNombre) => {
+            notaActualTarea = tareaId;
+            document.getElementById('notaTareaNombre').textContent = tareaNombre;
+            document.getElementById('notaTexto').value = notasTarea[tareaId] || '';
+            document.getElementById('modalNota').classList.add('visible');
+        };
+        
+        const cerrarModalNota = () => {
+            document.getElementById('modalNota').classList.remove('visible');
+            notaActualTarea = null;
+        };
+        
+        const guardarNota = () => {
+            const texto = document.getElementById('notaTexto').value.trim();
+            if (texto) {
+                notasTarea[notaActualTarea] = texto;
+                toast('✓ Nota guardada');
+            } else {
+                delete notasTarea[notaActualTarea];
+                toast('Nota eliminada');
+            }
+            localStorage.paluf_notas = JSON.stringify(notasTarea);
+            cerrarModalNota();
+            renderTareas();
+        };
+        
+        const eliminarNota = () => {
+            delete notasTarea[notaActualTarea];
+            localStorage.paluf_notas = JSON.stringify(notasTarea);
+            cerrarModalNota();
+            renderTareas();
+            toast('Nota eliminada');
         };
 
         const eliminarTarea = () => {
