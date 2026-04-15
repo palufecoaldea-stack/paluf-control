@@ -2141,6 +2141,7 @@
                 <div class="aseo-tab active" onclick="cambiarTabAseo('tareas')" id="tabAseoTareas">📋 Tareas</div>
                 <div class="aseo-tab" onclick="cambiarTabAseo('chat')" id="tabAseoChat">💬 Chat</div>
                 <div class="aseo-tab" onclick="cambiarTabAseo('historial')" id="tabAseoHistorial">📜 Historia</div>
+                <div class="aseo-tab" onclick="cambiarTabAseo('config')" id="tabAseoConfig">⚙️ Config</div>
             </div>
             <div class="aseo-content" id="aseoContent"></div>
         </div>
@@ -4588,24 +4589,28 @@
 
         // ==================== MODULO ASEO MEJORADO ====================
         
-        const TAREAS_ASEO = [
-            { nombre: 'Limpiar recepción', lugar: 'Recepción' },
-            { nombre: 'Limpiar baños', lugar: 'Baños' },
-            { nombre: 'Limpiar cocina', lugar: 'Cocina' },
-            { nombre: 'Limpiar salón', lugar: 'Salón' },
-            { nombre: 'Limpiar habitaciones', lugar: 'Habitaciones' },
-            { nombre: 'Limpiar cabañas', lugar: 'Cabañas' },
-            { nombre: 'Barrer zonas comunes', lugar: 'Exterior' },
-            { nombre: 'Limpiar piscina', lugar: 'Piscina' },
-            { nombre: 'Recoger basura', lugar: 'Exterior' },
-            { nombre: 'Limpiar ventanas', lugar: 'General' },
-            { nombre: 'Limpiar espejos', lugar: 'General' },
-            { nombre: 'Trapear pisos', lugar: 'General' }
+        const TAREAS_ASEO_DEFAULT = [
+            { nombre: 'Limpiar recepción', lugar: 'Recepción', nota: '' },
+            { nombre: 'Limpiar baños', lugar: 'Baños', nota: '' },
+            { nombre: 'Limpiar cocina', lugar: 'Cocina', nota: '' },
+            { nombre: 'Limpiar salón', lugar: 'Salón', nota: '' },
+            { nombre: 'Limpiar habitaciones', lugar: 'Habitaciones', nota: '' },
+            { nombre: 'Limpiar cabañas', lugar: 'Cabañas', nota: '' },
+            { nombre: 'Barrer zonas comunes', lugar: 'Exterior', nota: '' },
+            { nombre: 'Limpiar piscina', lugar: 'Piscina', nota: '' },
+            { nombre: 'Recoger basura', lugar: 'Exterior', nota: '' },
+            { nombre: 'Limpiar ventanas', lugar: 'General', nota: '' },
+            { nombre: 'Limpiar espejos', lugar: 'General', nota: '' },
+            { nombre: 'Trapear pisos', lugar: 'General', nota: '' }
         ];
 
-        const PERSONAS_ASEO = ['María José', 'Laura', 'Carlos', 'Ana', 'Pedro', 'Juan', 'Diana', 'Roberto'];
-
-        let aseoData = { tareas: [], chat: [], faltantes: [], personas: ['María José', 'Laura', 'Carlos', 'Ana', 'Pedro', 'Juan', 'Diana', 'Roberto'] };
+        let aseoData = { 
+            tareas: [], 
+            chat: [], 
+            faltantes: [], 
+            personas: ['María José', 'Laura', 'Carlos', 'Ana', 'Pedro', 'Juan', 'Diana', 'Roberto'],
+            tareasBase: TAREAS_ASEO_DEFAULT
+        };
         let aseoTab = 'tareas';
         let aseoResponsables = [];
         let aseoSeleccionadas = [];
@@ -4728,7 +4733,8 @@
             document.getElementById('tabAseo' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
             if (tab === 'tareas') renderTareasAseo();
             else if (tab === 'chat') renderChatAseo();
-            else renderHistorialAseo();
+            else if (tab === 'historial') renderHistorialAseo();
+            else if (tab === 'config') renderConfigAseo();
         };
 
         const renderTareasAseo = () => {
@@ -4770,7 +4776,7 @@
                     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid var(--crema);">';
                     html += '<div><span style="font-size:20px;">👤</span> <strong style="font-size:18px;color:var(--verde-oscuro);">' + resp + '</strong></div>';
                     html += '<div style="display:flex;gap:8px;">';
-                    html += '<button class="btn-accion" onclick="gestionarResponsables()" style="padding:6px 12px;background:#9b59b6;color:white;">👥 Gestionar</button>';
+                    html += '<button class="btn-accion" onclick="cambiarTabAseo(\'config\')" style="padding:6px 12px;background:#9b59b6;color:white;">👥 Gestionar</button>';
                     html += '<button class="btn-accion btn-foto" onclick="editarResponsable(\'' + resp + '\')" style="padding:6px 12px;">✏️ Editar</button>';
                     html += '<span style="background:' + (h === tareas.length ? '#27ae60' : '#fff3cd') + ';color:' + (h === tareas.length ? 'white' : '#856404') + ';padding:4px 12px;border-radius:15px;font-size:12px;font-weight:600;">' + h + '/' + tareas.length + '</span>';
                     html += '</div></div>';
@@ -4827,21 +4833,24 @@
         };
 
         const renderCrearTareas = () => {
+            const tareasBase = aseoData.tareasBase || TAREAS_ASEO_DEFAULT;
             let html = '<div style="background:white;border-radius:12px;padding:20px;margin-bottom:15px;">';
             html += '<h4 style="color:var(--verde-oscuro);margin:0 0 15px 0;">👤👤 Selecciona Responsables (pueden ser varios)</h4>';
             html += '<p style="font-size:12px;color:var(--gris);margin-bottom:15px;">Selecciona quién(es) harán las tareas hoy:</p>';
             html += '<div class="chips-personas" style="margin-bottom:20px;">';
-            (aseoData.personas || PERSONAS_ASEO).forEach(p => {
+            aseoData.personas.forEach(p => {
                 html += '<div class="chip-persona" id="chip_' + p.replace(/ /g, '_') + '" onclick="toggleResponsableAseo(\'' + p + '\')">' + p + '</div>';
             });
             html += '</div>';
             
-            html += '<h5 style="color:var(--verde-oscuro);margin:0 0 15px 0;">✨ Tareas sugeridas (marca las que necesites)</h5>';
+            html += '<h5 style="color:var(--verde-oscuro);margin:0 0 15px 0;">✨ Tareas base (marca las que necesites)</h5>';
             html += '<div class="sugerencias-box" style="margin-bottom:15px;">';
-            TAREAS_ASEO.forEach(t => {
+            tareasBase.forEach(t => {
                 html += '<div class="sugerencia-item">';
                 html += '<input type="checkbox" id="tarea_' + t.nombre.replace(/ /g, '_') + '" onchange="toggleAseoTarea(\'' + t.nombre + '\', \'' + t.lugar + '\')">';
-                html += '<label for="tarea_' + t.nombre.replace(/ /g, '_') + '">' + t.nombre + ' <small>(' + t.lugar + ')</small></label>';
+                html += '<label for="tarea_' + t.nombre.replace(/ /g, '_') + '">' + t.nombre + ' <small>(' + t.lugar + ')</small>';
+                if (t.nota) html += ' <span style="color:#27ae60;font-size:11px;">💬 ' + t.nota + '</span>';
+                html += '</label>';
                 html += '</div>';
             });
             html += '</div>';
@@ -4863,18 +4872,19 @@
         const mostrarAgregarTareas = () => {
             aseoResponsables = [];
             aseoSeleccionadas = [];
+            const tareasBase = aseoData.tareasBase || TAREAS_ASEO_DEFAULT;
             const container = document.getElementById('aseoContent');
             container.innerHTML = '<div style="background:white;border-radius:12px;padding:20px;margin-bottom:15px;">';
             container.innerHTML += '<h4 style="color:var(--verde-oscuro);margin:0 0 15px 0;">➕ Agregar Más Tareas</h4>';
             container.innerHTML += '<h5 style="color:var(--verde-oscuro);margin:0 0 15px 0;">👤 Responsable:</h5>';
             container.innerHTML += '<div class="chips-personas" style="margin-bottom:20px;">';
-            (aseoData.personas || PERSONAS_ASEO).forEach(p => {
+            aseoData.personas.forEach(p => {
                 container.innerHTML += '<div class="chip-persona" id="chip_agregar_' + p.replace(/ /g, '_') + '" onclick="toggleResponsableAgregar(\'' + p + '\')">' + p + '</div>';
             });
             container.innerHTML += '</div>';
             container.innerHTML += '<h5 style="color:var(--verde-oscuro);margin:0 0 15px 0;">✨ Tareas:</h5>';
             container.innerHTML += '<div class="sugerencias-box" style="margin-bottom:15px;">';
-            TAREAS_ASEO.forEach(t => {
+            tareasBase.forEach(t => {
                 container.innerHTML += '<div class="sugerencia-item"><input type="checkbox" id="tarea_agregar_' + t.nombre.replace(/ /g, '_') + '" onchange="toggleAseoTareaAgregar(\'' + t.nombre + '\', \'' + t.lugar + '\')"><label for="tarea_agregar_' + t.nombre.replace(/ /g, '_') + '">' + t.nombre + ' <small>(' + t.lugar + ')</small></label></div>';
             });
             container.innerHTML += '</div>';
@@ -5065,70 +5075,6 @@
             toast('🗑️ Tarea eliminada', 'success');
         };
 
-        const gestionarResponsables = () => {
-            let html = '<div style="background:white;border-radius:12px;padding:20px;">';
-            html += '<h4 style="color:var(--verde-oscuro);margin:0 0 20px 0;">👥 Gestionar Responsables</h4>';
-            
-            // Lista actual
-            html += '<div style="margin-bottom:20px;">';
-            html += '<h5 style="margin:0 0 10px 0;color:var(--verde-oscuro);">Responsables actuales:</h5>';
-            aseoData.personas.forEach(p => {
-                html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--crema);border-radius:8px;margin-bottom:8px;">';
-                html += '<span>' + p + '</span>';
-                html += '<div style="display:flex;gap:8px;">';
-                html += '<button onclick="editarPersonaAseo(\'' + p + '\')" style="padding:6px 12px;background:#3498db;color:white;border:none;border-radius:6px;cursor:pointer;">✏️</button>';
-                html += '<button onclick="eliminarPersonaAseo(\'' + p + '\')" style="padding:6px 12px;background:#e74c3c;color:white;border:none;border-radius:6px;cursor:pointer;">🗑️</button>';
-                html += '</div></div>';
-            });
-            html += '</div>';
-            
-            // Agregar nuevo
-            html += '<div style="border-top:2px solid var(--crema);padding-top:20px;">';
-            html += '<h5 style="margin:0 0 10px 0;color:var(--verde-oscuro);">Agregar nuevo responsable:</h5>';
-            html += '<div style="display:flex;gap:10px;">';
-            html += '<input type="text" id="nuevaPersonaAseo" placeholder="Nombre del responsable" style="flex:1;padding:12px;border:2px solid #ddd;border-radius:10px;">';
-            html += '<button onclick="agregarPersonaAseo()" style="padding:12px 20px;background:#27ae60;color:white;border:none;border-radius:10px;cursor:pointer;font-weight:600;">+ Agregar</button>';
-            html += '</div></div>';
-            
-            html += '<button onclick="renderTareasAseo()" style="width:100%;margin-top:20px;padding:12px;background:#ddd;color:var(--marron);border:none;border-radius:10px;cursor:pointer;font-size:14px;">← Volver</button>';
-            html += '</div>';
-            document.getElementById('aseoContent').innerHTML = html;
-        };
-
-        const agregarPersonaAseo = async () => {
-            const nombre = document.getElementById('nuevaPersonaAseo').value.trim();
-            if (!nombre) { toast('Ingresa un nombre', 'error'); return; }
-            if (aseoData.personas.includes(nombre)) { toast('Este nombre ya existe', 'error'); return; }
-            aseoData.personas.push(nombre);
-            await guardarAseoData();
-            toast('✓ Responsable agregado', 'success');
-            gestionarResponsables();
-        };
-
-        const editarPersonaAseo = async (nombreActual) => {
-            const nuevoNombre = prompt('Nuevo nombre:', nombreActual);
-            if (!nuevoNombre || nuevoNombre.trim() === nombreActual) return;
-            const idx = aseoData.personas.indexOf(nombreActual);
-            if (idx >= 0) {
-                aseoData.personas[idx] = nuevoNombre.trim();
-                // Actualizar también en tareas existentes
-                aseoData.tareas.forEach(t => {
-                    if (t.responsable === nombreActual) t.responsable = nuevoNombre.trim();
-                });
-                await guardarAseoData();
-                toast('✓ Nombre actualizado', 'success');
-                gestionarResponsables();
-            }
-        };
-
-        const eliminarPersonaAseo = async (nombre) => {
-            if (!confirm('¿Eliminar a ' + nombre + '?')) return;
-            aseoData.personas = aseoData.personas.filter(p => p !== nombre);
-            await guardarAseoData();
-            toast('🗑️ Responsable eliminado', 'success');
-            gestionarResponsables();
-        };
-
         const marcarHechoAseo = async (tareaId) => {
             const tarea = aseoData.tareas.find(t => t.id == tareaId);
             if (tarea) { tarea.estado = 'hecho'; await guardarAseoData(); renderTareasAseo(); toast('✓ Marcado como hecho', 'success'); }
@@ -5256,6 +5202,7 @@
                 const tareasDia = aseoData.tareas.filter(t => t.fecha === dia);
                 const hechas = tareasDia.filter(t => t.estado === 'hecho').length;
                 const faltan = tareasDia.filter(t => t.estado === 'falta').length;
+                const pctGlobal = tareasDia.length > 0 ? Math.round((hechas / tareasDia.length) * 100) : 0;
                 
                 // Agrupar por responsable
                 const porResp = {};
@@ -5266,22 +5213,49 @@
 
                 const fechaFmt = new Date(dia + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
                 
+                // Barra de progreso general
+                const colorBarra = pctGlobal >= 80 ? '#27ae60' : pctGlobal >= 50 ? '#f39c12' : '#e74c3c';
+                
                 html += '<div class="historial-item">';
                 html += '<div class="historial-fecha">📅 ' + fechaFmt.charAt(0).toUpperCase() + fechaFmt.slice(1) + '</div>';
-                html += '<div class="historial-resumen" style="margin-bottom:10px;">';
-                html += '<span>📋 ' + tareasDia.length + '</span>';
-                html += '<span class="historial-completadas">✓ ' + hechas + '</span>';
-                html += '<span class="historial-faltantes">⚠️ ' + faltan + '</span>';
+                
+                // Barra de progreso del día
+                html += '<div style="background:white;padding:15px;border-radius:10px;margin-bottom:15px;">';
+                html += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
+                html += '<span style="font-weight:600;color:var(--verde-oscuro);">📊 Rendimiento del Día</span>';
+                html += '<span style="font-weight:bold;color:' + colorBarra + ';">' + pctGlobal + '%</span>';
                 html += '</div>';
+                html += '<div style="height:12px;background:#eee;border-radius:6px;overflow:hidden;">';
+                html += '<div style="height:100%;width:' + pctGlobal + '%;background:' + colorBarra + ';border-radius:6px;transition:width 0.5s;"></div>';
+                html += '</div>';
+                html += '<div class="historial-resumen" style="margin-top:10px;">';
+                html += '<span>📋 ' + tareasDia.length + ' total</span>';
+                html += '<span class="historial-completadas">✓ ' + hechas + ' hechas</span>';
+                html += '<span class="historial-faltantes">⚠️ ' + faltan + ' faltantes</span>';
+                html += '</div></div>';
 
                 // Mostrar por responsable
                 Object.keys(porResp).forEach(resp => {
                     const tResp = porResp[resp];
                     const hResp = tResp.filter(t => t.estado === 'hecho').length;
                     const fResp = tResp.filter(t => t.estado === 'falta');
+                    const pctResp = tResp.length > 0 ? Math.round((hResp / tResp.length) * 100) : 0;
+                    const colorResp = pctResp >= 80 ? '#27ae60' : pctResp >= 50 ? '#f39c12' : '#e74c3c';
                     
-                    html += '<div style="background:var(--crema);padding:10px;border-radius:8px;margin-bottom:8px;">';
-                    html += '<div style="font-weight:600;color:var(--verde-oscuro);margin-bottom:8px;">👤 ' + resp + ' <span style="font-size:12px;color:var(--gris);">(' + hResp + '/' + tResp.length + ')</span></div>';
+                    html += '<div style="background:var(--crema);padding:12px;border-radius:8px;margin-bottom:8px;">';
+                    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
+                    html += '<div style="font-weight:600;color:var(--verde-oscuro);">👤 ' + resp + '</div>';
+                    html += '<div style="text-align:right;">';
+                    html += '<span style="font-weight:bold;color:' + colorResp + ';font-size:16px;">' + pctResp + '%</span>';
+                    html += '</div></div>';
+                    
+                    // Barra individual
+                    html += '<div style="height:8px;background:#ddd;border-radius:4px;overflow:hidden;margin-bottom:10px;">';
+                    html += '<div style="height:100%;width:' + pctResp + '%;background:' + colorResp + ';border-radius:4px;"></div>';
+                    html += '</div>';
+                    
+                    // Resumen del responsable
+                    html += '<div style="font-size:12px;color:var(--gris);margin-bottom:8px;">(' + hResp + '/' + tResp.length + ') completadas • ⏱️ ~' + (tResp.length * 0.5) + ' horas</div>';
                     
                     // Tareas completadas
                     const completadas = tResp.filter(t => t.estado === 'hecho');
@@ -5292,13 +5266,12 @@
                     // Faltantes con detalles
                     if (fResp.length > 0) {
                         fResp.forEach(t => {
-                            // Buscar si fue reprogramada
                             const reprogramada = aseoData.faltantes?.find(f => f.tarea === t.nombre && f.fechaOriginal === dia && f.responsableOriginal === resp);
                             html += '<div style="background:#f8d7da;padding:8px;border-radius:6px;margin-bottom:5px;font-size:12px;color:#721c24;">';
                             html += '⚠️ <strong>' + t.nombre + '</strong>';
-                            if (t.faltante) html += '<br>↳ <em>Faltó: ' + t.faltante + '</em>';
+                            if (t.faltante) html += '<br>↳ <em>Nota: ' + t.faltante + '</em>';
                             if (reprogramada) {
-                                html += '<br>↳ 🔄 Reprogramada para <strong>' + reprogramada.fechaReprogramada + '</strong> a <strong>' + reprogramada.nuevoResponsable + '</strong>';
+                                html += '<br>↳ 🔄 Reprogramada para ' + reprogramada.fechaReprogramada + ' → ' + reprogramada.nuevoResponsable;
                             }
                             html += '</div>';
                         });
@@ -5310,6 +5283,143 @@
             container.innerHTML = html;
         };
 
+        const renderConfigAseo = () => {
+            const container = document.getElementById('aseoContent');
+            let html = '<div style="max-width:600px;">';
+            
+            // Sección: Responsables
+            html += '<div style="background:white;border-radius:12px;padding:20px;margin-bottom:15px;">';
+            html += '<h3 style="color:var(--verde-oscuro);margin:0 0 15px 0;border-bottom:2px solid var(--crema);padding-bottom:10px;">👥 Gestión de Responsables</h3>';
+            html += '<p style="font-size:13px;color:var(--gris);margin-bottom:15px;">Edita, agrega o elimina las personas del equipo de aseo:</p>';
+            
+            aseoData.personas.forEach(p => {
+                html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--crema);border-radius:8px;margin-bottom:8px;">';
+                html += '<span style="font-weight:600;">' + p + '</span>';
+                html += '<div style="display:flex;gap:8px;">';
+                html += '<button onclick="editarPersonaAseo(\'' + p + '\')" style="padding:6px 12px;background:#3498db;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">✏️</button>';
+                html += '<button onclick="eliminarPersonaAseo(\'' + p + '\')" style="padding:6px 12px;background:#e74c3c;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">🗑️</button>';
+                html += '</div></div>';
+            });
+            
+            html += '<div style="margin-top:15px;padding-top:15px;border-top:2px solid var(--crema);">';
+            html += '<h4 style="margin:0 0 10px 0;color:var(--verde-oscuro);">➕ Agregar nuevo responsable:</h4>';
+            html += '<div style="display:flex;gap:10px;">';
+            html += '<input type="text" id="nuevaPersonaInput" placeholder="Nombre" style="flex:1;padding:12px;border:2px solid #ddd;border-radius:10px;">';
+            html += '<button onclick="agregarPersonaAseo()" style="padding:12px 20px;background:#27ae60;color:white;border:none;border-radius:10px;cursor:pointer;font-weight:600;">+</button>';
+            html += '</div></div>';
+            html += '</div>';
+            
+            // Sección: Tareas Base
+            html += '<div style="background:white;border-radius:12px;padding:20px;margin-bottom:15px;">';
+            html += '<h3 style="color:var(--verde-oscuro);margin:0 0 15px 0;border-bottom:2px solid var(--crema);padding-bottom:10px;">📋 Tareas Base</h3>';
+            html += '<p style="font-size:13px;color:var(--gris);margin-bottom:15px;">Estas tareas aparecen por defecto. Puedes editarlas o agregar notas explicativas:</p>';
+            
+            (aseoData.tareasBase || TAREAS_ASEO_DEFAULT).forEach((t, idx) => {
+                html += '<div style="background:var(--crema);padding:12px;border-radius:8px;margin-bottom:10px;">';
+                html += '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">';
+                html += '<div><strong>' + t.nombre + '</strong><br><small style="color:var(--gris);">📍 ' + t.lugar + '</small></div>';
+                html += '<div style="display:flex;gap:8px;">';
+                html += '<button onclick="editarTareaBase(' + idx + ')" style="padding:6px 12px;background:#3498db;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">✏️</button>';
+                html += '<button onclick="eliminarTareaBase(' + idx + ')" style="padding:6px 12px;background:#e74c3c;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">🗑️</button>';
+                html += '</div></div>';
+                if (t.nota) {
+                    html += '<div style="background:#e8f5e9;padding:8px;border-radius:6px;font-size:12px;color:#27ae60;">💬 ' + t.nota + '</div>';
+                }
+                html += '</div>';
+            });
+            
+            html += '<div style="margin-top:15px;padding-top:15px;border-top:2px solid var(--crema);">';
+            html += '<h4 style="margin:0 0 10px 0;color:var(--verde-oscuro);">➕ Agregar nueva tarea base:</h4>';
+            html += '<div style="display:flex;flex-direction:column;gap:10px;">';
+            html += '<input type="text" id="nuevaTareaNombre" placeholder="Nombre de la tarea" style="padding:12px;border:2px solid #ddd;border-radius:10px;">';
+            html += '<input type="text" id="nuevaTareaLugar" placeholder="Lugar (ej: Baños, Cocina)" style="padding:12px;border:2px solid #ddd;border-radius:10px;">';
+            html += '<textarea id="nuevaTareaNota" placeholder="Nota explicativa (opcional)" style="padding:12px;border:2px solid #ddd;border-radius:10px;min-height:60px;"></textarea>';
+            html += '<button onclick="agregarTareaBase()" style="padding:12px;background:#27ae60;color:white;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;">+ Agregar Tarea</button>';
+            html += '</div></div>';
+            html += '</div>';
+            
+            container.innerHTML = html;
+        };
+
+        const agregarPersonaAseo = async () => {
+            const nombre = document.getElementById('nuevaPersonaInput').value.trim();
+            if (!nombre) { toast('Ingresa un nombre', 'error'); return; }
+            if (aseoData.personas.includes(nombre)) { toast('Este nombre ya existe', 'error'); return; }
+            aseoData.personas.push(nombre);
+            await guardarAseoData();
+            toast('✓ Responsable agregado', 'success');
+            renderConfigAseo();
+        };
+
+        const editarPersonaAseo = async (nombreActual) => {
+            const nuevoNombre = prompt('Nuevo nombre para ' + nombreActual + ':', nombreActual);
+            if (!nuevoNombre || nuevoNombre.trim() === nombreActual) return;
+            const idx = aseoData.personas.indexOf(nombreActual);
+            if (idx >= 0) {
+                aseoData.personas[idx] = nuevoNombre.trim();
+                aseoData.tareas.forEach(t => {
+                    if (t.responsable === nombreActual) t.responsable = nuevoNombre.trim();
+                });
+                await guardarAseoData();
+                toast('✓ Nombre actualizado', 'success');
+                renderConfigAseo();
+            }
+        };
+
+        const eliminarPersonaAseo = async (nombre) => {
+            if (!confirm('¿Eliminar a ' + nombre + '? Esta acción no se puede deshacer.')) return;
+            aseoData.personas = aseoData.personas.filter(p => p !== nombre);
+            await guardarAseoData();
+            toast('🗑️ Responsable eliminado', 'success');
+            renderConfigAseo();
+        };
+
+        const agregarTareaBase = async () => {
+            const nombre = document.getElementById('nuevaTareaNombre').value.trim();
+            const lugar = document.getElementById('nuevaTareaLugar').value.trim() || 'General';
+            const nota = document.getElementById('nuevaTareaNota').value.trim();
+            
+            if (!nombre) { toast('Ingresa el nombre de la tarea', 'error'); return; }
+            
+            if (!aseoData.tareasBase) aseoData.tareasBase = TAREAS_ASEO_DEFAULT;
+            aseoData.tareasBase.push({ nombre, lugar, nota });
+            await guardarAseoData();
+            
+            document.getElementById('nuevaTareaNombre').value = '';
+            document.getElementById('nuevaTareaLugar').value = '';
+            document.getElementById('nuevaTareaNota').value = '';
+            
+            toast('✓ Tarea base agregada', 'success');
+            renderConfigAseo();
+        };
+
+        const editarTareaBase = async (idx) => {
+            const tarea = aseoData.tareasBase[idx];
+            const nombre = prompt('Nombre de la tarea:', tarea.nombre);
+            if (nombre === null) return;
+            const lugar = prompt('Lugar:', tarea.lugar);
+            if (lugar === null) return;
+            const nota = prompt('Nota (Enter para none):', tarea.nota || '');
+            if (nota === null) return;
+            
+            aseoData.tareasBase[idx] = { 
+                nombre: nombre.trim() || tarea.nombre, 
+                lugar: lugar.trim() || tarea.lugar, 
+                nota: nota ? nota.trim() : '' 
+            };
+            await guardarAseoData();
+            toast('✓ Tarea actualizada', 'success');
+            renderConfigAseo();
+        };
+
+        const eliminarTareaBase = async (idx) => {
+            if (!confirm('¿Eliminar esta tarea base?')) return;
+            aseoData.tareasBase.splice(idx, 1);
+            await guardarAseoData();
+            toast('🗑️ Tarea eliminada', 'success');
+            renderConfigAseo();
+        };
+
         const iniciarAutoRefreshAseo = () => {
             if (aseoInterval) clearInterval(aseoInterval);
             aseoInterval = setInterval(async () => {
@@ -5317,7 +5427,8 @@
                     await cargarAseoData();
                     if (aseoTab === 'tareas') renderTareasAseo();
                     else if (aseoTab === 'chat') renderChatAseo();
-                    else renderHistorialAseo();
+                    else if (aseoTab === 'historial') renderHistorialAseo();
+                    else if (aseoTab === 'config') renderConfigAseo();
                 }
             }, 5000);
         };
