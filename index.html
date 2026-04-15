@@ -4742,6 +4742,13 @@
             const hoy = new Date().toISOString().split('T')[0];
             const tareasHoy = aseoData.tareas.filter(t => t.fecha === hoy);
             
+            // Ordenar: urgentes primero, luego por orden
+            tareasHoy.sort((a, b) => {
+                if (a.urgente && !b.urgente) return -1;
+                if (!a.urgente && b.urgente) return 1;
+                return (a.orden || 0) - (b.orden || 0);
+            });
+            
             // Agrupar por responsable
             const porResponsable = {};
             tareasHoy.forEach(t => {
@@ -4758,38 +4765,53 @@
                 const total = tareasHoy.length;
                 const hechas = tareasHoy.filter(t => t.estado === 'hecho').length;
                 const faltan = tareasHoy.filter(t => t.estado === 'falta').length;
+                const urgentes = tareasHoy.filter(t => t.urgente).length;
                 
                 html += '<div style="background:linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));color:white;padding:20px;border-radius:12px;margin-bottom:15px;text-align:center;">';
                 html += '<h3 style="margin:0 0 10px 0;">📋 Tareas del Día</h3>';
-                html += '<div style="display:flex;justify-content:center;gap:20px;">';
+                html += '<div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">';
                 html += '<div><div style="font-size:28px;font-weight:bold;">' + total + '</div><small>Total</small></div>';
                 html += '<div><div style="font-size:28px;font-weight:bold;color:#90EE90;">' + hechas + '</div><small>Completadas</small></div>';
                 html += '<div><div style="font-size:28px;font-weight:bold;color:#FFB6C1;">' + faltan + '</div><small>Faltantes</small></div>';
+                if (urgentes > 0) {
+                    html += '<div><div style="font-size:28px;font-weight:bold;color:#FFD700;">' + urgentes + '</div><small>🔥 Urgentes</small></div>';
+                }
                 html += '</div></div>';
 
                 // Mostrar tareas por responsable
                 Object.keys(porResponsable).forEach(resp => {
                     const tareas = porResponsable[resp];
+                    // Ordenar también por responsable
+                    tareas.sort((a, b) => {
+                        if (a.urgente && !b.urgente) return -1;
+                        if (!a.urgente && b.urgente) return 1;
+                        return (a.orden || 0) - (b.orden || 0);
+                    });
                     const h = tareas.filter(t => t.estado === 'hecho').length;
                     
                     html += '<div style="background:white;border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">';
                     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid var(--crema);">';
                     html += '<div><span style="font-size:20px;">👤</span> <strong style="font-size:18px;color:var(--verde-oscuro);">' + resp + '</strong></div>';
                     html += '<div style="display:flex;gap:8px;">';
-                    html += '<button class="btn-accion" onclick="cambiarTabAseo(\'config\')" style="padding:6px 12px;background:#9b59b6;color:white;">👥 Gestionar</button>';
-                    html += '<button class="btn-accion btn-foto" onclick="editarResponsable(\'' + resp + '\')" style="padding:6px 12px;">✏️ Editar</button>';
+                    html += '<button class="btn-accion" onclick="cambiarTabAseo(\'config\')" style="padding:6px 12px;background:#9b59b6;color:white;">⚙️</button>';
+                    html += '<button class="btn-accion btn-foto" onclick="editarResponsable(\'' + resp + '\')" style="padding:6px 12px;">✏️</button>';
                     html += '<span style="background:' + (h === tareas.length ? '#27ae60' : '#fff3cd') + ';color:' + (h === tareas.length ? 'white' : '#856404') + ';padding:4px 12px;border-radius:15px;font-size:12px;font-weight:600;">' + h + '/' + tareas.length + '</span>';
                     html += '</div></div>';
 
-                    tareas.forEach(t => {
+                    tareas.forEach((t, idx) => {
                         const statusClass = t.estado === 'hecho' ? 'hecho' : t.estado === 'falta' ? 'falta' : '';
                         const statusText = t.estado === 'hecho' ? '✓' : t.estado === 'falta' ? '⚠️' : '⏳';
                         const statusBg = t.estado === 'hecho' ? '#d4edda' : t.estado === 'falta' ? '#f8d7da' : '#fff3cd';
                         const statusColor = t.estado === 'hecho' ? '#155724' : t.estado === 'falta' ? '#721c24' : '#856404';
+                        const urgenteBorder = t.urgente ? '#e74c3c' : (t.estado === 'hecho' ? '#27ae60' : t.estado === 'falta' ? '#e74c3c' : '#ddd');
                         
-                        html += '<div class="tarea-item ' + statusClass + '" style="border-left:4px solid ' + (t.estado === 'hecho' ? '#27ae60' : t.estado === 'falta' ? '#e74c3c' : '#ddd') + ';margin-bottom:8px;padding:12px;background:var(--crema);border-radius:8px;">';
+                        html += '<div class="tarea-item ' + statusClass + '" style="border-left:4px solid ' + urgenteBorder + ';margin-bottom:8px;padding:12px;background:var(--crema);border-radius:8px;' + (t.urgente ? 'border-left-width:6px;' : '') + '">';
                         html += '<div style="display:flex;justify-content:space-between;align-items:start;">';
-                        html += '<div><div style="font-weight:600;color:var(--verde-oscuro);">' + t.nombre + '</div><div style="font-size:12px;color:var(--gris);">📍 ' + t.lugar + '</div></div>';
+                        html += '<div style="flex:1;">';
+                        if (t.urgente) {
+                            html += '<span style="background:#e74c3c;color:white;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:bold;margin-bottom:5px;display:inline-block;">🔥 URGENTE</span> ';
+                        }
+                        html += '<div style="font-weight:600;color:var(--verde-oscuro);">' + t.nombre + '</div><div style="font-size:12px;color:var(--gris);">📍 ' + t.lugar + '</div></div>';
                         html += '<span style="background:' + statusBg + ';color:' + statusColor + ';padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">' + statusText + '</span>';
                         html += '</div>';
 
@@ -4804,19 +4826,22 @@
                         }
 
                         if (t.estado === 'pendiente') {
-                            html += '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">';
-                            html += '<button class="btn-accion btn-foto" onclick="subirFotoAseo(\'' + t.id + '\')">📷</button>';
-                            html += '<button class="btn-accion btn-hecho" onclick="marcarHechoAseo(\'' + t.id + '\')">✓</button>';
-                            html += '<button class="btn-accion btn-falta" onclick="marcarFaltaAseo(\'' + t.id + '\')">⚠️</button>';
-                            html += '<button class="btn-accion" onclick="eliminarTareaAseo(\'' + t.id + '\')" style="background:#e74c3c;color:white;">🗑️</button>';
+                            html += '<div style="display:flex;gap:5px;margin-top:10px;flex-wrap:wrap;align-items:center;">';
+                            html += '<button class="btn-accion btn-foto" onclick="subirFotoAseo(\'' + t.id + '\')" title="Subir foto">📷</button>';
+                            html += '<button class="btn-accion btn-hecho" onclick="marcarHechoAseo(\'' + t.id + '\')" title="Marcar hecho">✓</button>';
+                            html += '<button class="btn-accion btn-falta" onclick="marcarFaltaAseo(\'' + t.id + '\')" title="Marcar faltante">⚠️</button>';
+                            html += '<button onclick="toggleUrgenteAseo(\'' + t.id + '\')" style="padding:6px 10px;border:none;border-radius:8px;font-size:12px;cursor:pointer;' + (t.urgente ? 'background:#e74c3c;color:white;' : 'background:#FFD700;color:#333;') + '" title="Marcar urgente">' + (t.urgente ? '🔥' : '⚡') + '</button>';
+                            html += '<button onclick="subirOrdenAseo(\'' + t.id + '\')" style="padding:6px 8px;border:none;border-radius:8px;font-size:12px;cursor:pointer;background:#3498db;color:white;" title="Subir">⬆️</button>';
+                            html += '<button onclick="bajarOrdenAseo(\'' + t.id + '\')" style="padding:6px 8px;border:none;border-radius:8px;font-size:12px;cursor:pointer;background:#3498db;color:white;" title="Bajar">⬇️</button>';
+                            html += '<button class="btn-accion" onclick="eliminarTareaAseo(\'' + t.id + '\')" style="background:#e74c3c;color:white;margin-left:auto;" title="Eliminar">🗑️</button>';
                             html += '</div>';
                         } else if (t.estado === 'falta') {
-                            html += '<div style="display:flex;gap:8px;margin-top:10px;">';
-                            html += '<button class="btn-accion" style="background:#3498db;color:white;" onclick="reprogramarTarea(\'' + t.id + '\')">📅</button>';
+                            html += '<div style="display:flex;gap:5px;margin-top:10px;">';
+                            html += '<button class="btn-accion" style="background:#3498db;color:white;" onclick="reprogramarTarea(\'' + t.id + '\')">📅 Reprogramar</button>';
                             html += '<button class="btn-accion" onclick="eliminarTareaAseo(\'' + t.id + '\')" style="background:#e74c3c;color:white;">🗑️</button>';
                             html += '</div>';
                         } else {
-                            html += '<div style="margin-top:10px;">';
+                            html += '<div style="margin-top:10px;display:flex;gap:5px;">';
                             html += '<button class="btn-accion" onclick="eliminarTareaAseo(\'' + t.id + '\')" style="background:#e74c3c;color:white;">🗑️</button>';
                             html += '</div>';
                         }
@@ -4911,8 +4936,8 @@
             if (!respAgregar) { toast('Selecciona un responsable', 'error'); return; }
             if (aseoSeleccionadas.length === 0) { toast('Selecciona al menos una tarea', 'error'); return; }
             const hoy = new Date().toISOString().split('T')[0];
-            aseoSeleccionadas.forEach(t => {
-                aseoData.tareas.push({ id: Date.now() + Math.random(), fecha: hoy, nombre: t.nombre, lugar: t.lugar, responsable: respAgregar, estado: 'pendiente', evidencia: [], faltante: '' });
+            aseoSeleccionadas.forEach((t, idx) => {
+                aseoData.tareas.push({ id: Date.now() + Math.random(), fecha: hoy, nombre: t.nombre, lugar: t.lugar, responsable: respAgregar, estado: 'pendiente', evidencia: [], faltante: '', orden: idx + 1, urgente: false });
             });
             await guardarAseoData();
             aseoSeleccionadas = [];
@@ -4936,7 +4961,7 @@
             const nombre = document.getElementById('tareaCustomNombre').value.trim();
             const lugar = document.getElementById('tareaCustomLugar').value.trim() || 'General';
             if (nombre) {
-                aseoSeleccionadas.push({ nombre, lugar });
+                aseoSeleccionadas.push({ nombre, lugar, orden: aseoSeleccionadas.length + 1 });
                 toast('Tarea agregada: ' + nombre, 'success');
                 document.getElementById('tareaCustomNombre').value = '';
                 document.getElementById('tareaCustomLugar').value = '';
@@ -4963,8 +4988,8 @@
             if (aseoSeleccionadas.length === 0) { toast('Selecciona al menos una tarea', 'error'); return; }
             const hoy = new Date().toISOString().split('T')[0];
             aseoResponsables.forEach(resp => {
-                aseoSeleccionadas.forEach(t => {
-                    aseoData.tareas.push({ id: Date.now() + Math.random(), fecha: hoy, nombre: t.nombre, lugar: t.lugar, responsable: resp, estado: 'pendiente', evidencia: [], faltante: '' });
+                aseoSeleccionadas.forEach((t, idx) => {
+                    aseoData.tareas.push({ id: Date.now() + Math.random(), fecha: hoy, nombre: t.nombre, lugar: t.lugar, responsable: resp, estado: 'pendiente', evidencia: [], faltante: '', orden: idx + 1, urgente: false });
                 });
             });
             await guardarAseoData();
@@ -5094,6 +5119,35 @@
             }
         };
 
+        // ====== PRIORIDAD Y ORDEN DE TAREAS ======
+        const toggleUrgenteAseo = async (tareaId) => {
+            const tarea = aseoData.tareas.find(t => t.id == tareaId);
+            if (tarea) {
+                tarea.urgente = !tarea.urgente;
+                await guardarAseoData();
+                renderTareasAseo();
+                toast(tarea.urgente ? '🔥 Marcado como URGENTE' : '⚡ Ya no es urgente', 'info');
+            }
+        };
+
+        const subirOrdenAseo = async (tareaId) => {
+            const tarea = aseoData.tareas.find(t => t.id == tareaId);
+            if (tarea) {
+                tarea.orden = Math.max(1, (tarea.orden || 10) - 1);
+                await guardarAseoData();
+                renderTareasAseo();
+            }
+        };
+
+        const bajarOrdenAseo = async (tareaId) => {
+            const tarea = aseoData.tareas.find(t => t.id == tareaId);
+            if (tarea) {
+                tarea.orden = (tarea.orden || 10) + 1;
+                await guardarAseoData();
+                renderTareasAseo();
+            }
+        };
+
         const reprogramarTarea = (tareaId) => {
             const tarea = aseoData.tareas.find(t => t.id == tareaId);
             if (!tarea) return;
@@ -5142,7 +5196,9 @@
                 estado: 'pendiente',
                 evidencia: [],
                 faltante: '',
-                reprogramadaDe: tarea.id
+                reprogramadaDe: tarea.id,
+                orden: tarea.orden || 10,
+                urgente: false
             });
 
             // Guardar en faltantes históricos
