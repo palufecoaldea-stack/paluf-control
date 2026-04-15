@@ -1993,6 +1993,7 @@
             <button class="btn btn-warning" onclick="abrirModalLinks()"><i class="fas fa-link"></i> Links</button>
             <button class="btn btn-success" id="btnExport" style="display:none;" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar</button>
             <span class="user-welcome" id="userWelcome" style="display:none;"></span>
+            <button class="btn-emoji" id="btnEmoji" style="display:none; background: linear-gradient(135deg, var(--verde-medio), var(--verde-oscuro)); color: white; padding: 8px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 20px; margin: 0 5px;" onclick="abrirModalEmoji()" title="Cambiar avatar">✨</button>
             <button class="btn-logout" id="btnLogout" style="display:none;" onclick="logout()">Salir</button>
             <button class="btn btn-primary" id="btnDashboard" style="display:none;" onclick="verDashboard()"><i class="fas fa-chart-line"></i> Dashboard</button>
             <button class="btn btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
@@ -2089,7 +2090,7 @@
 
     <!-- CHAT FLOATING BUTTON -->
     <button class="chat-fab" id="chatFab" onclick="abrirChat()" style="display:none;">
-        💬
+        <span id="chatFabEmoji">💬</span>
         <span class="chat-badge" id="chatBadge" style="display:none;">0</span>
     </button>
 
@@ -2518,6 +2519,29 @@
         </div>
     </div>
 
+    <!-- MODAL EMOJI -->
+    <div class="modal" id="modalEmoji">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>✨ Elige tu Avatar</h2>
+                <button class="modal-close" onclick="cerrarModalEmoji()">×</button>
+            </div>
+            <div style="padding: 20px;">
+                <p style="color: var(--gris); margin-bottom: 15px;">Selecciona un emoji que te represente 🌿</p>
+                <p id="emojiPersonaNombre" style="font-weight: 600; color: var(--verde-oscuro); font-size: 16px; margin-bottom: 15px;"></p>
+                <div id="emojiGrid" style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; max-height: 300px; overflow-y: auto; padding: 10px; background: #f5f5f5; border-radius: 12px;"></div>
+                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <button onclick="randomEmoji()" style="padding: 10px 20px; background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 14px;">
+                        🎲 ¡Sorpréndeme!
+                    </button>
+                    <button onclick="guardarEmoji()" style="padding: 12px 30px; background: var(--verde-oscuro); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        ✓ Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
@@ -2539,6 +2563,34 @@
         let notasTarea = {}; // { "persona_tareaId_fecha": "nota" }
         let comentarios = [];
         let tareaEditando = null;
+
+        // ==================== EMOJIS PALUF ====================
+        // Emojis lindos relacionados con naturaleza, bosque, holístico
+        const EMOJIS_PALUF = [
+            '🌿', '🍃', '🌸', '🌺', '🌻', '🌼', '🌷', '🌵', '🍀', '🌱',
+            '🦋', '🐦', '🦉', '🐝', '🐢', '🦎', '🦔', '🦝', '🦊', '🦌',
+            '⛰️', '🏔️', '🌅', '🌄', '🌈', '☀️', '🌙', '⭐', '✨', '💫',
+            '🧘', '🙏', '💫', '🔮', '💎', '🌊', '💧', '🔥', '🍃', '🍵',
+            '🕯️', '🌿', '🪷', '🦢', '🦜', '🐸', '🐢', '🦎', '🌻', '🍄',
+            '🌲', '🌳', '🪵', '🍂', '🍁', '🌾', '🦚', '🦚', '🐦‍⬛', '🦅',
+            '💚', '🧡', '💛', '💜', '🩵', '🤎', '🖤', '🤍', '💖', '💗'
+        ];
+
+        // Función para obtener emoji de una persona
+        const getEmojiPersona = (persona) => {
+            const emojisGuardados = JSON.parse(localStorage.getItem('paluf_emojis') || '{}');
+            if (emojisGuardados[persona]) return emojisGuardados[persona];
+            // Si no tiene emoji, asignar uno basado en el nombre
+            const idx = PERSONAS.indexOf(persona);
+            return EMOJIS_PALUF[idx % EMOJIS_PALUF.length];
+        };
+
+        // Función para guardar emoji de persona
+        const guardarEmojiPersona = (persona, emoji) => {
+            const emojisGuardados = JSON.parse(localStorage.getItem('paluf_emojis') || '{}');
+            emojisGuardados[persona] = emoji;
+            localStorage.setItem('paluf_emojis', JSON.stringify(emojisGuardados));
+        };
 
         // Funciones default - 152 funciones completas
         const funcionesDefault = [
@@ -2753,10 +2805,9 @@
 
         // ==================== RENDER ====================
         const renderLogin = () => {
-            const avatares = ['fa-user-tie', 'fa-user-edit', 'fa-user-cog', 'fa-user-nurse', 'fa-user-hard-hat', 'fa-user', 'fa-user-check', 'fa-user-tag', 'fa-user-astronaut', 'fa-user-shield'];
             document.getElementById('userSelect').innerHTML = PERSONAS.map((p, i) => `
                 <div class="user-btn" onclick="login('${p}')">
-                    <div class="avatar"><i class="fas ${avatares[i % avatares.length]}"></i></div>
+                    <div class="avatar" style="font-size:28px;">${getEmojiPersona(p)}</div>
                     <div class="name">${p}</div>
                 </div>
             `).join('');
@@ -2765,10 +2816,8 @@
         const renderPersonas = () => {
             document.getElementById('personList').innerHTML = PERSONAS.map((p, i) => {
                 const cant = funcionesData.filter(f => f.persona === p).length;
-                const idx = i % 10;
-                const iconos = ['fa-user-tie', 'fa-user-edit', 'fa-user-cog', 'fa-user-nurse', 'fa-user-hard-hat', 'fa-user', 'fa-user-check', 'fa-user-tag', 'fa-user-astronaut', 'fa-user-shield'];
                 return `<div class="person-item ${personaSeleccionada === p ? 'active' : ''}" onclick="seleccionar('${p}')">
-                    <span><i class="fas ${iconos[idx]}"></i> ${p}</span><span class="stats">${cant}</span>
+                    <span style="font-size:18px;margin-right:8px;">${getEmojiPersona(p)}</span><span>${p}</span><span class="stats">${cant}</span>
                 </div>`;
             }).join('');
         };
@@ -3107,11 +3156,15 @@
             // Mostrar modal de bienvenida con resumen
             mostrarBienvenida(p);
             
+            // Actualizar emoji del usuario
+            actualizarEmojiBoton(p);
+            
             // Mostrar UI principal
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainContainer').style.display = 'flex';
-            document.getElementById('userWelcome').textContent = `👤 ${p}`;
+            document.getElementById('userWelcome').innerHTML = `${getEmojiPersona(p)} <strong>${p}</strong>`;
             document.getElementById('userWelcome').style.display = 'inline';
+            document.getElementById('btnEmoji').style.display = 'inline-block';
             document.getElementById('btnLogout').style.display = 'inline-block';
             document.getElementById('btnExport').style.display = 'inline-block';
             if (['Luisa Torres', 'Julieth Melo', 'María Paula'].includes(p)) {
@@ -3119,9 +3172,76 @@
             }
             seleccionar(p);
             renderComentarios();
-            // Mostrar botón de chat
+            // Mostrar botón de chat con emoji del usuario
             document.getElementById('chatFab').style.display = 'flex';
+            document.getElementById('chatFabEmoji').textContent = getEmojiPersona(p);
             cargarChat();
+        };
+
+        // ==================== EMOJI SELECTOR ====================
+        let emojiSeleccionado = null;
+
+        const abrirModalEmoji = () => {
+            if (!usuarioActual) return;
+            emojiSeleccionado = getEmojiPersona(usuarioActual);
+            document.getElementById('emojiPersonaNombre').innerHTML = `${emojiSeleccionado} ${usuarioActual}`;
+            
+            // Renderizar grid de emojis
+            const grid = document.getElementById('emojiGrid');
+            grid.innerHTML = EMOJIS_PALUF.map(emoji => `
+                <div onclick="seleccionarEmoji('${emoji}')" 
+                     style="text-align:center;font-size:24px;padding:8px;cursor:pointer;border-radius:8px;${emoji === emojiSeleccionado ? 'background:var(--verde-oscuro);box-shadow:0 2px 8px rgba(0,0,0,0.2);' : 'background:white;'}"
+                     title="${emoji}">
+                    ${emoji}
+                </div>
+            `).join('');
+            
+            document.getElementById('modalEmoji').classList.add('visible');
+        };
+
+        const cerrarModalEmoji = () => {
+            document.getElementById('modalEmoji').classList.remove('visible');
+        };
+
+        const seleccionarEmoji = (emoji) => {
+            emojiSeleccionado = emoji;
+            document.getElementById('emojiPersonaNombre').innerHTML = `${emoji} ${usuarioActual}`;
+            
+            // Actualizar visualización
+            const grid = document.getElementById('emojiGrid');
+            grid.querySelectorAll('div').forEach(el => {
+                if (el.textContent === emoji) {
+                    el.style.background = 'var(--verde-oscuro)';
+                    el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+                } else {
+                    el.style.background = 'white';
+                    el.style.boxShadow = 'none';
+                }
+            });
+        };
+
+        const randomEmoji = () => {
+            const randomIdx = Math.floor(Math.random() * EMOJIS_PALUF.length);
+            seleccionarEmoji(EMOJIS_PALUF[randomIdx]);
+        };
+
+        const guardarEmoji = () => {
+            if (!usuarioActual || !emojiSeleccionado) return;
+            guardarEmojiPersona(usuarioActual, emojiSeleccionado);
+            actualizarEmojiBoton(usuarioActual);
+            document.getElementById('userWelcome').innerHTML = `${emojiSeleccionado} <strong>${usuarioActual}</strong>`;
+            cerrarModalEmoji();
+            renderChat();
+            renderPersonas();
+            renderLogin();
+            toast(`${emojiSeleccionado} ¡Avatar actualizado!`, 'success');
+        };
+
+        const actualizarEmojiBoton = (persona) => {
+            const btn = document.getElementById('btnEmoji');
+            if (btn) btn.textContent = getEmojiPersona(persona);
+            const fabEmoji = document.getElementById('chatFabEmoji');
+            if (fabEmoji) fabEmoji.textContent = getEmojiPersona(persona);
         };
 
         const mostrarBienvenida = (persona) => {
@@ -4628,7 +4748,7 @@
                     <div class="chat-bubble ${tipoClase}">`;
 
                 if (!esMio) {
-                    html += `<div class="chat-bubble-sender">${msg.autor}</div>`;
+                    html += `<div class="chat-bubble-sender">${getEmojiPersona(msg.autor)} ${msg.autor}</div>`;
                 }
 
                 // Contenido del mensaje
