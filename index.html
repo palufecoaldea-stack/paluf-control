@@ -355,6 +355,51 @@
             border-color: var(--verde-oscuro);
             box-shadow: 0 4px 15px var(--sombra-suave);
         }
+        
+        .filter-chip.filter-alta { border-color: #e74c3c; }
+        .filter-chip.filter-alta:hover, .filter-chip.filter-alta.active { 
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); 
+        }
+        .filter-chip.filter-alta i { color: #e74c3c; }
+        .filter-chip.filter-alta.active i, .filter-chip.filter-alta:hover i { color: white; }
+        
+        .filter-chip.filter-media { border-color: #f39c12; }
+        .filter-chip.filter-media:hover, .filter-chip.filter-media.active { 
+            background: linear-gradient(135deg, #d68910 0%, #f39c12 100%); 
+        }
+        .filter-chip.filter-media i { color: #f39c12; }
+        .filter-chip.filter-media.active i, .filter-chip.filter-media:hover i { color: white; }
+        
+        .filter-chip.filter-baja { border-color: #3498db; }
+        .filter-chip.filter-baja:hover, .filter-chip.filter-baja.active { 
+            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%); 
+        }
+        .filter-chip.filter-baja i { color: #3498db; }
+        .filter-chip.filter-baja.active i, .filter-chip.filter-baja:hover i { color: white; }
+        
+        .filters-bar {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--verde-oscuro);
+            white-space: nowrap;
+        }
+        .filter-label i { margin-right: 4px; color: var(--dorado); }
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
 
         /* QUICK ACTIONS */
         .quick-actions {
@@ -890,7 +935,21 @@
         </div>
 
         <div class="content">
-            <div class="filters" id="filtroFrecuencia"></div>
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <span class="filter-label"><i class="fas fa-clock"></i> Frecuencia:</span>
+                    <div class="filter-chips" id="filtroFrecuencia"></div>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label"><i class="fas fa-flag"></i> Prioridad:</span>
+                    <div class="filter-chips" id="filtroPrioridad">
+                        <div class="filter-chip active" onclick="setFiltroPrioridad('Todas')">Todas</div>
+                        <div class="filter-chip filter-alta" onclick="setFiltroPrioridad('Alta')"><i class="fas fa-circle"></i> Alta</div>
+                        <div class="filter-chip filter-media" onclick="setFiltroPrioridad('Media')"><i class="fas fa-circle"></i> Media</div>
+                        <div class="filter-chip filter-baja" onclick="setFiltroPrioridad('Baja')"><i class="fas fa-circle"></i> Baja</div>
+                    </div>
+                </div>
+            </div>
             
             <div class="quick-actions" id="quickMarkPanel" style="display:none;">
                 <button class="btn btn-success" onclick="marcarTodos('si')">✓ Todo hecho</button>
@@ -1026,6 +1085,7 @@
         let anioActual = 2026;
         let personaSeleccionada = null;
         let filtroFrecuencia = 'Todas';
+        let filtroPrioridad = 'Todas';
         let usuarioActual = null;
         let funcionesData = [];
         let asistencia = {};
@@ -1281,9 +1341,11 @@
 
             let tareas = personaSeleccionada ? funcionesData.filter(f => f.persona === personaSeleccionada) : [];
             if (filtroFrecuencia !== 'Todas') tareas = tareas.filter(t => t.frecuencia === filtroFrecuencia);
+            if (filtroPrioridad !== 'Todas') tareas = tareas.filter(t => t.prioridad === filtroPrioridad);
 
             if (!tareas.length) {
-                grid.innerHTML = '<p style="text-align:center;padding:40px;color:var(--verde-claro);">Selecciona una persona</p>';
+                const msg = !personaSeleccionada ? 'Selecciona una persona' : 'No hay tareas para estos filtros';
+                grid.innerHTML = `<p style="text-align:center;padding:40px;color:var(--verde-claro);">${msg}</p>`;
                 return;
             }
 
@@ -1647,6 +1709,19 @@
         const setFiltro = (f) => {
             filtroFrecuencia = f;
             renderFiltro();
+            renderTareas();
+        };
+        
+        const setFiltroPrioridad = (p) => {
+            filtroPrioridad = p;
+            // Update UI for priority chips
+            const chips = document.querySelectorAll('#filtroPrioridad .filter-chip');
+            chips.forEach(c => {
+                c.classList.remove('active');
+                if (c.textContent.includes(p) || (p === 'Todas' && c.textContent.trim() === 'Todas')) {
+                    c.classList.add('active');
+                }
+            });
             renderTareas();
         };
 
