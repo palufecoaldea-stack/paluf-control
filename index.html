@@ -2038,6 +2038,7 @@
                 <button class="btn btn-danger" onclick="marcarTodos('no')">✗ Todo no hecho</button>
                 <button class="btn btn-secondary" onclick="marcarTodos('na')">- N/A</button>
                 <button class="btn btn-primary" onclick="abrirModalTarea()">➕ Nueva Tarea</button>
+                <button class="btn btn-warning" onclick="abrirProgramacionMasiva()" style="background:#c9a962;color:white;">📅 Programación Masiva</button>
             </div>
 
             <div class="calendar-header">
@@ -2209,6 +2210,101 @@
                     <button type="submit" class="btn btn-primary">💾 Guardar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL PROGRAMACIÓN MASIVA -->
+    <div class="modal" id="modalProgMasiva">
+        <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>📅 Programación Masiva de Tareas</h2>
+                <button class="modal-close" onclick="cerrarProgMasiva()">×</button>
+            </div>
+            <div style="padding: 20px;">
+                <p style="color: var(--gris); margin-bottom: 20px;">Selecciona tareas existentes y prográmalas masivamente para varios días.</p>
+                
+                <!-- Paso 1: Seleccionar Persona -->
+                <div class="form-group">
+                    <label>Seleccionar Persona</label>
+                    <select id="progPersona" onchange="cargarTareasProgMasiva()" style="width:100%;padding:12px;border-radius:12px;border:2px solid #ddd;">
+                        <option value="">-- Seleccionar persona --</option>
+                        ${PERSONAS.map(p => `<option value="${p}">${p}</option>`).join('')}
+                    </select>
+                </div>
+                
+                <!-- Paso 2: Seleccionar Tareas -->
+                <div class="form-group" id="progTareasContainer" style="display:none;">
+                    <label>Seleccionar Tareas</label>
+                    <div id="progListaTareas" style="max-height:200px;overflow-y:auto;background:#f8f9fa;padding:15px;border-radius:12px;"></div>
+                    <button onclick="seleccionarTodasProg()" style="margin-top:10px;padding:8px 15px;background:#ddd;border:none;border-radius:8px;cursor:pointer;">☑️ Seleccionar Todas</button>
+                    <button onclick="deseleccionarTodasProg()" style="margin-top:10px;padding:8px 15px;background:#ddd;border:none;border-radius:8px;cursor:pointer;">⬜ Deseleccionar Todas</button>
+                </div>
+                
+                <!-- Paso 3: Patrón de programación -->
+                <div class="form-group" id="progPatronContainer" style="display:none;">
+                    <label>Patrón de Repetición</label>
+                    <select id="progPatron" onchange="actualizarProgPreview()" style="width:100%;padding:12px;border-radius:12px;border:2px solid #ddd;">
+                        <option value="diario">📆 Diario (todos los días)</option>
+                        <option value="semanal_lunes">📅 Todos los Lunes</option>
+                        <option value="semanal_martes">📅 Todos los Martes</option>
+                        <option value="semanal_miercoles">📅 Todos los Miércoles</option>
+                        <option value="semanal_jueves">📅 Todos los Jueves</option>
+                        <option value="semanal_viernes">📅 Todos los Viernes</option>
+                        <option value="semanal_sabado">📅 Todos los Sábados</option>
+                        <option value="semanal_domingo">📅 Todos los Domingos</option>
+                        <option value="fines">📅 Fines de semana (Sáb y Dom)</option>
+                        <option value="dias_laborales">📅 Días laborales (Lun-Vie)</option>
+                        <option value="personalizado">✏️ Días específicos del mes</option>
+                    </select>
+                </div>
+                
+                <!-- Días personalizados -->
+                <div id="progDiasPersonalizados" style="display:none;margin-top:15px;">
+                    <label>Seleccionar días del mes:</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+                        ${[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31].map(d => 
+                            `<label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:#f0f0f0;border-radius:8px;cursor:pointer;">
+                                <input type="checkbox" class="prog-dia" value="${d}"> ${d}
+                            </label>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <!-- Mes y Año -->
+                <div id="progPeriodoContainer" style="display:none;margin-top:15px;">
+                    <label>Período</label>
+                    <div style="display:flex;gap:10px;">
+                        <select id="progMes" onchange="actualizarProgPreview()" style="flex:1;padding:12px;border-radius:12px;border:2px solid #ddd;">
+                            <option value="0">Enero</option>
+                            <option value="1">Febrero</option>
+                            <option value="2">Marzo</option>
+                            <option value="3" selected>Abril</option>
+                            <option value="4">Mayo</option>
+                            <option value="5">Junio</option>
+                            <option value="6">Julio</option>
+                            <option value="7">Agosto</option>
+                            <option value="8">Septiembre</option>
+                            <option value="9">Octubre</option>
+                            <option value="10">Noviembre</option>
+                            <option value="11">Diciembre</option>
+                        </select>
+                        <select id="progAnio" onchange="actualizarProgPreview()" style="flex:1;padding:12px;border-radius:12px;border:2px solid #ddd;">
+                            ${[2026, 2027, 2028].map(a => `<option value="${a}" ${a === 2026 ? 'selected' : ''}>${a}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Preview -->
+                <div id="progPreview" style="display:none;margin-top:20px;background:#e8f5e9;padding:15px;border-radius:12px;">
+                    <h4 style="margin:0 0 10px 0;color:var(--verde-oscuro);">📋 Vista Previa</h4>
+                    <div id="progPreviewContent" style="font-size:13px;max-height:150px;overflow-y:auto;"></div>
+                </div>
+                
+                <div class="modal-footer" style="margin-top:20px;">
+                    <button class="btn btn-secondary" onclick="cerrarProgMasiva()">Cancelar</button>
+                    <button class="btn btn-primary" id="btnProgCrear" onclick="crearProgMasiva()" style="background:var(--verde-oscuro);" disabled>📅 Crear Programación</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -3696,6 +3792,204 @@
             document.getElementById('commentInput').value = '';
             renderComentarios();
             toast('Mensaje enviado ✓');
+        };
+
+        // ==================== PROGRAMACIÓN MASIVA ====================
+        const abrirProgramacionMasiva = () => {
+            // Resetear valores
+            document.getElementById('progPersona').value = '';
+            document.getElementById('progTareasContainer').style.display = 'none';
+            document.getElementById('progPatronContainer').style.display = 'none';
+            document.getElementById('progPeriodoContainer').style.display = 'none';
+            document.getElementById('progPreview').style.display = 'none';
+            document.getElementById('progDiasPersonalizados').style.display = 'none';
+            document.getElementById('btnProgCrear').disabled = true;
+            
+            // Poner el mes y año actual
+            const hoy = new Date();
+            document.getElementById('progMes').value = hoy.getMonth();
+            document.getElementById('progAnio').value = hoy.getFullYear();
+            
+            document.getElementById('modalProgMasiva').classList.add('visible');
+        };
+
+        const cerrarProgMasiva = () => {
+            document.getElementById('modalProgMasiva').classList.remove('visible');
+        };
+
+        const cargarTareasProgMasiva = () => {
+            const persona = document.getElementById('progPersona').value;
+            const container = document.getElementById('progTareasContainer');
+            const lista = document.getElementById('progListaTareas');
+            
+            if (!persona) {
+                container.style.display = 'none';
+                document.getElementById('progPatronContainer').style.display = 'none';
+                document.getElementById('progPeriodoContainer').style.display = 'none';
+                document.getElementById('progPreview').style.display = 'none';
+                document.getElementById('btnProgCrear').disabled = true;
+                return;
+            }
+            
+            const tareas = funcionesData.filter(f => f.persona === persona);
+            
+            if (tareas.length === 0) {
+                lista.innerHTML = '<p style="color:#999;">Esta persona no tiene tareas registradas.</p>';
+            } else {
+                lista.innerHTML = tareas.map(t => `
+                    <label style="display:flex;align-items:center;gap:10px;padding:10px;background:white;margin-bottom:8px;border-radius:8px;cursor:pointer;">
+                        <input type="checkbox" class="prog-tarea" value="${t.id}" onchange="actualizarProgPreview()">
+                        <div style="flex:1;">
+                            <strong>${t.func}</strong>
+                            <div style="font-size:11px;color:#666;">${t.area} • ${t.frecuencia}</div>
+                        </div>
+                    </label>
+                `).join('');
+            }
+            
+            container.style.display = 'block';
+            document.getElementById('progPatronContainer').style.display = 'block';
+            document.getElementById('progPeriodoContainer').style.display = 'block';
+            actualizarProgPreview();
+        };
+
+        const seleccionarTodasProg = () => {
+            document.querySelectorAll('.prog-tarea').forEach(cb => cb.checked = true);
+            actualizarProgPreview();
+        };
+
+        const deseleccionarTodasProg = () => {
+            document.querySelectorAll('.prog-tarea').forEach(cb => cb.checked = false);
+            actualizarProgPreview();
+        };
+
+        const obtenerDiasProgramados = () => {
+            const patron = document.getElementById('progPatron').value;
+            const mes = parseInt(document.getElementById('progMes').value);
+            const anio = parseInt(document.getElementById('progAnio').value);
+            const dias = [];
+            
+            const diasEnMes = new Date(anio, mes + 1, 0).getDate();
+            const primerDia = new Date(anio, mes, 1).getDay();
+            
+            for (let d = 1; d <= diasEnMes; d++) {
+                const fecha = new Date(anio, mes, d);
+                const diaSemana = fecha.getDay(); // 0=Dom, 1=Lun, ..., 6=Sáb
+                
+                let incluir = false;
+                
+                switch (patron) {
+                    case 'diario':
+                        incluir = true;
+                        break;
+                    case 'semanal_lunes':
+                        incluir = diaSemana === 1;
+                        break;
+                    case 'semanal_martes':
+                        incluir = diaSemana === 2;
+                        break;
+                    case 'semanal_miercoles':
+                        incluir = diaSemana === 3;
+                        break;
+                    case 'semanal_jueves':
+                        incluir = diaSemana === 4;
+                        break;
+                    case 'semanal_viernes':
+                        incluir = diaSemana === 5;
+                        break;
+                    case 'semanal_sabado':
+                        incluir = diaSemana === 6;
+                        break;
+                    case 'semanal_domingo':
+                        incluir = diaSemana === 0;
+                        break;
+                    case 'fines':
+                        incluir = diaSemana === 0 || diaSemana === 6;
+                        break;
+                    case 'dias_laborales':
+                        incluir = diaSemana >= 1 && diaSemana <= 5;
+                        break;
+                    case 'personalizado':
+                        const diaCheck = document.querySelectorAll('.prog-dia:checked');
+                        incluir = Array.from(diaCheck).some(cb => parseInt(cb.value) === d);
+                        break;
+                }
+                
+                if (incluir) {
+                    dias.push({ dia: d, fecha: formatFecha(fecha), fechaObj: fecha });
+                }
+            }
+            
+            return dias;
+        };
+
+        const actualizarProgPreview = () => {
+            const tareasSel = document.querySelectorAll('.prog-tarea:checked');
+            const patron = document.getElementById('progPatron').value;
+            const preview = document.getElementById('progPreview');
+            const previewContent = document.getElementById('progPreviewContent');
+            const btnCrear = document.getElementById('btnProgCrear');
+            
+            // Mostrar/ocultar días personalizados
+            document.getElementById('progDiasPersonalizados').style.display = 
+                patron === 'personalizado' ? 'block' : 'none';
+            
+            if (tareasSel.length === 0) {
+                preview.style.display = 'none';
+                btnCrear.disabled = true;
+                return;
+            }
+            
+            const dias = obtenerDiasProgramados();
+            const nombresTareas = Array.from(tareasSel).map(cb => {
+                const t = funcionesData.find(f => f.id === cb.value);
+                return t ? t.func : '';
+            });
+            
+            preview.style.display = 'block';
+            btnCrear.disabled = dias.length === 0;
+            
+            if (dias.length === 0) {
+                previewContent.innerHTML = '<p style="color:#e74c3c;">No hay días seleccionados en este período.</p>';
+            } else {
+                previewContent.innerHTML = `
+                    <p style="margin:0 0 10px 0;"><strong>${tareasSel.length}</strong> tarea(s) × <strong>${dias.length}</strong> día(s) = <strong>${tareasSel.length * dias.length}</strong> registros</p>
+                    <p style="margin:0 0 10px 0;font-size:12px;">Tareas: ${nombresTareas.slice(0, 3).join(', ')}${nombresTareas.length > 3 ? '...' : ''}</p>
+                    <p style="margin:0;font-size:12px;">Fechas: ${dias.slice(0, 5).map(d => d.dia).join(', ')}${dias.length > 5 ? '...' : ''}</p>
+                `;
+            }
+        };
+
+        const crearProgMasiva = async () => {
+            const tareasSel = document.querySelectorAll('.prog-tarea:checked');
+            if (tareasSel.length === 0) {
+                toast('Selecciona al menos una tarea', 'error');
+                return;
+            }
+            
+            const dias = obtenerDiasProgramados();
+            if (dias.length === 0) {
+                toast('Selecciona al menos un día', 'error');
+                return;
+            }
+            
+            let creados = 0;
+            
+            dias.forEach(d => {
+                tareasSel.forEach(cb => {
+                    const tareaId = cb.value;
+                    const key = `${tareaId}_${d.fecha}`;
+                    if (!asistencia[key]) {
+                        asistencia[key] = 'pendiente';
+                        creados++;
+                    }
+                });
+            });
+            
+            guardar();
+            cerrarProgMasiva();
+            renderTareas();
+            toast(`✓ ${creados} tareas creadas`, 'success');
         };
 
         // ==================== TAREA ====================
