@@ -391,6 +391,18 @@
         }
         .month-nav span { font-weight: 600; font-size: 18px; color: var(--verde-oscuro); }
 
+        .badge-historico {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 10px;
+            animation: pulse-hoy 2s infinite;
+        }
+        .badge-historico i { margin-right: 4px; }
+
         .btn-hoy {
             background: linear-gradient(135deg, var(--dorado) 0%, var(--dorado-oscuro) 100%) !important;
             color: var(--verde-bosque) !important;
@@ -891,6 +903,7 @@
                 <div class="month-nav">
                     <button onclick="cambiarMes(-1)">◀</button>
                     <span id="mesActual">Abril 2026</span>
+                    <span class="badge-historico" id="mesHistorico" style="display:none;"><i class="fas fa-history"></i> Histórico</span>
                     <button onclick="cambiarMes(1)">▶</button>
                     <button class="btn-hoy" onclick="irAHoy()"><i class="fas fa-calendar-day"></i> HOY</button>
                 </div>
@@ -1641,31 +1654,37 @@
             mesActual += d;
             if (mesActual > 11) { mesActual = 0; anioActual++; }
             if (mesActual < 0) { mesActual = 11; anioActual--; }
-            if (anioActual === 2026 && mesActual < 3) mesActual = 3;
             renderCalendario();
             renderTareas();
+            actualizarIndicadorMes();
         };
 
         const irAHoy = () => {
             const hoy = new Date();
-            const mesHoy = hoy.getMonth();
-            const anioHoy = hoy.getFullYear();
-            
-            // Solo permite volver a meses desde abril 2026
-            if (anioHoy === 2026 && mesHoy < 3) {
-                toast('No se puede ir a fechas anteriores a abril 2026');
-                return;
-            }
-            
-            mesActual = mesHoy;
-            anioActual = anioHoy;
+            mesActual = hoy.getMonth();
+            anioActual = hoy.getFullYear();
             
             // Mostrar panel de acciones rápidas
             document.getElementById('quickMarkPanel').style.display = 'flex';
             
             renderCalendario();
             renderTareas();
+            actualizarIndicadorMes();
             toast('📅 Hoy: ' + formatFecha(hoy));
+        };
+        
+        const actualizarIndicadorMes = () => {
+            const indicador = document.getElementById('mesHistorico');
+            const hoy = new Date();
+            const esMesActual = (mesActual === hoy.getMonth() && anioActual === hoy.getFullYear());
+            
+            if (indicador) {
+                if (esMesActual) {
+                    indicador.style.display = 'none';
+                } else {
+                    indicador.style.display = 'inline';
+                }
+            }
         };
 
         const marcar = (id, fecha) => {
@@ -1849,6 +1868,7 @@
             renderCalendario();
             renderTareas();
             renderComentarios();
+            actualizarIndicadorMes();
 
             // Cargar modo oscuro si estaba activo
             if (localStorage.getItem('paluf_darkmode') === 'true') {
