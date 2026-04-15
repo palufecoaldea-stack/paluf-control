@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PALUF - Control de Funciones 2026</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a3d2e'/><path d='M50 20 Q65 35 60 55 Q55 70 50 80 Q45 70 40 55 Q35 35 50 20' fill='%2327ae60'/><circle cx='50' cy='50' r='8' fill='%23c9a962'/></svg>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
         /* PALUF BRAND COLORS */
         :root {
@@ -1445,35 +1445,35 @@
     <div class="modal" id="modalBienvenida">
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
-                <h2 id="bienvenidaTitulo"><i class="fas fa-hand-sparkles"></i> ¡Buenos días!</h2>
+                <h2 id="bienvenidaTitulo">🎉 ¡Buenos días!</h2>
                 <button class="modal-close" onclick="cerrarModalBienvenida()">×</button>
             </div>
             <div style="padding: 25px;">
                 <!-- Resumen de ayer -->
                 <div class="resumen-ayer" id="resumenAyer" style="margin-bottom:25px;">
-                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;"><i class="fas fa-chart-bar"></i> Resumen de Ayer</h3>
+                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;">📊 Resumen de Ayer</h3>
                     <div class="stats-resumen" id="statsResumen"></div>
                 </div>
                 
                 <!-- Eventos de hoy -->
                 <div class="eventos-hoy" id="eventosHoySection" style="margin-bottom:25px;">
-                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;"><i class="fas fa-calendar-day"></i> Eventos de Hoy</h3>
+                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;">📅 Eventos de Hoy</h3>
                     <div id="eventosHoyLista"></div>
                 </div>
                 
                 <!-- Atajos rápidos -->
                 <div class="atajos-rapidos">
-                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;"><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;">⚡ Acciones Rápidas</h3>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                        <button class="btn btn-success" onclick="atajoMarcarHoy()"><i class="fas fa-check-circle"></i> Marcar Hoy</button>
-                        <button class="btn btn-calendar" onclick="atajoVerCalendario()"><i class="fas fa-calendar"></i> Ver Calendario</button>
-                        <button class="btn btn-warning" onclick="atajoVerLinks()"><i class="fas fa-link"></i> Links</button>
-                        <button class="btn btn-primary" onclick="atajoVerDashboard()"><i class="fas fa-chart-pie"></i> Dashboard</button>
+                        <button class="btn btn-success" onclick="atajoMarcarHoy()">✅ Marcar Hoy</button>
+                        <button class="btn btn-calendar" onclick="atajoVerCalendario()">📅 Ver Calendario</button>
+                        <button class="btn btn-warning" onclick="atajoVerLinks()">🔗 Links</button>
+                        <button class="btn btn-primary" onclick="atajoVerDashboard()">📊 Dashboard</button>
                     </div>
                 </div>
                 
                 <div style="text-align:center;margin-top:25px;">
-                    <button class="btn btn-secondary" onclick="cerrarModalBienvenida()" style="padding:12px 40px;">Continuar a Tareas <i class="fas fa-arrow-right"></i></button>
+                    <button class="btn btn-secondary" onclick="cerrarModalBienvenida()" style="padding:12px 40px;">Continuar a Tareas →</button>
                 </div>
             </div>
         </div>
@@ -1498,18 +1498,18 @@
         <div class="header-actions">
             <button class="btn-dark-mode" id="btnDarkMode" onclick="toggleDarkMode()" title="Modo Oscuro">🌙</button>
             <button class="btn-notificaciones" id="btnNotificaciones" onclick="abrirModalNotificaciones()" style="display:none;">
-                <i class="fas fa-bell"></i>
+                🔔
                 <span class="notif-badge" id="notifBadge">0</span>
             </button>
-            <button class="btn btn-equipo" onclick="abrirModalEquipo()"><i class="fas fa-users"></i> Equipo</button>
-            <button class="btn btn-semanal" onclick="abrirModalSemanal()"><i class="fas fa-calendar-week"></i> Semana</button>
-            <button class="btn btn-calendar" onclick="abrirModalCalendario()"><i class="fas fa-calendar-alt"></i> Calendario</button>
-            <button class="btn btn-warning" onclick="abrirModalLinks()"><i class="fas fa-link"></i> Links</button>
-            <button class="btn btn-success" id="btnExport" style="display:none;" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar</button>
+            <button class="btn btn-equipo" onclick="abrirModalEquipo()">👥 Equipo</button>
+            <button class="btn btn-semanal" onclick="abrirModalSemanal()">📅 Semana</button>
+            <button class="btn btn-calendar" onclick="abrirModalCalendario()">📅 Calendario</button>
+            <button class="btn btn-warning" onclick="abrirModalLinks()">🔗 Links</button>
+            <button class="btn btn-success" id="btnExport" style="display:none;" onclick="exportarExcel()">📥 Exportar</button>
             <span class="user-welcome" id="userWelcome" style="display:none;"></span>
             <button class="btn-logout" id="btnLogout" style="display:none;" onclick="logout()">Salir</button>
-            <button class="btn btn-primary" id="btnDashboard" style="display:none;" onclick="verDashboard()"><i class="fas fa-chart-line"></i> Dashboard</button>
-            <button class="btn btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+            <button class="btn btn-primary" id="btnDashboard" style="display:none;" onclick="verDashboard()">📈 📊 Dashboard</button>
+            <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir</button>
         </div>
     </header>
 
@@ -1521,7 +1521,7 @@
             
             <!-- COMMENTS -->
             <div class="comments-section" style="margin-top: 20px;">
-                <h3><i class="fas fa-comments"></i> Mensajes</h3>
+                <h3>💬 Mensajes</h3>
                 <div class="comment-input">
                     <input type="text" id="commentInput" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter')enviarComentario()">
                     <button class="btn btn-primary" onclick="enviarComentario()">Enviar</button>
@@ -1533,16 +1533,16 @@
         <div class="content">
             <div class="filters-bar">
                 <div class="filter-group">
-                    <span class="filter-label"><i class="fas fa-clock"></i> Frecuencia:</span>
+                    <span class="filter-label">⏰ Frecuencia:</span>
                     <div class="filter-chips" id="filtroFrecuencia"></div>
                 </div>
                 <div class="filter-group">
-                    <span class="filter-label"><i class="fas fa-flag"></i> Prioridad:</span>
+                    <span class="filter-label">🚩 Prioridad:</span>
                     <div class="filter-chips" id="filtroPrioridad">
                         <div class="filter-chip active" onclick="setFiltroPrioridad('Todas')">Todas</div>
-                        <div class="filter-chip filter-alta" onclick="setFiltroPrioridad('Alta')"><i class="fas fa-circle"></i> Alta</div>
-                        <div class="filter-chip filter-media" onclick="setFiltroPrioridad('Media')"><i class="fas fa-circle"></i> Media</div>
-                        <div class="filter-chip filter-baja" onclick="setFiltroPrioridad('Baja')"><i class="fas fa-circle"></i> Baja</div>
+                        <div class="filter-chip filter-alta" onclick="setFiltroPrioridad('Alta')">🔴 Alta</div>
+                        <div class="filter-chip filter-media" onclick="setFiltroPrioridad('Media')">🟠 Media</div>
+                        <div class="filter-chip filter-baja" onclick="setFiltroPrioridad('Baja')">🔵 Baja</div>
                     </div>
                 </div>
             </div>
@@ -1558,9 +1558,9 @@
                 <div class="month-nav">
                     <button onclick="cambiarMes(-1)">◀</button>
                     <span id="mesActual">Abril 2026</span>
-                    <span class="badge-historico" id="mesHistorico" style="display:none;"><i class="fas fa-history"></i> Histórico</span>
+                    <span class="badge-historico" id="mesHistorico" style="display:none;">📜 Histórico</span>
                     <button onclick="cambiarMes(1)">▶</button>
-                    <button class="btn-hoy" onclick="irAHoy()"><i class="fas fa-calendar-day"></i> HOY</button>
+                    <button class="btn-hoy" onclick="irAHoy()">📅 HOY</button>
                 </div>
                 <div class="stats-bar">
                     <div class="stat-item">
@@ -1577,7 +1577,7 @@
             <!-- DASHBOARD -->
             <div class="dashboard" id="dashboard">
                 <div class="dashboard-header">
-                    <h3><i class="fas fa-chart-pie"></i> Dashboard de Rendimiento</h3>
+                    <h3>📊 Dashboard de Rendimiento</h3>
                     <button class="btn btn-secondary" onclick="toggleDashboard()">Ocultar</button>
                 </div>
                 <div class="dashboard-stats" id="dashboardStats"></div>
@@ -1648,7 +1648,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" id="btnEliminar" style="display:none;" onclick="eliminarTarea()">🗑️ Eliminar</button>
-                    <button type="button" class="btn btn-secondary" id="btnDuplicar" style="display:none;" onclick="duplicarTarea()"><i class="fas fa-copy"></i> Duplicar</button>
+                    <button type="button" class="btn btn-secondary" id="btnDuplicar" style="display:none;" onclick="duplicarTarea()">📋 Duplicar</button>
                     <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
                     <button type="submit" class="btn btn-primary">💾 Guardar</button>
                 </div>
@@ -1660,17 +1660,17 @@
     <div class="modal" id="modalNota">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2><i class="fas fa-sticky-note"></i> Nota de Tarea</h2>
+                <h2>📝 Nota de Tarea</h2>
                 <button class="modal-close" onclick="cerrarModalNota()">×</button>
             </div>
             <div style="padding: 20px;">
                 <p id="notaTareaNombre" style="font-weight:600;margin-bottom:15px;color:var(--verde-oscuro);"></p>
                 <textarea id="notaTexto" placeholder="Escribe una nota para esta tarea..." style="width:100%;min-height:120px;padding:12px;border-radius:12px;border:2px solid var(--verde-claro);font-size:14px;resize:vertical;"></textarea>
                 <div style="display:flex;justify-content:space-between;margin-top:15px;">
-                    <button class="btn btn-danger" onclick="eliminarNota()"><i class="fas fa-trash"></i> Eliminar</button>
+                    <button class="btn btn-danger" onclick="eliminarNota()">🗑️ Eliminar</button>
                     <div style="display:flex;gap:10px;">
                         <button class="btn btn-secondary" onclick="cerrarModalNota()">Cancelar</button>
-                        <button class="btn btn-primary" onclick="guardarNota()"><i class="fas fa-save"></i> Guardar</button>
+                        <button class="btn btn-primary" onclick="guardarNota()">💾 Guardar</button>
                     </div>
                 </div>
             </div>
@@ -1681,7 +1681,7 @@
     <div class="modal" id="modalNotificaciones">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2><i class="fas fa-bell"></i> Notificaciones</h2>
+                <h2>🔔 Notificaciones</h2>
                 <button class="modal-close" onclick="cerrarModalNotificaciones()">×</button>
             </div>
             <div style="padding: 20px;">
@@ -1698,7 +1698,7 @@
     <div class="modal" id="modalEquipo">
         <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
-                <h2><i class="fas fa-users"></i> Vista de Equipo</h2>
+                <h2>👥 Vista de Equipo</h2>
                 <div style="display:flex;gap:10px;">
                     <span id="equipoFecha" style="color:white;font-weight:600;"></span>
                     <button class="modal-close" onclick="cerrarModalEquipo()">×</button>
@@ -1717,12 +1717,12 @@
     <div class="modal" id="modalSemanal">
         <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
-                <h2><i class="fas fa-calendar-week"></i> Vista Semanal</h2>
+                <h2>📅 Vista Semanal</h2>
                 <div style="display:flex;gap:10px;">
-                    <button class="btn-nav-semana" onclick="cambiarSemana(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <button class="btn-nav-semana" onclick="cambiarSemana(-1)">◀</button>
                     <span id="semanaTitulo" style="color:white;font-weight:600;padding:0 15px;"></span>
-                    <button class="btn-nav-semana" onclick="cambiarSemana(1)"><i class="fas fa-chevron-right"></i></button>
-                    <button class="btn btn-semanal" onclick="irASemanaActual()"><i class="fas fa-bullseye"></i> Esta Semana</button>
+                    <button class="btn-nav-semana" onclick="cambiarSemana(1)">▶</button>
+                    <button class="btn btn-semanal" onclick="irASemanaActual()">🎯 Esta Semana</button>
                     <button class="modal-close" onclick="cerrarModalSemanal()">×</button>
                 </div>
             </div>
@@ -1741,18 +1741,18 @@
     <div class="modal" id="modalCalendario">
         <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
-                <h2><i class="fas fa-calendar-alt"></i> Calendario de Eventos</h2>
+                <h2>📅 Calendario de Eventos</h2>
                 <div style="display:flex;gap:10px;">
-                    <button class="btn btn-calendar" onclick="abrirAgregarEvento()"><i class="fas fa-plus"></i> Agregar</button>
-                    <button class="btn btn-secondary" style="background:var(--blanco);color:var(--verde-oscuro);" onclick="exportarICS()"><i class="fas fa-download"></i> Exportar .ics</button>
-                    <button class="btn btn-secondary" style="background:var(--blanco);color:var(--verde-oscuro);" onclick="abrirGoogleCalendar()"><i class="fab fa-google"></i> Abrir en G.Calendar</button>
+                    <button class="btn btn-calendar" onclick="abrirAgregarEvento()">+ Agregar</button>
+                    <button class="btn btn-secondary" style="background:var(--blanco);color:var(--verde-oscuro);" onclick="exportarICS()">📥 Exportar .ics</button>
+                    <button class="btn btn-secondary" style="background:var(--blanco);color:var(--verde-oscuro);" onclick="abrirGoogleCalendar()">Google Abrir en G.Calendar</button>
                     <button class="modal-close" onclick="cerrarModalCalendario()">×</button>
                 </div>
             </div>
             <div style="padding: 20px;">
                 <!-- Instrucciones de sincronización -->
                 <div class="sync-info" style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid var(--dorado);">
-                    <h4 style="color:var(--dorado-oscuro);margin-bottom:10px;"><i class="fas fa-info-circle"></i> ¿Cómo sincronizar con Google Calendar?</h4>
+                    <h4 style="color:var(--dorado-oscuro);margin-bottom:10px;">ℹ️ ¿Cómo sincronizar con Google Calendar?</h4>
                     <ol style="font-size:13px;color:var(--marron);padding-left:20px;margin:0;">
                         <li style="margin-bottom:5px;">Click en <strong>"Exportar .ics"</strong> para descargar los eventos</li>
                         <li style="margin-bottom:5px;">En Google Calendar, click en <strong>⚙️ Configuración</strong></li>
@@ -1769,9 +1769,9 @@
                 <!-- Mini Calendario -->
                 <div class="calendario-container">
                     <div class="calendario-header-mini">
-                        <button onclick="cambiarMesEvento(-1)" class="btn-nav-cal"><i class="fas fa-chevron-left"></i></button>
+                        <button onclick="cambiarMesEvento(-1)" class="btn-nav-cal">◀</button>
                         <h3 id="calMesTitulo"></h3>
-                        <button onclick="cambiarMesEvento(1)" class="btn-nav-cal"><i class="fas fa-chevron-right"></i></button>
+                        <button onclick="cambiarMesEvento(1)" class="btn-nav-cal">▶</button>
                     </div>
                     <div class="calendario-grid-mini" id="calGridMini"></div>
                 </div>
@@ -1785,7 +1785,7 @@
     <div class="modal" id="modalAgregarEvento">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2><i class="fas fa-calendar-plus"></i> <span id="eventoTituloModal">Agregar Evento</span></h2>
+                <h2>📅 <span id="eventoTituloModal">Agregar Evento</span></h2>
                 <button class="modal-close" onclick="cerrarModalAgregarEvento()">×</button>
             </div>
             <div style="padding: 20px;">
@@ -1820,10 +1820,10 @@
                     <textarea id="eventoDescripcion" placeholder="Detalles del evento..." style="width:100%;min-height:80px;padding:10px;border-radius:10px;border:2px solid #ddd;"></textarea>
                 </div>
                 <div style="display:flex;justify-content:space-between;margin-top:20px;">
-                    <button class="btn btn-danger" id="btnEliminarEvento" style="display:none;" onclick="eliminarEvento()"><i class="fas fa-trash"></i> Eliminar</button>
+                    <button class="btn btn-danger" id="btnEliminarEvento" style="display:none;" onclick="eliminarEvento()">🗑️ Eliminar</button>
                     <div style="display:flex;gap:10px;margin-left:auto;">
                         <button class="btn btn-secondary" onclick="cerrarModalAgregarEvento()">Cancelar</button>
-                        <button class="btn btn-calendar" onclick="guardarEvento()"><i class="fas fa-save"></i> Guardar</button>
+                        <button class="btn btn-calendar" onclick="guardarEvento()">💾 Guardar</button>
                     </div>
                 </div>
             </div>
@@ -1834,9 +1834,9 @@
     <div class="modal" id="modalLinks">
         <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
-                <h2><i class="fas fa-link"></i> Links de PALUF</h2>
+                <h2>🔗 Links de PALUF</h2>
                 <div style="display:flex;gap:10px;">
-                    <button class="btn btn-warning" onclick="abrirEditarLinks()"><i class="fas fa-edit"></i> Editar</button>
+                    <button class="btn btn-warning" onclick="abrirEditarLinks()">✏️ Editar</button>
                     <button class="modal-close" onclick="cerrarModalLinks()">×</button>
                 </div>
             </div>
@@ -1850,14 +1850,14 @@
     <div class="modal" id="modalEditarLinks">
         <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
-                <h2><i class="fas fa-edit"></i> Editar Links</h2>
+                <h2>✏️ Editar Links</h2>
                 <button class="modal-close" onclick="cerrarModalEditarLinks()">×</button>
             </div>
             <div style="padding: 20px;">
                 <div class="links-edit-container" id="linksEditContent"></div>
                 <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
                     <button class="btn btn-secondary" onclick="cerrarModalEditarLinks()">Cancelar</button>
-                    <button class="btn btn-primary" onclick="guardarLinks()"><i class="fas fa-save"></i> Guardar Cambios</button>
+                    <button class="btn btn-primary" onclick="guardarLinks()">💾 Guardar Cambios</button>
                 </div>
             </div>
         </div>
@@ -2177,9 +2177,9 @@
                             <div class="tarea-meta">
                                 <span class="meta-tag ${prio}">${t.prioridad}</span>
                                 <span>⏱️ ${t.tiempo || '-'}</span>
-                                <span><i class="fas fa-clock"></i> ${t.frecuencia}</span>
+                                <span>⏰ ${t.frecuencia}</span>
                                 <button class="btn-nota ${tieneNota ? 'has-note' : ''}" onclick="abrirNota('${t.id}', '${t.func}')" title="${tieneNota ? 'Ver nota' : 'Agregar nota'}">
-                                    <i class="fas fa-sticky-note"></i> ${tieneNota ? '✓' : ''}
+                                    📝 ${tieneNota ? '✓' : ''}
                                 </button>
                             </div>
                         </div>
@@ -2328,7 +2328,7 @@
                     </div>
                 </div>
                 <div class="chart-card">
-                    <h4><i class="fas fa-users"></i> Detalle por Persona</h4>
+                    <h4>👥 Detalle por Persona</h4>
                     ${personasOrdenadas.map((p, idx) => {
                         const nivel = porPersona[p].porcentaje >= 80 ? 'high' : porPersona[p].porcentaje >= 50 ? 'medium' : 'low';
                         const tieneTareas = porPersona[p].total > 0;
@@ -2475,7 +2475,7 @@
             if (hora >= 12 && hora < 18) saludo = '¡Buenas tardes!';
             else if (hora >= 18) saludo = '¡Buenas noches!';
             
-            document.getElementById('bienvenidaTitulo').innerHTML = `<i class="fas fa-hand-sparkles"></i> ${saludo} ${persona.split(' ')[0]}!`;
+            document.getElementById('bienvenidaTitulo').innerHTML = `🎉 ${saludo} ${persona.split(' ')[0]}!`;
             
             // Resumen de ayer
             const resumenDiv = document.getElementById('statsResumen');
@@ -2634,7 +2634,7 @@
                 if (pendientes.length === 0) {
                     container.innerHTML = `
                         <div class="notif-empty">
-                            <i class="fas fa-check-circle"></i>
+                            ✅
                             <p>¡Todo al día! No tienes tareas pendientes sin marcar.</p>
                         </div>
                     `;
@@ -2667,7 +2667,7 @@
                 if (recordatorios.length === 0) {
                     container.innerHTML = `
                         <div class="notif-empty">
-                            <i class="fas fa-bell-slash"></i>
+                            🔕
                             <p>No hay recordatorios pendientes para hoy.</p>
                         </div>
                     `;
@@ -2826,7 +2826,7 @@
             const maximo = Math.max(...porDia.map(d => d.total), 1);
             const graficoDiv = document.getElementById('graficoSemanal');
             graficoDiv.innerHTML = `
-                <h4><i class="fas fa-chart-bar"></i> Rendimiento por Día</h4>
+                <h4>📊 Rendimiento por Día</h4>
                 <div class="barras-semana">
                     ${porDia.map(d => {
                         const altura = d.total > 0 ? Math.max((d.completadas / maximo) * 120, 10) : 5;
@@ -3313,7 +3313,7 @@
                         ${cat.links.map(link => `
                             <div class="link-item">
                                 <div class="link-icon" style="background: ${cat.color}; color: white;">
-                                    <i class="fas fa-external-link-alt"></i>
+                                    🔗
                                 </div>
                                 <div class="link-info">
                                     <strong>${link.nombre}</strong>
@@ -3357,11 +3357,11 @@
                             <div class="link-edit-item">
                                 <input type="text" id="link-nombre-${catIdx}-${linkIdx}" value="${link.nombre}" placeholder="Nombre">
                                 <input type="url" id="link-url-${catIdx}-${linkIdx}" value="${link.url}" placeholder="https://...">
-                                <button class="btn-delete" onclick="eliminarLink(${catIdx}, ${linkIdx})"><i class="fas fa-trash"></i></button>
+                                <button class="btn-delete" onclick="eliminarLink(${catIdx}, ${linkIdx})">🗑️</button>
                             </div>
                         `).join('')}
                     </div>
-                    <button class="btn-add-link" onclick="agregarLink(${catIdx})"><i class="fas fa-plus"></i> Agregar Link</button>
+                    <button class="btn-add-link" onclick="agregarLink(${catIdx})">+ Agregar Link</button>
                 </div>
             `).join('');
         };
