@@ -2228,7 +2228,6 @@
                     <label>Seleccionar Persona</label>
                     <select id="progPersona" onchange="cargarTareasProgMasiva()" style="width:100%;padding:12px;border-radius:12px;border:2px solid #ddd;">
                         <option value="">-- Seleccionar persona --</option>
-                        ${PERSONAS.map(p => `<option value="${p}">${p}</option>`).join('')}
                     </select>
                 </div>
                 
@@ -2261,13 +2260,7 @@
                 <!-- Días personalizados -->
                 <div id="progDiasPersonalizados" style="display:none;margin-top:15px;">
                     <label>Seleccionar días del mes:</label>
-                    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
-                        ${[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31].map(d => 
-                            `<label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:#f0f0f0;border-radius:8px;cursor:pointer;">
-                                <input type="checkbox" class="prog-dia" value="${d}"> ${d}
-                            </label>`
-                        ).join('')}
-                    </div>
+                    <div id="progDiasCheckboxes" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
                 </div>
                 
                 <!-- Mes y Año -->
@@ -2289,7 +2282,9 @@
                             <option value="11">Diciembre</option>
                         </select>
                         <select id="progAnio" onchange="actualizarProgPreview()" style="flex:1;padding:12px;border-radius:12px;border:2px solid #ddd;">
-                            ${[2026, 2027, 2028].map(a => `<option value="${a}" ${a === 2026 ? 'selected' : ''}>${a}</option>`).join('')}
+                            <option value="2026" selected>2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
                         </select>
                     </div>
                 </div>
@@ -3797,13 +3792,38 @@
         // ==================== PROGRAMACIÓN MASIVA ====================
         const abrirProgramacionMasiva = () => {
             // Resetear valores
-            document.getElementById('progPersona').value = '';
             document.getElementById('progTareasContainer').style.display = 'none';
             document.getElementById('progPatronContainer').style.display = 'none';
             document.getElementById('progPeriodoContainer').style.display = 'none';
             document.getElementById('progPreview').style.display = 'none';
             document.getElementById('progDiasPersonalizados').style.display = 'none';
             document.getElementById('btnProgCrear').disabled = true;
+            
+            // Llenar selector de personas dinámicamente
+            const personaSelect = document.getElementById('progPersona');
+            personaSelect.innerHTML = '<option value="">-- Seleccionar persona --</option>';
+            PERSONAS.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                personaSelect.appendChild(opt);
+            });
+            
+            // Llenar checkboxes de días personalizados
+            const diasContainer = document.getElementById('progDiasCheckboxes');
+            diasContainer.innerHTML = '';
+            for (let d = 1; d <= 31; d++) {
+                const label = document.createElement('label');
+                label.style.cssText = 'display:flex;align-items:center;gap:5px;padding:8px 12px;background:#f0f0f0;border-radius:8px;cursor:pointer;';
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.className = 'prog-dia';
+                cb.value = d;
+                cb.addEventListener('change', actualizarProgPreview);
+                label.appendChild(cb);
+                label.appendChild(document.createTextNode(' ' + d));
+                diasContainer.appendChild(label);
+            }
             
             // Poner el mes y año actual
             const hoy = new Date();
