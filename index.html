@@ -168,6 +168,10 @@
             background: linear-gradient(135deg, var(--dorado) 0%, var(--dorado-oscuro) 100%); 
             color: var(--verde-bosque); 
         }
+        .btn-calendar { 
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); 
+            color: white; 
+        }
         .btn-success { 
             background: linear-gradient(135deg, var(--verde-check) 0%, var(--verde-medio) 100%); 
             color: var(--blanco); 
@@ -991,6 +995,109 @@
         }
         .btn-add-link:hover { background: var(--verde-medio); }
 
+        /* CALENDARIO */
+        .calendario-container {
+            background: var(--blanco);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px var(--sombra-suave);
+        }
+        .calendario-header-mini {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .calendario-header-mini h3 { color: var(--verde-oscuro); font-size: 18px; }
+        .btn-nav-cal {
+            background: var(--crema);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--verde-oscuro);
+            transition: all 0.2s;
+        }
+        .btn-nav-cal:hover { background: var(--verde-oscuro); color: white; }
+        .calendario-grid-mini {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .cal-day-header {
+            text-align: center;
+            font-weight: 600;
+            font-size: 11px;
+            color: var(--gris);
+            padding: 5px;
+        }
+        .cal-day {
+            text-align: center;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .cal-day:hover { background: var(--crema); }
+        .cal-day.other-month { color: var(--gris-claro); }
+        .cal-day.today { background: var(--verde-oscuro); color: white; font-weight: 600; }
+        .cal-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--dorado);
+        }
+        .cal-day.has-event.today::after { background: var(--dorado); }
+        
+        .eventos-lista {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .eventos-fecha {
+            margin-bottom: 15px;
+        }
+        .eventos-fecha h4 {
+            color: var(--verde-oscuro);
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--dorado-claro);
+        }
+        .evento-item {
+            background: var(--blanco);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid var(--dorado);
+        }
+        .evento-item:hover { box-shadow: 0 4px 15px var(--sombra-suave); transform: translateX(3px); }
+        .evento-item.ceremonia { border-left-color: #9b59b6; }
+        .evento-item.taller { border-left-color: #3498db; }
+        .evento-item.retiro { border-left-color: #27ae60; }
+        .evento-item.reunion { border-left-color: #f39c12; }
+        .evento-item.mantenimiento { border-left-color: #e74c3c; }
+        .evento-item.especial { border-left-color: #1abc9c; }
+        .evento-icon { font-size: 24px; }
+        .evento-info { flex: 1; }
+        .evento-info strong { display: block; color: var(--verde-oscuro); font-size: 14px; }
+        .evento-info span { font-size: 12px; color: var(--gris); }
+        .evento-hora { font-size: 12px; color: var(--verde-medio); font-weight: 600; }
+        .no-eventos { text-align: center; padding: 30px; color: var(--gris); }
+
         /* PRINT */
         @media print {
             .login-overlay, .sidebar, .filters, .quick-actions, .header-actions, .task-actions, .btn { display: none !important; }
@@ -1038,6 +1145,7 @@
         </div>
         <div class="header-actions">
             <button class="btn-dark-mode" id="btnDarkMode" onclick="toggleDarkMode()" title="Modo Oscuro">🌙</button>
+            <button class="btn btn-calendar" onclick="abrirModalCalendario()"><i class="fas fa-calendar-alt"></i> Calendario</button>
             <button class="btn btn-warning" onclick="abrirModalLinks()"><i class="fas fa-link"></i> Links</button>
             <button class="btn btn-success" id="btnExport" style="display:none;" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar</button>
             <span class="user-welcome" id="userWelcome" style="display:none;"></span>
@@ -1205,6 +1313,85 @@
                     <div style="display:flex;gap:10px;">
                         <button class="btn btn-secondary" onclick="cerrarModalNota()">Cancelar</button>
                         <button class="btn btn-primary" onclick="guardarNota()"><i class="fas fa-save"></i> Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CALENDARIO -->
+    <div class="modal" id="modalCalendario">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class="fas fa-calendar-alt"></i> Calendario de Eventos</h2>
+                <div style="display:flex;gap:10px;">
+                    <button class="btn btn-calendar" onclick="abrirAgregarEvento()"><i class="fas fa-plus"></i> Agregar Evento</button>
+                    <button class="btn btn-secondary" style="background:var(--blanco);color:var(--verde-oscuro);" onclick="toggleGoogleCalendar()"><i class="fab fa-google"></i> Google Calendar</button>
+                    <button class="modal-close" onclick="cerrarModalCalendario()">×</button>
+                </div>
+            </div>
+            <div style="padding: 20px;">
+                <!-- Google Calendar Embed -->
+                <div id="googleCalendarSection" style="display:none;margin-bottom:20px;">
+                    <iframe src="https://calendar.google.com/calendar/embed?src=paluecoaldea7%40gmail.com&ctz=America%2FBogota" style="border: 0" width="100%" height="400" frameborder="0" scrolling="no"></iframe>
+                    <p style="text-align:center;margin-top:10px;font-size:12px;color:var(--gris);">Conecta tu Google Calendar en Configuración</p>
+                </div>
+                <!-- Mini Calendario -->
+                <div class="calendario-container">
+                    <div class="calendario-header-mini">
+                        <button onclick="cambiarMesEvento(-1)" class="btn-nav-cal"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="calMesTitulo"></h3>
+                        <button onclick="cambiarMesEvento(1)" class="btn-nav-cal"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendario-grid-mini" id="calGridMini"></div>
+                </div>
+                <!-- Lista de Eventos -->
+                <div class="eventos-lista" id="eventosLista"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AGREGAR EVENTO -->
+    <div class="modal" id="modalAgregarEvento">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-calendar-plus"></i> <span id="eventoTituloModal">Agregar Evento</span></h2>
+                <button class="modal-close" onclick="cerrarModalAgregarEvento()">×</button>
+            </div>
+            <div style="padding: 20px;">
+                <input type="hidden" id="eventoId">
+                <div class="form-group">
+                    <label>Título del Evento</label>
+                    <input type="text" id="eventoTitulo" placeholder="Ej: Ceremonia Luna Llena">
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" id="eventoFecha">
+                </div>
+                <div class="form-group">
+                    <label>Hora (opcional)</label>
+                    <input type="time" id="eventoHora">
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select id="eventoTipo">
+                        <option value="ceremonia">🎭 Ceremonia</option>
+                        <option value="taller">🛠️ Taller</option>
+                        <option value="retiro">🏕️ Retiro</option>
+                        <option value="reunion">👥 Reunión</option>
+                        <option value="mantenimiento">🔧 Mantenimiento</option>
+                        <option value="especial">⭐ Especial</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Descripción (opcional)</label>
+                    <textarea id="eventoDescripcion" placeholder="Detalles del evento..." style="width:100%;min-height:80px;padding:10px;border-radius:10px;border:2px solid #ddd;"></textarea>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:20px;">
+                    <button class="btn btn-danger" id="btnEliminarEvento" style="display:none;" onclick="eliminarEvento()"><i class="fas fa-trash"></i> Eliminar</button>
+                    <div style="display:flex;gap:10px;margin-left:auto;">
+                        <button class="btn btn-secondary" onclick="cerrarModalAgregarEvento()">Cancelar</button>
+                        <button class="btn btn-calendar" onclick="guardarEvento()"><i class="fas fa-save"></i> Guardar</button>
                     </div>
                 </div>
             </div>
@@ -2252,6 +2439,235 @@
             toast('✓ Links guardados correctamente');
         };
 
+        // ==================== CALENDARIO ====================
+        let eventos = [];
+        let calMes = new Date().getMonth();
+        let calAnio = new Date().getFullYear();
+        let googleCalendarVisible = false;
+        
+        const eventosDefault = [
+            { id: 1, titulo: "Ceremonia Luna Llena", fecha: "2026-04-14", hora: "19:00", tipo: "ceremonia", descripcion: "Ceremonia mensual de luna llena" },
+            { id: 2, titulo: "Retiro Espiritual", fecha: "2026-04-18", hora: "09:00", tipo: "retiro", descripcion: "Retiro de fin de semana" },
+            { id: 3, titulo: "Reunión Equipo", fecha: "2026-04-16", hora: "10:00", tipo: "reunion", descripcion: "Coordinación semanal" },
+            { id: 4, titulo: "Taller de Terapias", fecha: "2026-04-20", hora: "14:00", tipo: "taller", descripcion: "Formación del equipo" },
+        ];
+
+        const cargarEventos = () => {
+            try {
+                const guardados = localStorage.getItem('paluf_eventos');
+                if (guardados) {
+                    eventos = JSON.parse(guardados);
+                } else {
+                    eventos = [...eventosDefault];
+                    guardarEventos();
+                }
+            } catch (e) {
+                eventos = [...eventosDefault];
+            }
+        };
+
+        const guardarEventos = () => {
+            localStorage.setItem('paluf_eventos', JSON.stringify(eventos));
+        };
+
+        const abrirModalCalendario = () => {
+            cargarEventos();
+            renderizarCalendario();
+            renderizarEventos();
+            document.getElementById('modalCalendario').classList.add('visible');
+        };
+
+        const cerrarModalCalendario = () => {
+            document.getElementById('modalCalendario').classList.remove('visible');
+        };
+
+        const toggleGoogleCalendar = () => {
+            googleCalendarVisible = !googleCalendarVisible;
+            document.getElementById('googleCalendarSection').style.display = googleCalendarVisible ? 'block' : 'none';
+        };
+
+        const renderizarCalendario = () => {
+            const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            
+            document.getElementById('calMesTitulo').textContent = `${meses[calMes]} ${calAnio}`;
+            
+            const grid = document.getElementById('calGridMini');
+            let html = diasSemana.map(d => `<div class="cal-day-header">${d}</div>`).join('');
+            
+            const primerDia = new Date(calAnio, calMes, 1).getDay();
+            const diasMes = new Date(calAnio, calMes + 1, 0).getDate();
+            const hoy = new Date();
+            const hoyStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+            
+            // Días del mes anterior
+            const diasPrev = new Date(calAnio, calMes, 0).getDate();
+            for (let i = primerDia - 1; i >= 0; i--) {
+                html += `<div class="cal-day other-month">${diasPrev - i}</div>`;
+            }
+            
+            // Días del mes actual
+            for (let d = 1; d <= diasMes; d++) {
+                const fechaStr = `${calAnio}-${String(calMes + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const tieneEvento = eventos.some(e => e.fecha === fechaStr);
+                const esHoy = fechaStr === hoyStr;
+                html += `<div class="cal-day ${esHoy ? 'today' : ''} ${tieneEvento ? 'has-event' : ''}" onclick="mostrarEventosFecha('${fechaStr}')">${d}</div>`;
+            }
+            
+            // Días del siguiente mes
+            const totalCeldas = primerDia + diasMes;
+            const resto = totalCeldas % 7 === 0 ? 0 : 7 - (totalCeldas % 7);
+            for (let d = 1; d <= resto; d++) {
+                html += `<div class="cal-day other-month">${d}</div>`;
+            }
+            
+            grid.innerHTML = html;
+        };
+
+        const cambiarMesEvento = (dir) => {
+            calMes += dir;
+            if (calMes > 11) { calMes = 0; calAnio++; }
+            if (calMes < 0) { calMes = 11; calAnio--; }
+            renderizarCalendario();
+        };
+
+        const mostrarEventosFecha = (fecha) => {
+            // Abrir modal para agregar evento en esa fecha
+            document.getElementById('eventoFecha').value = fecha;
+            abrirAgregarEvento();
+        };
+
+        const renderizarEventos = () => {
+            const lista = document.getElementById('eventosLista');
+            const iconos = { ceremonia: '🎭', taller: '🛠️', retiro: '🏕️', reunion: '👥', mantenimiento: '🔧', especial: '⭐' };
+            
+            // Agrupar por fecha
+            const eventosOrdenados = [...eventos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            
+            if (eventosOrdenados.length === 0) {
+                lista.innerHTML = '<div class="no-eventos">No hay eventos programados. ¡Agrega uno!</div>';
+                return;
+            }
+            
+            let html = '';
+            let fechaActual = '';
+            
+            eventosOrdenados.forEach(e => {
+                if (e.fecha !== fechaActual) {
+                    fechaActual = e.fecha;
+                    const fechaObj = new Date(e.fecha + 'T00:00:00');
+                    const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                    html += `
+                        <div class="eventos-fecha">
+                            <h4>📅 ${diasSemana[fechaObj.getDay()]}, ${fechaObj.getDate()} de ${meses[fechaObj.getMonth()]}</h4>
+                        </div>
+                    `;
+                }
+                html += `
+                    <div class="evento-item ${e.tipo}" onclick="editarEvento('${e.id}')">
+                        <div class="evento-icon">${iconos[e.tipo] || '📅'}</div>
+                        <div class="evento-info">
+                            <strong>${e.titulo}</strong>
+                            <span>${e.descripcion || ''}</span>
+                        </div>
+                        ${e.hora ? `<div class="evento-hora">${e.hora}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+        };
+
+        const abrirAgregarEvento = (id = null) => {
+            document.getElementById('eventoId').value = id || '';
+            document.getElementById('eventoTitulo').value = '';
+            document.getElementById('eventoFecha').value = '';
+            document.getElementById('eventoHora').value = '';
+            document.getElementById('eventoTipo').value = 'ceremonia';
+            document.getElementById('eventoDescripcion').value = '';
+            document.getElementById('btnEliminarEvento').style.display = 'none';
+            document.getElementById('eventoTituloModal').textContent = id ? 'Editar Evento' : 'Agregar Evento';
+            
+            if (!id) {
+                // Nueva fecha si no se seleccionó una
+                if (!document.getElementById('eventoFecha').value) {
+                    const hoy = new Date();
+                    document.getElementById('eventoFecha').value = hoy.toISOString().split('T')[0];
+                }
+            }
+            
+            document.getElementById('modalAgregarEvento').classList.add('visible');
+        };
+
+        const editarEvento = (id) => {
+            const evento = eventos.find(e => e.id == id);
+            if (!evento) return;
+            
+            document.getElementById('eventoId').value = evento.id;
+            document.getElementById('eventoTitulo').value = evento.titulo;
+            document.getElementById('eventoFecha').value = evento.fecha;
+            document.getElementById('eventoHora').value = evento.hora || '';
+            document.getElementById('eventoTipo').value = evento.tipo;
+            document.getElementById('eventoDescripcion').value = evento.descripcion || '';
+            document.getElementById('btnEliminarEvento').style.display = 'inline-block';
+            document.getElementById('eventoTituloModal').textContent = 'Editar Evento';
+            
+            document.getElementById('modalAgregarEvento').classList.add('visible');
+        };
+
+        const cerrarModalAgregarEvento = () => {
+            document.getElementById('modalAgregarEvento').classList.remove('visible');
+        };
+
+        const guardarEvento = () => {
+            const id = document.getElementById('eventoId').value;
+            const titulo = document.getElementById('eventoTitulo').value.trim();
+            const fecha = document.getElementById('eventoFecha').value;
+            const hora = document.getElementById('eventoHora').value;
+            const tipo = document.getElementById('eventoTipo').value;
+            const descripcion = document.getElementById('eventoDescripcion').value.trim();
+            
+            if (!titulo || !fecha) {
+                toast('❌ Completa el título y la fecha', 'error');
+                return;
+            }
+            
+            if (id) {
+                // Editar
+                const idx = eventos.findIndex(e => e.id == id);
+                if (idx !== -1) {
+                    eventos[idx] = { ...eventos[idx], titulo, fecha, hora, tipo, descripcion };
+                }
+            } else {
+                // Nuevo
+                eventos.push({
+                    id: Date.now(),
+                    titulo, fecha, hora, tipo, descripcion
+                });
+            }
+            
+            guardarEventos();
+            cerrarModalAgregarEvento();
+            renderizarEventos();
+            renderizarCalendario();
+            toast('✓ Evento guardado');
+        };
+
+        const eliminarEvento = () => {
+            const id = document.getElementById('eventoId').value;
+            if (!id) return;
+            
+            if (confirm('¿Eliminar este evento?')) {
+                eventos = eventos.filter(e => e.id != id);
+                guardarEventos();
+                cerrarModalAgregarEvento();
+                renderizarEventos();
+                renderizarCalendario();
+                toast('Evento eliminado');
+            }
+        };
+
         const eliminarTarea = () => {
             if (!tareaEditando) return;
             confirmarEliminar(tareaEditando);
@@ -2319,6 +2735,7 @@
         const init = () => {
             cargar();
             cargarLinks(); // Cargar links de PALUF
+            cargarEventos(); // Cargar eventos del calendario
             renderLogin();
             renderPersonas();
             renderFiltro();
