@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PALUF - Control de Funciones 2026</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231a3d2e'/><path d='M50 20 Q65 35 60 55 Q55 70 50 80 Q45 70 40 55 Q35 35 50 20' fill='%2327ae60'/><circle cx='50' cy='50' r='8' fill='%23c9a962'/></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         /* PALUF BRAND COLORS */
         :root {
@@ -243,8 +244,25 @@
         }
 
         .user-btn:hover { border-color: var(--dorado); transform: scale(1.02); }
-        .avatar { font-size: 30px; margin-bottom: 8px; }
+        .avatar { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            margin: 0 auto 8px auto;
+            color: var(--dorado);
+            font-size: 20px;
+        }
         .name { font-weight: 600; font-size: 13px; }
+        
+        .person-item i { margin-right: 8px; color: var(--dorado); }
+        .person-item.active i { color: var(--dorado-claro); }
+        
+        .area-icon { font-size: 20px; color: var(--verde-oscuro); }
+        .area-icon i { margin-right: 0; }
 
         /* MAIN LAYOUT */
         .main-container { display: flex; min-height: calc(100vh - 70px); }
@@ -836,8 +854,8 @@
             <button class="btn-dark-mode" id="btnDarkMode" onclick="toggleDarkMode()" title="Modo Oscuro">🌙</button>
             <span class="user-welcome" id="userWelcome" style="display:none;"></span>
             <button class="btn-logout" id="btnLogout" style="display:none;" onclick="logout()">Salir</button>
-            <button class="btn btn-primary" id="btnDashboard" style="display:none;" onclick="verDashboard()">📊 Dashboard</button>
-            <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir</button>
+            <button class="btn btn-primary" id="btnDashboard" style="display:none;" onclick="verDashboard()"><i class="fas fa-chart-line"></i> Dashboard</button>
+            <button class="btn btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
         </div>
     </header>
 
@@ -849,7 +867,7 @@
             
             <!-- COMMENTS -->
             <div class="comments-section" style="margin-top: 20px;">
-                <h3>💬 Mensajes</h3>
+                <h3><i class="fas fa-comments"></i> Mensajes</h3>
                 <div class="comment-input">
                     <input type="text" id="commentInput" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter')enviarComentario()">
                     <button class="btn btn-primary" onclick="enviarComentario()">Enviar</button>
@@ -873,7 +891,7 @@
                     <button onclick="cambiarMes(-1)">◀</button>
                     <span id="mesActual">Abril 2026</span>
                     <button onclick="cambiarMes(1)">▶</button>
-                    <button class="btn-hoy" onclick="irAHoy()">📅 HOY</button>
+                    <button class="btn-hoy" onclick="irAHoy()"><i class="fas fa-calendar-day"></i> HOY</button>
                 </div>
                 <div class="stats-bar">
                     <div class="stat-item">
@@ -890,7 +908,7 @@
             <!-- DASHBOARD -->
             <div class="dashboard" id="dashboard">
                 <div class="dashboard-header">
-                    <h3>📊 Dashboard de Rendimiento</h3>
+                    <h3><i class="fas fa-chart-pie"></i> Dashboard de Rendimiento</h3>
                     <button class="btn btn-secondary" onclick="toggleDashboard()">Ocultar</button>
                 </div>
                 <div class="dashboard-stats" id="dashboardStats"></div>
@@ -961,7 +979,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" id="btnEliminar" style="display:none;" onclick="eliminarTarea()">🗑️ Eliminar</button>
-                    <button type="button" class="btn btn-secondary" id="btnDuplicar" style="display:none;" onclick="duplicarTarea()">📋 Duplicar</button>
+                    <button type="button" class="btn btn-secondary" id="btnDuplicar" style="display:none;" onclick="duplicarTarea()"><i class="fas fa-copy"></i> Duplicar</button>
                     <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
                     <button type="submit" class="btn btn-primary">💾 Guardar</button>
                 </div>
@@ -1204,20 +1222,22 @@
 
         // ==================== RENDER ====================
         const renderLogin = () => {
-            const avatares = ['👩‍💼', '👩‍💻', '👩‍🎨', '👩‍⚕️', '👨‍🔧', '🧹', '💰', '📱', '🔧', '💬'];
+            const avatares = ['fa-user-tie', 'fa-user-edit', 'fa-user-cog', 'fa-user-nurse', 'fa-user-hard-hat', 'fa-user', 'fa-user-check', 'fa-user-tag', 'fa-user-astronaut', 'fa-user-shield'];
             document.getElementById('userSelect').innerHTML = PERSONAS.map((p, i) => `
                 <div class="user-btn" onclick="login('${p}')">
-                    <div class="avatar">${avatares[i]}</div>
+                    <div class="avatar"><i class="fas ${avatares[i % avatares.length]}"></i></div>
                     <div class="name">${p}</div>
                 </div>
             `).join('');
         };
 
         const renderPersonas = () => {
-            document.getElementById('personList').innerHTML = PERSONAS.map(p => {
+            document.getElementById('personList').innerHTML = PERSONAS.map((p, i) => {
                 const cant = funcionesData.filter(f => f.persona === p).length;
+                const idx = i % 10;
+                const iconos = ['fa-user-tie', 'fa-user-edit', 'fa-user-cog', 'fa-user-nurse', 'fa-user-hard-hat', 'fa-user', 'fa-user-check', 'fa-user-tag', 'fa-user-astronaut', 'fa-user-shield'];
                 return `<div class="person-item ${personaSeleccionada === p ? 'active' : ''}" onclick="seleccionar('${p}')">
-                    <span>${p}</span><span class="stats">${cant}</span>
+                    <span><i class="fas ${iconos[idx]}"></i> ${p}</span><span class="stats">${cant}</span>
                 </div>`;
             }).join('');
         };
@@ -1266,7 +1286,7 @@
                             <div class="tarea-meta">
                                 <span class="meta-tag ${prio}">${t.prioridad}</span>
                                 <span>⏱️ ${t.tiempo || '-'}</span>
-                                <span>📅 ${t.frecuencia}</span>
+                                <span><i class="fas fa-clock"></i> ${t.frecuencia}</span>
                             </div>
                         </div>
                     </div>`;
@@ -1414,7 +1434,7 @@
                     </div>
                 </div>
                 <div class="chart-card">
-                    <h4>📊 Detalle por Persona</h4>
+                    <h4><i class="fas fa-users"></i> Detalle por Persona</h4>
                     ${personasOrdenadas.map((p, idx) => {
                         const nivel = porPersona[p].porcentaje >= 80 ? 'high' : porPersona[p].porcentaje >= 50 ? 'medium' : 'low';
                         const tieneTareas = porPersona[p].total > 0;
@@ -1444,12 +1464,12 @@
                 'CAJA Y VENTAS': '#f39c12'
             };
             const areaIconos = {
-                'ADMINISTRACION': '📋',
-                'DIRECCION': '👑',
-                'OPERACIONES': '🔧',
-                'MARKETING': '📱',
-                'TERAPIAS': '💆',
-                'CAJA Y VENTAS': '💰'
+                'ADMINISTRACION': 'fa-briefcase',
+                'DIRECCION': 'fa-crown',
+                'OPERACIONES': 'fa-tools',
+                'MARKETING': 'fa-bullhorn',
+                'TERAPIAS': 'fa-spa',
+                'CAJA Y VENTAS': 'fa-cash-register' /* o fa-money-bill */
             };
             
             const areaStats = {};
@@ -1482,7 +1502,7 @@
                         return `
                         <div class="area-card" style="border-left: 4px solid ${areaColores[a]}">
                             <div class="area-header">
-                                <span class="area-icon">${areaIconos[a]}</span>
+                                <span class="area-icon"><i class="fas ${areaIconos[a]}"></i></span>
                                 <span class="area-name">${a}</span>
                             </div>
                             <div class="area-stats-row">
