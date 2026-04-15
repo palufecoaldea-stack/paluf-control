@@ -172,6 +172,10 @@
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); 
             color: white; 
         }
+        .btn-semanal { 
+            background: linear-gradient(135deg, #059669 0%, #047857 100%); 
+            color: white; 
+        }
         .btn-notificaciones {
             background: var(--rojo);
             border: none;
@@ -1231,6 +1235,93 @@
         }
         .notif-empty i { font-size: 48px; margin-bottom: 15px; color: var(--verde-menta); }
 
+        /* VISTA SEMANAL */
+        .btn-nav-semana {
+            background: var(--crema);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--verde-oscuro);
+            transition: all 0.2s;
+        }
+        .btn-nav-semana:hover { background: white; }
+        
+        .resumen-semanal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .resumen-semanal .stat-card {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+        }
+        .resumen-semanal .stat-card.gold {
+            background: linear-gradient(135deg, var(--dorado-oscuro) 0%, var(--dorado) 100%);
+        }
+        .resumen-semanal .stat-card .value { font-size: 28px; font-weight: bold; }
+        .resumen-semanal .stat-card .label { font-size: 11px; opacity: 0.9; }
+        
+        .grafico-semanal {
+            background: var(--blanco);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px var(--sombra-suave);
+        }
+        .grafico-semanal h4 { color: var(--verde-oscuro); margin-bottom: 15px; }
+        .barras-semana {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 150px;
+            padding: 10px 0;
+        }
+        .barra-dia {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+        }
+        .barra-altura {
+            width: 40px;
+            background: linear-gradient(180deg, var(--verde-check) 0%, var(--verde-menta) 100%);
+            border-radius: 8px 8px 0 0;
+            transition: height 0.5s ease;
+            min-height: 5px;
+        }
+        .barra-dia span { font-size: 11px; color: var(--gris); margin-top: 5px; }
+        .barra-dia .pct { font-weight: bold; color: var(--verde-oscuro); font-size: 12px; }
+        
+        .detalle-semanal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        .dia-card {
+            background: var(--blanco);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--sombra-suave);
+        }
+        .dia-header {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            color: white;
+            padding: 10px 15px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+        .dia-header.hoy { background: linear-gradient(135deg, var(--dorado) 0%, var(--dorado-oscuro) 100%); color: var(--verde-bosque); }
+        .dia-stats { padding: 10px 15px; font-size: 13px; }
+        .dia-stat-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--crema); }
+        .dia-stat-row:last-child { border-bottom: none; }
+
         /* PRINT */
         @media print {
             .login-overlay, .sidebar, .filters, .quick-actions, .header-actions, .task-actions, .btn { display: none !important; }
@@ -1320,6 +1411,7 @@
                 <i class="fas fa-bell"></i>
                 <span class="notif-badge" id="notifBadge">0</span>
             </button>
+            <button class="btn btn-semanal" onclick="abrirModalSemanal()"><i class="fas fa-calendar-week"></i> Semana</button>
             <button class="btn btn-calendar" onclick="abrirModalCalendario()"><i class="fas fa-calendar-alt"></i> Calendario</button>
             <button class="btn btn-warning" onclick="abrirModalLinks()"><i class="fas fa-link"></i> Links</button>
             <button class="btn btn-success" id="btnExport" style="display:none;" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar</button>
@@ -1507,6 +1599,30 @@
                     <button class="notif-tab" onclick="cambiarTabNotif('recordatorios')" id="tabRecordatorios">🔔 Recordatorios</button>
                 </div>
                 <div class="notif-content" id="notifContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL VISTA SEMANAL -->
+    <div class="modal" id="modalSemanal">
+        <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class="fas fa-calendar-week"></i> Vista Semanal</h2>
+                <div style="display:flex;gap:10px;">
+                    <button class="btn-nav-semana" onclick="cambiarSemana(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <span id="semanaTitulo" style="color:white;font-weight:600;padding:0 15px;"></span>
+                    <button class="btn-nav-semana" onclick="cambiarSemana(1)"><i class="fas fa-chevron-right"></i></button>
+                    <button class="btn btn-semanal" onclick="irASemanaActual()"><i class="fas fa-bullseye"></i> Esta Semana</button>
+                    <button class="modal-close" onclick="cerrarModalSemanal()">×</button>
+                </div>
+            </div>
+            <div style="padding: 20px;">
+                <!-- Resumen semanal -->
+                <div class="resumen-semanal" id="resumenSemanal"></div>
+                <!-- Gráfico semanal -->
+                <div class="grafico-semanal" id="graficoSemanal"></div>
+                <!-- Detalle por día -->
+                <div class="detalle-semanal" id="detalleSemanal"></div>
             </div>
         </div>
     </div>
@@ -2483,6 +2599,148 @@
                 const row = document.querySelector(`[onclick*="'${tareaId}'"]`);
                 if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 500);
+        };
+
+        // ==================== VISTA SEMANAL ====================
+        let semanaOffset = 0; // 0 = semana actual, -1 = semana pasada, etc.
+
+        const abrirModalSemanal = () => {
+            semanaOffset = 0;
+            renderizarVistaSemanal();
+            document.getElementById('modalSemanal').classList.add('visible');
+        };
+
+        const cerrarModalSemanal = () => {
+            document.getElementById('modalSemanal').classList.remove('visible');
+        };
+
+        const cambiarSemana = (dir) => {
+            semanaOffset += dir;
+            renderizarVistaSemanal();
+        };
+
+        const irASemanaActual = () => {
+            semanaOffset = 0;
+            renderizarVistaSemanal();
+        };
+
+        const getSemanaDates = () => {
+            const hoy = new Date();
+            const diaSemana = hoy.getDay();
+            const domingo = new Date(hoy);
+            domingo.setDate(hoy.getDate() - diaSemana + (semanaOffset * 7));
+            
+            const dias = [];
+            for (let i = 0; i < 7; i++) {
+                const dia = new Date(domingo);
+                dia.setDate(domingo.getDate() + i);
+                dias.push(dia);
+            }
+            return dias;
+        };
+
+        const renderizarVistaSemanal = () => {
+            const dias = getSemanaDates();
+            const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            
+            // Título
+            const desde = dias[0];
+            const hasta = dias[6];
+            document.getElementById('semanaTitulo').textContent = `${desde.getDate()} ${meses[desde.getMonth()]} - ${hasta.getDate()} ${meses[hasta.getMonth()]} ${hasta.getFullYear()}`;
+            
+            // Calcular estadísticas para la semana
+            let totalTareas = 0, completadas = 0;
+            const porDia = [];
+            const hoy = new Date();
+            const hoyStr = formatFecha(hoy);
+            
+            dias.forEach(dia => {
+                const diaStr = formatFecha(dia);
+                let diaTotal = 0, diaCompletadas = 0;
+                
+                funcionesData.forEach(t => {
+                    const key = `${t.persona}_${t.id}_${diaStr}`;
+                    if (asistencia[key]) {
+                        diaTotal++;
+                        if (asistencia[key] === 'si') diaCompletadas++;
+                    }
+                });
+                
+                totalTareas += diaTotal;
+                completadas += diaCompletadas;
+                porDia.push({
+                    dia: dia,
+                    nombre: diasSemana[dia.getDay()],
+                    num: dia.getDate(),
+                    total: diaTotal,
+                    completadas: diaCompletadas,
+                    esHoy: diaStr === hoyStr
+                });
+            });
+            
+            const pctSemana = totalTareas > 0 ? Math.round(completadas / totalTareas * 100) : 0;
+            
+            // Resumen semanal
+            const resumenDiv = document.getElementById('resumenSemanal');
+            resumenDiv.innerHTML = `
+                <div class="stat-card">
+                    <div class="value">${completadas}/${totalTareas}</div>
+                    <div class="label">Tareas Marcadas</div>
+                </div>
+                <div class="stat-card gold">
+                    <div class="value">${pctSemana}%</div>
+                    <div class="label">Cumplimiento</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">${Math.round(totalTareas / 7)}</div>
+                    <div class="label">Promedio/Día</div>
+                </div>
+            `;
+            
+            // Gráfico de barras
+            const maximo = Math.max(...porDia.map(d => d.total), 1);
+            const graficoDiv = document.getElementById('graficoSemanal');
+            graficoDiv.innerHTML = `
+                <h4><i class="fas fa-chart-bar"></i> Rendimiento por Día</h4>
+                <div class="barras-semana">
+                    ${porDia.map(d => {
+                        const altura = d.total > 0 ? Math.max((d.completadas / maximo) * 120, 10) : 5;
+                        const pct = d.total > 0 ? Math.round(d.completadas / d.total * 100) : 0;
+                        return `
+                            <div class="barra-dia">
+                                <div class="pct">${pct}%</div>
+                                <div class="barra-altura" style="height:${altura}px; ${d.esHoy ? 'background: linear-gradient(180deg, var(--dorado) 0%, var(--dorado-oscuro) 100%);' : ''}"></div>
+                                <span>${d.nombre} ${d.num}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+            
+            // Detalle por día
+            const detalleDiv = document.getElementById('detalleSemanal');
+            detalleDiv.innerHTML = porDia.map(d => {
+                const pct = d.total > 0 ? Math.round(d.completadas / d.total * 100) : 0;
+                return `
+                    <div class="dia-card">
+                        <div class="dia-header ${d.esHoy ? 'hoy' : ''}">
+                            <span>${d.nombre} ${d.num} ${meses[d.dia.getMonth()]}</span>
+                            <span>${pct}%</span>
+                        </div>
+                        <div class="dia-stats">
+                            <div class="dia-stat-row">
+                                <span>Marcadas</span>
+                                <span><strong>${d.completadas}/${d.total}</strong></span>
+                            </div>
+                            <div class="dia-stat-row">
+                                <span>Eventos</span>
+                                <span>${eventos.filter(e => e.fecha === formatFecha(d.dia)).length}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         };
 
         const toggleDarkMode = () => {
