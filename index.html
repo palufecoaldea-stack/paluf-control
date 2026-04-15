@@ -164,6 +164,10 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
         }
+        .btn-warning { 
+            background: linear-gradient(135deg, var(--dorado) 0%, var(--dorado-oscuro) 100%); 
+            color: var(--verde-bosque); 
+        }
         .btn-success { 
             background: linear-gradient(135deg, var(--verde-check) 0%, var(--verde-medio) 100%); 
             color: var(--blanco); 
@@ -876,6 +880,117 @@
             .task-cell { width: 200px; min-width: 200px; }
         }
 
+        /* LINKS MODAL */
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .links-category {
+            background: var(--crema);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--dorado-claro);
+        }
+        .links-category-header {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            color: white;
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .links-category-header i { color: var(--dorado); }
+        .links-list { padding: 10px; }
+        .link-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .link-item:hover { border-color: var(--dorado); box-shadow: 0 2px 10px var(--sombra-suave); }
+        .link-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        .link-info { flex: 1; }
+        .link-info strong { display: block; color: var(--verde-oscuro); font-size: 13px; }
+        .link-info span { color: var(--gris); font-size: 11px; }
+        .link-btn {
+            background: var(--verde-oscuro);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .link-btn:hover { background: var(--verde-medio); transform: scale(1.05); }
+        
+        /* EDIT LINKS */
+        .links-edit-category {
+            margin-bottom: 20px;
+            background: var(--crema);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        .links-edit-category h4 {
+            color: var(--verde-oscuro);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--dorado-claro);
+        }
+        .link-edit-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+        }
+        .link-edit-item input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid var(--gris-claro);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .link-edit-item input:focus { border-color: var(--verde-medio); outline: none; }
+        .link-edit-item .btn-delete {
+            background: var(--rojo);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .btn-add-link {
+            background: var(--verde-oscuro);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .btn-add-link:hover { background: var(--verde-medio); }
+
         /* PRINT */
         @media print {
             .login-overlay, .sidebar, .filters, .quick-actions, .header-actions, .task-actions, .btn { display: none !important; }
@@ -923,6 +1038,7 @@
         </div>
         <div class="header-actions">
             <button class="btn-dark-mode" id="btnDarkMode" onclick="toggleDarkMode()" title="Modo Oscuro">🌙</button>
+            <button class="btn btn-warning" onclick="abrirModalLinks()"><i class="fas fa-link"></i> Links</button>
             <button class="btn btn-success" id="btnExport" style="display:none;" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar</button>
             <span class="user-welcome" id="userWelcome" style="display:none;"></span>
             <button class="btn-logout" id="btnLogout" style="display:none;" onclick="logout()">Salir</button>
@@ -1090,6 +1206,39 @@
                         <button class="btn btn-secondary" onclick="cerrarModalNota()">Cancelar</button>
                         <button class="btn btn-primary" onclick="guardarNota()"><i class="fas fa-save"></i> Guardar</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LINKS -->
+    <div class="modal" id="modalLinks">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class="fas fa-link"></i> Links de PALUF</h2>
+                <div style="display:flex;gap:10px;">
+                    <button class="btn btn-warning" onclick="abrirEditarLinks()"><i class="fas fa-edit"></i> Editar</button>
+                    <button class="modal-close" onclick="cerrarModalLinks()">×</button>
+                </div>
+            </div>
+            <div style="padding: 20px;">
+                <div class="links-grid" id="linksContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR LINKS -->
+    <div class="modal" id="modalEditarLinks">
+        <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Editar Links</h2>
+                <button class="modal-close" onclick="cerrarModalEditarLinks()">×</button>
+            </div>
+            <div style="padding: 20px;">
+                <div class="links-edit-container" id="linksEditContent"></div>
+                <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+                    <button class="btn btn-secondary" onclick="cerrarModalEditarLinks()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="guardarLinks()"><i class="fas fa-save"></i> Guardar Cambios</button>
                 </div>
             </div>
         </div>
@@ -1957,6 +2106,152 @@
             toast('Nota eliminada');
         };
 
+        // ==================== LINKS ====================
+        let configLinks = [
+            { categoria: "drive", titulo: "Google Drive", icono: "fa-drive", color: "#4285F4", links: [
+                { nombre: "Drive Principal PALUF", url: "" },
+                { nombre: "Registro de Pacientes", url: "" },
+                { nombre: "Inventario", url: "" },
+                { nombre: "Cuentas de Cobro", url: "" },
+                { nombre: "Nómina", url: "" },
+                { nombre: "Balance Mensual", url: "" },
+                { nombre: "Agenda de Terapias", url: "" }
+            ]},
+            { categoria: "whatsapp", titulo: "WhatsApp", icono: "fa-whatsapp", color: "#25D366", links: [
+                { nombre: "WhatsApp Principal", url: "https://wa.me/573138925821" },
+                { nombre: "Grupo Coordinación", url: "" },
+                { nombre: "Grupo Aseo", url: "" },
+                { nombre: "Grupo Marketing", url: "" },
+                { nombre: "Grupo Mantenimiento", url: "" },
+                { nombre: "Grupo Terapias", url: "" },
+                { nombre: "Grupo Arriendos", url: "" },
+                { nombre: "Grupo Caja", url: "" },
+                { nombre: "Grupo Voluntarios", url: "" },
+                { nombre: "Clientes Frecuentes", url: "" }
+            ]},
+            { categoria: "instagram", titulo: "Redes Sociales", icono: "fa-instagram", color: "#E4405F", links: [
+                { nombre: "Instagram", url: "https://instagram.com/paluf_ceremonias" },
+                { nombre: "TikTok", url: "https://tiktok.com/@paluf_ecoaldea" },
+                { nombre: "Facebook", url: "https://facebook.com/p/Palu-Ecoaldea-100063537070683" },
+                { nombre: "YouTube", url: "" }
+            ]},
+            { categoria: "web", titulo: "Web y Email", icono: "fa-globe", color: "#6366F1", links: [
+                { nombre: "Web PALUF", url: "https://www.paluecoaldea7.com" },
+                { nombre: "Email General", url: "mailto:Palu_ecoaldea7@outlook.es" },
+                { nombre: "Gmail PALUF", url: "https://mail.google.com/mail/u/0/#inbox?compose=new" }
+            ]},
+            { categoria: "calendar", titulo: "Sistemas", icono: "fa-calendar", color: "#F59E0B", links: [
+                { nombre: "ALEGRA (Sistema)", url: "" },
+                { nombre: "Google Calendar", url: "https://calendar.google.com/calendar/r" },
+                { nombre: "Consentimientos", url: "" },
+                { nombre: "Control de Arriendos", url: "" }
+            ]},
+            { categoria: "otro", titulo: "Otros", icono: "fa-folder", color: "#6B7280", links: [
+                { nombre: "DIAN", url: "https://muiscal.dian.gov.co" },
+                { nombre: "Proveedor Medicina", url: "" },
+                { nombre: "Banco - Cta Corriente", url: "" }
+            ]}
+        ];
+
+        const cargarLinks = () => {
+            try {
+                const guardadas = localStorage.getItem('paluf_links');
+                if (guardadas) {
+                    configLinks = JSON.parse(guardadas);
+                }
+            } catch (e) {
+                console.log('Error cargando links:', e);
+            }
+        };
+
+        const renderizarLinks = () => {
+            const grid = document.getElementById('linksContent');
+            grid.innerHTML = configLinks.map(cat => `
+                <div class="links-category">
+                    <div class="links-category-header">
+                        <i class="fas ${cat.icono}"></i> ${cat.titulo}
+                    </div>
+                    <div class="links-list">
+                        ${cat.links.map(link => `
+                            <div class="link-item">
+                                <div class="link-icon" style="background: ${cat.color}; color: white;">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </div>
+                                <div class="link-info">
+                                    <strong>${link.nombre}</strong>
+                                    <span>${link.url ? link.url.substring(0, 40) + (link.url.length > 40 ? '...' : '') : 'Sin URL'}</span>
+                                </div>
+                                ${link.url ? `<a href="${link.url}" class="link-btn" target="_blank">Abrir</a>` : '<span style="color:var(--gris);font-size:12px;">Sin link</span>'}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        const abrirModalLinks = () => {
+            cargarLinks();
+            renderizarLinks();
+            document.getElementById('modalLinks').classList.add('visible');
+        };
+
+        const cerrarModalLinks = () => {
+            document.getElementById('modalLinks').classList.remove('visible');
+        };
+
+        const abrirEditarLinks = () => {
+            cerrarModalLinks();
+            renderizarEditarLinks();
+            document.getElementById('modalEditarLinks').classList.add('visible');
+        };
+
+        const cerrarModalEditarLinks = () => {
+            document.getElementById('modalEditarLinks').classList.remove('visible');
+        };
+
+        const renderizarEditarLinks = () => {
+            const container = document.getElementById('linksEditContent');
+            container.innerHTML = configLinks.map((cat, catIdx) => `
+                <div class="links-edit-category">
+                    <h4><i class="fas ${cat.icono}"></i> ${cat.titulo}</h4>
+                    <div id="links-list-${catIdx}">
+                        ${cat.links.map((link, linkIdx) => `
+                            <div class="link-edit-item">
+                                <input type="text" id="link-nombre-${catIdx}-${linkIdx}" value="${link.nombre}" placeholder="Nombre">
+                                <input type="url" id="link-url-${catIdx}-${linkIdx}" value="${link.url}" placeholder="https://...">
+                                <button class="btn-delete" onclick="eliminarLink(${catIdx}, ${linkIdx})"><i class="fas fa-trash"></i></button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn-add-link" onclick="agregarLink(${catIdx})"><i class="fas fa-plus"></i> Agregar Link</button>
+                </div>
+            `).join('');
+        };
+
+        const agregarLink = (catIdx) => {
+            configLinks[catIdx].links.push({ nombre: "Nuevo Link", url: "" });
+            renderizarEditarLinks();
+        };
+
+        const eliminarLink = (catIdx, linkIdx) => {
+            configLinks[catIdx].links.splice(linkIdx, 1);
+            renderizarEditarLinks();
+        };
+
+        const guardarLinks = () => {
+            configLinks.forEach((cat, catIdx) => {
+                cat.links.forEach((link, linkIdx) => {
+                    const nombreInput = document.getElementById(`link-nombre-${catIdx}-${linkIdx}`);
+                    const urlInput = document.getElementById(`link-url-${catIdx}-${linkIdx}`);
+                    if (nombreInput) link.nombre = nombreInput.value;
+                    if (urlInput) link.url = urlInput.value;
+                });
+            });
+            localStorage.setItem('paluf_links', JSON.stringify(configLinks));
+            cerrarModalEditarLinks();
+            toast('✓ Links guardados correctamente');
+        };
+
         const eliminarTarea = () => {
             if (!tareaEditando) return;
             confirmarEliminar(tareaEditando);
@@ -2023,6 +2318,7 @@
         // ==================== INIT ====================
         const init = () => {
             cargar();
+            cargarLinks(); // Cargar links de PALUF
             renderLogin();
             renderPersonas();
             renderFiltro();
