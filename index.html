@@ -1321,7 +1321,7 @@
             align-items: center;
         }
         .image-preview-modal.visible { display: flex; }
-.image-preview-modal img {
+        .image-preview-modal img {
             max-width: 90%;
             max-height: 90%;
             border-radius: 10px;
@@ -1337,347 +1337,453 @@
             cursor: pointer;
         }
 
-        /* GRUPO DE ASEO */
-        .aseo-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            justify-content: center;
-            align-items: flex-end;
+        /* LINKS MODAL */
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
-        .aseo-modal.visible { display: flex; }
-
-        .aseo-container {
+        .links-category {
+            background: var(--crema);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--dorado-claro);
+        }
+        .links-category-header {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            color: white;
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .links-category-header i { color: var(--dorado); }
+        .links-list { padding: 10px; }
+        .link-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
             background: white;
-            width: 100%;
-            max-width: 600px;
-            height: 90vh;
-            border-radius: 20px 20px 0 0;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .link-item:hover { border-color: var(--dorado); box-shadow: 0 2px 10px var(--sombra-suave); }
+        .link-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        .link-info { flex: 1; }
+        .link-info strong { display: block; color: var(--verde-oscuro); font-size: 13px; }
+        .link-info span { color: var(--gris); font-size: 11px; }
+        .link-btn {
+            background: var(--verde-oscuro);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .link-btn:hover { background: var(--verde-medio); transform: scale(1.05); }
+        
+        /* EDIT LINKS */
+        .links-edit-category {
+            margin-bottom: 20px;
+            background: var(--crema);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        .links-edit-category h4 {
+            color: var(--verde-oscuro);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--dorado-claro);
+        }
+        .link-edit-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+        }
+        .link-edit-item input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid var(--gris-claro);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .link-edit-item input:focus { border-color: var(--verde-medio); outline: none; }
+        .link-edit-item .btn-delete {
+            background: var(--rojo);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .btn-add-link {
+            background: var(--verde-oscuro);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .btn-add-link:hover { background: var(--verde-medio); }
+
+        /* CALENDARIO */
+        .calendario-container {
+            background: var(--blanco);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px var(--sombra-suave);
+        }
+        .calendario-header-mini {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .calendario-header-mini h3 { color: var(--verde-oscuro); font-size: 18px; }
+        .btn-nav-cal {
+            background: var(--crema);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--verde-oscuro);
+            transition: all 0.2s;
+        }
+        .btn-nav-cal:hover { background: var(--verde-oscuro); color: white; }
+        .calendario-grid-mini {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .cal-day-header {
+            text-align: center;
+            font-weight: 600;
+            font-size: 11px;
+            color: var(--gris);
+            padding: 5px;
+        }
+        .cal-day {
+            text-align: center;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .cal-day:hover { background: var(--crema); }
+        .cal-day.other-month { color: var(--gris-claro); }
+        .cal-day.today { background: var(--verde-oscuro); color: white; font-weight: 600; }
+        .cal-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--dorado);
+        }
+        .cal-day.has-event.today::after { background: var(--dorado); }
+        
+        .eventos-lista {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .eventos-fecha {
+            margin-bottom: 15px;
+        }
+        .eventos-fecha h4 {
+            color: var(--verde-oscuro);
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--dorado-claro);
+        }
+        .evento-item {
+            background: var(--blanco);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid var(--dorado);
+        }
+        .evento-item:hover { box-shadow: 0 4px 15px var(--sombra-suave); transform: translateX(3px); }
+        .evento-item.ceremonia { border-left-color: #9b59b6; }
+        .evento-item.taller { border-left-color: #3498db; }
+        .evento-item.retiro { border-left-color: #27ae60; }
+        .evento-item.reunion { border-left-color: #f39c12; }
+        .evento-item.mantenimiento { border-left-color: #e74c3c; }
+        .evento-item.publicacion { border-left-color: #3498db; }
+        .evento-item.promocion { border-left-color: #9b59b6; }
+        .evento-item.especial { border-left-color: #1abc9c; }
+        .evento-icon { font-size: 24px; }
+        .evento-info { flex: 1; }
+        .evento-info strong { display: block; color: var(--verde-oscuro); font-size: 14px; }
+        .evento-info span { font-size: 12px; color: var(--gris); }
+        .evento-hora { font-size: 12px; color: var(--verde-medio); font-weight: 600; }
+        .no-eventos { text-align: center; padding: 30px; color: var(--gris); }
+
+        /* NOTIFICACIONES */
+        .notif-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .notif-tab {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--verde-claro);
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .notif-tab.active {
+            background: var(--verde-oscuro);
+            color: white;
+            border-color: var(--verde-oscuro);
+        }
+        .notif-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--rojo);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .notif-item:hover { transform: translateX(5px); box-shadow: 0 4px 15px var(--sombra-suave); }
+        .notif-item.recordatorio { border-left-color: var(--dorado); }
+        .notif-item .icon { font-size: 24px; }
+        .notif-item .content { flex: 1; }
+        .notif-item .content strong { display: block; color: var(--verde-oscuro); margin-bottom: 4px; }
+        .notif-item .content span { font-size: 12px; color: var(--gris); }
+        .notif-item .mark-btn {
+            background: var(--verde-oscuro);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .notif-item .mark-btn:hover { background: var(--verde-medio); }
+        .notif-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--gris);
+        }
+        .notif-empty i { font-size: 48px; margin-bottom: 15px; color: var(--verde-menta); }
+
+        /* VISTA SEMANAL */
+        .btn-nav-semana {
+            background: var(--crema);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--verde-oscuro);
+            transition: all 0.2s;
+        }
+        .btn-nav-semana:hover { background: white; }
+        
+        .resumen-semanal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .resumen-semanal .stat-card {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+        }
+        .resumen-semanal .stat-card.gold {
+            background: linear-gradient(135deg, var(--dorado-oscuro) 0%, var(--dorado) 100%);
+        }
+        .resumen-semanal .stat-card .value { font-size: 28px; font-weight: bold; }
+        .resumen-semanal .stat-card .label { font-size: 11px; opacity: 0.9; }
+        
+        .grafico-semanal {
+            background: var(--blanco);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px var(--sombra-suave);
+        }
+        .grafico-semanal h4 { color: var(--verde-oscuro); margin-bottom: 15px; }
+        .barras-semana {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 150px;
+            padding: 10px 0;
+        }
+        .barra-dia {
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 -4px 30px rgba(0,0,0,0.2);
+            align-items: center;
+            width: 60px;
         }
-
-        .aseo-header {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        .barra-altura {
+            width: 40px;
+            background: linear-gradient(180deg, var(--verde-check) 0%, var(--verde-menta) 100%);
+            border-radius: 8px 8px 0 0;
+            transition: height 0.5s ease;
+            min-height: 5px;
+        }
+        .barra-dia span { font-size: 11px; color: var(--gris); margin-top: 5px; }
+        .barra-dia .pct { font-weight: bold; color: var(--verde-oscuro); font-size: 12px; }
+        
+        .detalle-semanal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        .dia-card {
+            background: var(--blanco);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--sombra-suave);
+        }
+        .dia-header {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
             color: white;
-            padding: 15px 20px;
+            padding: 10px 15px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+        .dia-header.hoy { background: linear-gradient(135deg, var(--dorado) 0%, var(--dorado-oscuro) 100%); color: var(--verde-bosque); }
+        .dia-stats { padding: 10px 15px; font-size: 13px; }
+        .dia-stat-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--crema); }
+        .dia-stat-row:last-child { border-bottom: none; }
+
+        /* VISTA EQUIPO */
+        .equipo-resumen {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .equipo-resumen .stat-card {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+        }
+        .equipo-resumen .stat-card.gold {
+            background: linear-gradient(135deg, var(--dorado-oscuro) 0%, var(--dorado) 100%);
+        }
+        .equipo-resumen .stat-card .value { font-size: 28px; font-weight: bold; }
+        .equipo-resumen .stat-card .label { font-size: 11px; opacity: 0.9; }
+        
+        .equipo-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .equipo-card {
+            background: var(--blanco);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--sombra-suave);
+            transition: transform 0.2s;
+        }
+        .equipo-card:hover { transform: translateY(-3px); }
+        .equipo-card-header {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            color: white;
+            padding: 15px;
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        .aseo-header-icon { font-size: 28px; }
-        .aseo-header-info { flex: 1; }
-        .aseo-header-info h3 { margin: 0; font-size: 18px; }
-        .aseo-header-info span { font-size: 12px; opacity: 0.9; }
-        .aseo-header-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        .aseo-tabs {
-            display: flex;
-            background: #f0f2f5;
-            border-bottom: 1px solid #ddd;
-        }
-        .aseo-tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: all 0.2s;
-            border-bottom: 3px solid transparent;
-        }
-        .aseo-tab.active {
-            background: white;
-            border-bottom-color: #27ae60;
-            color: #27ae60;
-        }
-        .aseo-tab:hover { background: #e8e8e8; }
-
-        .aseo-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        /* Tareas del día */
-        .aseo-encabezado {
-            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-        .aseo-encabezado-fecha { font-size: 14px; opacity: 0.9; }
-        .aseo-encabezado-Responsable { font-size: 20px; font-weight: bold; margin-top: 5px; }
-        .aseo-encabezado-stats { display: flex; gap: 15px; margin-top: 10px; }
-        .aseo-encabezado-stat { text-align: center; }
-        .aseo-encabezado-stat .value { font-size: 24px; font-weight: bold; }
-        .aseo-encabezado-stat .label { font-size: 11px; opacity: 0.8; }
-
-        .tarea-aseo-item {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-left: 4px solid var(--gris);
-            transition: all 0.2s;
-        }
-        .tarea-aseo-item.completada {
-            border-left-color: #27ae60;
-            opacity: 0.8;
-        }
-        .tarea-aseo-item.faltante {
-            border-left-color: #e74c3c;
-        }
-        .tarea-aseo-header {
+        .equipo-card-header i { font-size: 28px; color: var(--dorado); }
+        .equipo-card-header .nombre { font-weight: 600; font-size: 15px; }
+        .equipo-card-header .area { font-size: 11px; opacity: 0.8; }
+        .equipo-card-body { padding: 15px; }
+        .equipo-stat-row {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--crema);
         }
-        .tarea-aseo-nombre { font-weight: 600; font-size: 15px; color: var(--verde-oscuro); }
-        .tarea-aseo-lugar { font-size: 12px; color: var(--gris); margin-top: 3px; }
-        .tarea-aseo-status {
+        .equipo-stat-row:last-child { border-bottom: none; }
+        .equipo-stat-row .label { font-size: 13px; color: var(--gris); }
+        .equipo-stat-row .value { font-weight: 600; font-size: 14px; }
+        .equipo-stat-row .value.alto { color: var(--verde-check); }
+        .equipo-stat-row .value.medio { color: var(--naranja); }
+        .equipo-stat-row .value.bajo { color: var(--rojo); }
+        
+        .miembro-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .tarea-aseo-status.pendiente { background: #fff3cd; color: #856404; }
-        .tarea-aseo-status.completada { background: #d4edda; color: #155724; }
-        .tarea-aseo-status.faltante { background: #f8d7da; color: #721c24; }
-
-        .tarea-aseo-evidencia {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .tarea-aseo-foto {
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid var(--dorado-claro);
-        }
-        .tarea-aseo-foto:hover { transform: scale(1.05); }
-
-        .tarea-aseo-acciones {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .tarea-aseo-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 8px;
             font-size: 12px;
-            cursor: pointer;
             font-weight: 600;
-            transition: all 0.2s;
         }
-        .tarea-aseo-btn.foto { background: #e8f5e9; color: #27ae60; }
-        .tarea-aseo-btn.completo { background: #27ae60; color: white; }
-        .tarea-aseo-btn.faltante { background: #e74c3c; color: white; }
-        .tarea-aseo-btn:hover { transform: scale(1.05); }
-
-        /* Formulario crear tareas */
-        .aseo-crear-tarea {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .aseo-crear-tarea h4 {
-            color: var(--verde-oscuro);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .aseo-tarea-rapida {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        .aseo-tarea-rapida-item {
-            padding: 8px 15px;
-            background: var(--crema);
-            border: 2px solid transparent;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-        .aseo-tarea-rapida-item:hover { border-color: #27ae60; }
-        .aseo-tarea-rapida-item.seleccionada {
-            background: #27ae60;
-            color: white;
-            border-color: #27ae60;
-        }
-
-        .aseo-Responsable-select {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-        .aseo-persona-chip {
-            padding: 8px 15px;
-            background: var(--crema);
-            border: 2px solid transparent;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-        .aseo-persona-chip:hover { border-color: var(--verde-medio); }
-        .aseo-persona-chip.responsable {
-            background: var(--verde-oscuro);
+        .miembro-badge.hoy {
+            background: var(--verde-check);
             color: white;
         }
-
-        .aseo-lugar-input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        .aseo-lugar-input:focus { border-color: #27ae60; outline: none; }
-
-        /* Sugerencias inteligentes */
-        .aseo-sugerencias {
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        .aseo-sugerencias h5 {
-            color: #27ae60;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        .aseo-sugerencia-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .aseo-sugerencia-item:last-child { border-bottom: none; }
-        .aseo-sugerencia-item input[type="checkbox"] { width: 18px; height: 18px; }
-        .aseo-sugerencia-item label { flex: 1; font-size: 13px; cursor: pointer; }
-
-        /* Faltantes */
-        .aseo-faltantes {
-            background: #f8d7da;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-        .aseo-faltantes h5 {
-            color: #721c24;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .aseo-faltantes textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #f5c6cb;
-            border-radius: 10px;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        /* Chat del grupo */
-        .aseo-chat {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        .aseo-chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            background: #f0f2f5;
-        }
-        .aseo-chat-input {
-            display: flex;
-            gap: 10px;
-            padding: 15px;
-            background: white;
-            border-top: 1px solid #eee;
-        }
-        .aseo-chat-input textarea {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 25px;
-            resize: none;
-            font-family: inherit;
-            font-size: 14px;
-        }
-        .aseo-chat-input button {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: #27ae60;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        /* Historia */
-        .aseo-historial-item {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        .aseo-historial-fecha {
-            font-weight: 600;
-            color: var(--verde-oscuro);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .aseo-historial-resumen {
-            font-size: 13px;
+        .miembro-badge.no-trabaja {
+            background: var(--gris-claro);
             color: var(--gris);
         }
-        .aseo-historial-resumen span {
-            margin-right: 15px;
+        .miembro-badge.ausente {
+            background: var(--rojo);
+            color: white;
         }
-        .aseo-historial-resumen .completadas { color: #27ae60; font-weight: 600; }
-        .aseo-historial-resumen .faltantes { color: #e74c3c; font-weight: 600; }
+
+        /* PRINT */
+        @media print {
+            .login-overlay, .sidebar, .filters, .quick-actions, .header-actions, .task-actions, .btn { display: none !important; }
+            .main-container { display: block; }
+            .content { padding: 0; }
+            .attendance-cell { cursor: default; }
+        }
     </style>
 </head>
 <body>
@@ -1697,31 +1803,206 @@
             <p style="margin-bottom: 20px; color: var(--gris);">Centro Holístico y Reserva Forestal</p>
             <p style="margin-bottom: 20px; font-weight: 600;">Selecciona tu usuario:</p>
             <div class="user-select" id="userSelect"></div>
-</div>
+        </div>
     </div>
 
-    <!-- MODAL GRUPO DE ASEO -->
-    <div class="aseo-modal" id="aseoModal">
-        <div class="aseo-container">
-            <div class="aseo-header">
-                <div class="aseo-header-icon">🧹</div>
-                <div class="aseo-header-info">
-                    <h3>Grupo de Aseo</h3>
-                    <span id="aseoFecha">14 de Abril 2026</span>
+    <!-- MODAL BIENVENIDA / ATAJOS -->
+    <div class="modal" id="modalBienvenida">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 id="bienvenidaTitulo"><i class="fas fa-hand-sparkles"></i> ¡Buenos días!</h2>
+                <button class="modal-close" onclick="cerrarModalBienvenida()">×</button>
+            </div>
+            <div style="padding: 25px;">
+                <!-- Resumen de ayer -->
+                <div class="resumen-ayer" id="resumenAyer" style="margin-bottom:25px;">
+                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;"><i class="fas fa-chart-bar"></i> Resumen de Ayer</h3>
+                    <div class="stats-resumen" id="statsResumen"></div>
                 </div>
-                <button class="aseo-header-close" onclick="cerrarAseo()">×</button>
-            </div>
-            
-            <div class="aseo-tabs">
-                <div class="aseo-tab active" onclick="cambiarTabAseo('tareas')" id="tabTareas">📋 Tareas</div>
-                <div class="aseo-tab" onclick="cambiarTabAseo('chat')" id="tabChat">💬 Chat</div>
-                <div class="aseo-tab" onclick="cambiarTabAseo('historial')" id="tabHistorial">📜 Historia</div>
-            </div>
-            
-            <div class="aseo-content" id="aseoContent">
-                <!-- Content will be loaded dynamically -->
+                
+                <!-- Eventos de hoy -->
+                <div class="eventos-hoy" id="eventosHoySection" style="margin-bottom:25px;">
+                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;"><i class="fas fa-calendar-day"></i> Eventos de Hoy</h3>
+                    <div id="eventosHoyLista"></div>
+                </div>
+                
+                <!-- Atajos rápidos -->
+                <div class="atajos-rapidos">
+                    <h3 style="color:var(--verde-oscuro);margin-bottom:15px;font-size:16px;"><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <button class="btn btn-success" onclick="atajoMarcarHoy()"><i class="fas fa-check-circle"></i> Marcar Hoy</button>
+                        <button class="btn btn-calendar" onclick="atajoVerCalendario()"><i class="fas fa-calendar"></i> Ver Calendario</button>
+                        <button class="btn btn-warning" onclick="atajoVerLinks()"><i class="fas fa-link"></i> Links</button>
+                        <button class="btn btn-primary" onclick="atajoVerDashboard()"><i class="fas fa-chart-pie"></i> Dashboard</button>
+                    </div>
+                </div>
+                
+                <div style="text-align:center;margin-top:25px;">
+                    <button class="btn btn-secondary" onclick="cerrarModalBienvenida()" style="padding:12px 40px;">Continuar a Tareas <i class="fas fa-arrow-right"></i></button>
+                </div>
             </div>
         </div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <div class="logo-img">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" fill="#1a3d2e"/>
+                    <path d="M50 20 Q65 35 60 55 Q55 70 50 80 Q45 70 40 55 Q35 35 50 20" fill="#27ae60"/>
+                    <circle cx="50" cy="50" r="8" fill="#c9a962"/>
+                    <path d="M50 42 L50 58 M42 50 L58 50" stroke="#1a3d2e" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <h1><span>PALUF</span></h1>
+                <small>Control de Funciones 2026</small>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-dark-mode" id="btnDarkMode" onclick="toggleDarkMode()" title="Modo Oscuro">🌙</button>
+            <button class="btn-notificaciones" id="btnNotificaciones" onclick="abrirModalNotificaciones()" style="display:none;">
+                <i class="fas fa-bell"></i>
+                <span class="notif-badge" id="notifBadge">0</span>
+            </button>
+            <button class="btn btn-equipo" onclick="abrirModalEquipo()"><i class="fas fa-users"></i> Equipo</button>
+            <button class="btn btn-semanal" onclick="abrirModalSemanal()"><i class="fas fa-calendar-week"></i> Semana</button>
+            <button class="btn btn-calendar" onclick="abrirModalCalendario()"><i class="fas fa-calendar-alt"></i> Calendario</button>
+            <button class="btn btn-warning" onclick="abrirModalLinks()"><i class="fas fa-link"></i> Links</button>
+            <button class="btn btn-success" id="btnExport" style="display:none;" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar</button>
+            <span class="user-welcome" id="userWelcome" style="display:none;"></span>
+            <button class="btn-logout" id="btnLogout" style="display:none;" onclick="logout()">Salir</button>
+            <button class="btn btn-primary" id="btnDashboard" style="display:none;" onclick="verDashboard()"><i class="fas fa-chart-line"></i> Dashboard</button>
+            <button class="btn btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <div class="main-container" id="mainContainer" style="display:none;">
+        <div class="sidebar">
+            <h3>👥 Personal <span class="comment-badge" id="commentsBadge">0</span></h3>
+            <div id="personList"></div>
+            
+            <!-- COMMENTS -->
+            <div class="comments-section" style="margin-top: 20px;">
+                <h3><i class="fas fa-comments"></i> Mensajes</h3>
+                <div class="comment-input">
+                    <input type="text" id="commentInput" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter')enviarComentario()">
+                    <button class="btn btn-primary" onclick="enviarComentario()">Enviar</button>
+                </div>
+                <div class="comment-list" id="commentList"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <span class="filter-label"><i class="fas fa-clock"></i> Frecuencia:</span>
+                    <div class="filter-chips" id="filtroFrecuencia"></div>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label"><i class="fas fa-flag"></i> Prioridad:</span>
+                    <div class="filter-chips" id="filtroPrioridad">
+                        <div class="filter-chip active" onclick="setFiltroPrioridad('Todas')">Todas</div>
+                        <div class="filter-chip filter-alta" onclick="setFiltroPrioridad('Alta')"><i class="fas fa-circle"></i> Alta</div>
+                        <div class="filter-chip filter-media" onclick="setFiltroPrioridad('Media')"><i class="fas fa-circle"></i> Media</div>
+                        <div class="filter-chip filter-baja" onclick="setFiltroPrioridad('Baja')"><i class="fas fa-circle"></i> Baja</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quick-actions" id="quickMarkPanel" style="display:none;">
+                <button class="btn btn-success" onclick="marcarTodos('si')">✓ Todo hecho</button>
+                <button class="btn btn-danger" onclick="marcarTodos('no')">✗ Todo no hecho</button>
+                <button class="btn btn-secondary" onclick="marcarTodos('na')">- N/A</button>
+                <button class="btn btn-primary" onclick="abrirModalTarea()">➕ Nueva Tarea</button>
+            </div>
+
+            <div class="calendar-header">
+                <div class="month-nav">
+                    <button onclick="cambiarMes(-1)">◀</button>
+                    <span id="mesActual">Abril 2026</span>
+                    <span class="badge-historico" id="mesHistorico" style="display:none;"><i class="fas fa-history"></i> Histórico</span>
+                    <button onclick="cambiarMes(1)">▶</button>
+                    <button class="btn-hoy" onclick="irAHoy()"><i class="fas fa-calendar-day"></i> HOY</button>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="value" id="statTareas">0</div>
+                        <div class="label">Tareas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="value" id="statCumplimiento">0%</div>
+                        <div class="label">Cumplimiento</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DASHBOARD -->
+            <div class="dashboard" id="dashboard">
+                <div class="dashboard-header">
+                    <h3><i class="fas fa-chart-pie"></i> Dashboard de Rendimiento</h3>
+                    <button class="btn btn-secondary" onclick="toggleDashboard()">Ocultar</button>
+                </div>
+                <div class="dashboard-stats" id="dashboardStats"></div>
+                <div class="dashboard-charts" id="dashboardCharts"></div>
+            </div>
+
+            <div class="attendance-table">
+                <div class="attendance-header" id="attendanceHeader"></div>
+                <div id="attendanceGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAT FLOATING BUTTON -->
+    <button class="chat-fab" id="chatFab" onclick="abrirChat()" style="display:none;">
+        💬
+        <span class="chat-badge" id="chatBadge" style="display:none;">0</span>
+    </button>
+
+    <!-- CHAT MODAL -->
+    <div class="chat-modal" id="chatModal">
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-header-avatar">👥</div>
+                <div class="chat-header-info">
+                    <h3>Equipo PALUF</h3>
+                    <span id="chatStatus">En línea</span>
+                </div>
+                <button class="chat-header-close" onclick="cerrarChat()">×</button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be rendered here -->
+            </div>
+            
+            <div class="chat-typing" id="chatTyping">
+                <span class="chat-typing-dots"><span></span><span></span><span></span></span>
+                Escribiendo...
+            </div>
+            
+            <div class="chat-input-area">
+                <div class="chat-tools">
+                    <button type="button" class="chat-tool-btn" onclick="document.getElementById('chatFileInput').click()" title="Adjuntar archivo">📎</button>
+                    <button type="button" class="chat-tool-btn" onclick="document.getElementById('chatImageInput').click()" title="Enviar imagen">🖼️</button>
+                    <button type="button" class="chat-tool-btn" id="btnGrabarAudio" onclick="toggleGrabacionAudio()" title="Grabar audio">🎤</button>
+                </div>
+                <input type="file" id="chatFileInput" style="display:none;" onchange="handleChatFile(this)">
+                <input type="file" id="chatImageInput" style="display:none;" accept="image/*,video/*" onchange="handleChatImage(this)">
+                <div class="chat-input-wrapper">
+                    <textarea class="chat-input" id="chatInput" placeholder="Escribe un mensaje..." rows="1" oninput="autoResizeChat(this)" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();enviarChat()}"></textarea>
+                </div>
+                <button class="chat-send-btn" id="btnEnviarChat" onclick="enviarChat()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMAGE PREVIEW MODAL -->
+    <div class="image-preview-modal" id="imagePreviewModal" onclick="cerrarImagePreview()">
+        <button class="image-preview-close">×</button>
+        <img id="imagePreviewSrc" src="" alt="Preview">
     </div>
 
     <!-- MODAL TAREA -->
@@ -3807,105 +4088,34 @@
 
         const cerrarDashboard = () => document.getElementById('modalDashboard').classList.remove('visible');
 
-        // ==================== CHAT CON JSONBIN ====================
-        const JSONBIN_KEY = '$2a$10$2yLO2iuRKDEseqijq.nkbOkVwSsJ3lD0rRRLPiCCCRawa6c69tiR.';
-        let JSONBIN_BIN_ID = localStorage.getItem('paluf_chat_bin');
-        const JSONBIN_API = 'https://api.jsonbin.io/v3/b';
-
+        // ==================== CHAT ====================
         let chatMessages = [];
         let mediaRecorder = null;
         let audioChunks = [];
         let grabandoAudio = false;
         let audioElement = null;
 
-        const abrirChat = async () => {
+        const abrirChat = () => {
             document.getElementById('chatModal').classList.add('visible');
-            await cargarChat();
+            cargarChat();
             scrollChatBottom();
-            iniciarAutoRefresh();
         };
 
         const cerrarChat = () => {
             document.getElementById('chatModal').classList.remove('visible');
-            detenerAutoRefresh();
         };
 
-        const cargarChat = async () => {
+        const cargarChat = () => {
             try {
-                if (!JSONBIN_BIN_ID) {
-                    // Crear nuevo bin si no existe
-                    await crearBinChat();
-                    return;
-                }
-
-                const response = await fetch(`${JSONBIN_API}/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_KEY }
-                });
-
-                if (!response.ok) {
-                    // Si el bin no existe, crear uno nuevo
-                    await crearBinChat();
-                    return;
-                }
-
-                const data = await response.json();
-                if (data.record && data.record.messages) {
-                    chatMessages = data.record.messages;
-                }
-            } catch (err) {
-                console.log('Error cargando chat, usando local:', err);
-                // Fallback a localStorage
-                try {
-                    chatMessages = JSON.parse(localStorage.getItem('paluf_chat') || '[]');
-                } catch {
-                    chatMessages = [];
-                }
-            }
-            renderChat();
-        };
-
-        const crearBinChat = async () => {
-            try {
-                const response = await fetch(JSONBIN_API, {
-                    method: 'POST',
-                    headers: {
-                        'X-Master-Key': JSONBIN_KEY,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ messages: [] })
-                });
-                const data = await response.json();
-                if (data.metadata && data.metadata.id) {
-                    JSONBIN_BIN_ID = data.metadata.id;
-                    localStorage.setItem('paluf_chat_bin', JSONBIN_BIN_ID);
-                }
-            } catch (err) {
-                console.log('Error creando bin, usando local:', err);
+                chatMessages = JSON.parse(localStorage.getItem('paluf_chat') || '[]');
+            } catch {
                 chatMessages = [];
             }
             renderChat();
         };
 
-        const guardarChat = async () => {
-            // Guardar en JSONBin (nube)
-            if (JSONBIN_BIN_ID) {
-                try {
-                    await fetch(`${JSONBIN_API}/${JSONBIN_BIN_ID}`, {
-                        method: 'PUT',
-                        headers: {
-                            'X-Master-Key': JSONBIN_KEY,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ messages: chatMessages })
-                    });
-                } catch (err) {
-                    console.log('Error guardando en nube, guardando local:', err);
-                    localStorage.setItem('paluf_chat', JSON.stringify(chatMessages));
-                }
-            } else {
-                // Fallback a localStorage
-                localStorage.setItem('paluf_chat', JSON.stringify(chatMessages));
-            }
+        const guardarChat = () => {
+            localStorage.setItem('paluf_chat', JSON.stringify(chatMessages));
         };
 
         const renderChat = () => {
@@ -4043,7 +4253,7 @@
             return icons[ext] || '📎';
         };
 
-        const enviarChat = async () => {
+        const enviarChat = () => {
             const input = document.getElementById('chatInput');
             const texto = input.value.trim();
             if (!texto) return;
@@ -4060,7 +4270,7 @@
             };
 
             chatMessages.push(msg);
-            await guardarChat();
+            guardarChat();
             renderChat();
             scrollChatBottom();
             input.value = '';
@@ -4077,12 +4287,12 @@
             el.style.height = Math.min(el.scrollHeight, 120) + 'px';
         };
 
-const handleChatImage = (input) => {
+        const handleChatImage = (input) => {
             if (!input.files || !input.files[0]) return;
             const file = input.files[0];
             const reader = new FileReader();
 
-            reader.onload = async (e) => {
+            reader.onload = (e) => {
                 const ahora = new Date();
                 const msg = {
                     id: Date.now(),
@@ -4094,48 +4304,6 @@ const handleChatImage = (input) => {
                     hora: ahora.toTimeString().slice(0, 5),
                     timestamp: ahora.getTime()
                 };
-
-                chatMessages.push(msg);
-                await guardarChat();
-                renderChat();
-                scrollChatBottom();
-            };
-
-            reader.readAsDataURL(file);
-            input.value = '';
-        };
-
-        const handleChatFile = (input) => {
-            if (!input.files || !input.files[0]) return;
-            const file = input.files[0];
-
-            // Skip if it's an image/video (handled by other input)
-            if (file.type.startsWith('image') || file.type.startsWith('video')) return;
-
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const ahora = new Date();
-                const msg = {
-                    id: Date.now(),
-                    autor: usuarioActual,
-                    tipo: 'archivo',
-                    url: e.target.result,
-                    nombre: file.name,
-                    size: formatearSize(file.size),
-                    fecha: ahora.toISOString().split('T')[0],
-                    hora: ahora.toTimeString().slice(0, 5),
-                    timestamp: ahora.getTime()
-                };
-
-                chatMessages.push(msg);
-                await guardarChat();
-                renderChat();
-                scrollChatBottom();
-            };
-
-            reader.readAsDataURL(file);
-            input.value = '';
-        };
 
                 chatMessages.push(msg);
                 guardarChat();
@@ -4210,10 +4378,10 @@ const handleChatImage = (input) => {
                         audioChunks.push(e.data);
                     };
 
-                    mediaRecorder.onstop = async () => {
+                    mediaRecorder.onstop = () => {
                         const blob = new Blob(audioChunks, { type: 'audio/webm' });
                         const reader = new FileReader();
-                        reader.onload = async (e) => {
+                        reader.onload = (e) => {
                             const ahora = new Date();
                             const msg = {
                                 id: Date.now(),
@@ -4226,7 +4394,7 @@ const handleChatImage = (input) => {
                                 timestamp: ahora.getTime()
                             };
                             chatMessages.push(msg);
-                            await guardarChat();
+                            guardarChat();
                             renderChat();
                             scrollChatBottom();
                         };
@@ -4274,537 +4442,6 @@ const handleChatImage = (input) => {
                 badge.style.display = 'flex';
             } else {
                 badge.style.display = 'none';
-            }
-        };
-
-        // Auto-refresh del chat cada 5 segundos
-        let chatInterval = null;
-        const iniciarAutoRefresh = () => {
-            if (chatInterval) clearInterval(chatInterval);
-            chatInterval = setInterval(async () => {
-                if (document.getElementById('chatModal').classList.contains('visible')) {
-                    await cargarChat();
-                }
-            }, 5000);
-        };
-        const detenerAutoRefresh = () => {
-            if (chatInterval) {
-                clearInterval(chatInterval);
-                chatInterval = null;
-            }
-        };
-
-        // ==================== GRUPO DE ASEO ====================
-        
-        // Datos para el grupo de aseo
-        const TAREAS_ASEO_COMUNES = [
-            { nombre: 'Limpiar recepción', lugar: 'Recepción' },
-            { nombre: 'Limpiar baños', lugar: 'Baños' },
-            { nombre: 'Limpiar cocina', lugar: 'Cocina' },
-            { nombre: 'Limpiar salón principal', lugar: 'Salón' },
-            { nombre: 'Limpiar habitaciones', lugar: 'Habitaciones' },
-            { nombre: 'Limpiar cabañas', lugar: 'Cabañas' },
-            { nombre: 'Barrer zonas comunes', lugar: 'Zonas comunes' },
-            { nombre: 'Limpiar piscina', lugar: 'Piscina' },
-            { nombre: 'Recoger basura exterior', lugar: 'Exterior' },
-            { nombre: 'Limpiar ventanas', lugar: 'General' },
-            { nombre: 'Organizar almacenamiento', lugar: 'Bodega' },
-            { nombre: 'Limpiar espejos y superficies', lugar: 'General' }
-        ];
-
-        const PERSONAS_ANTIVIRALES = ['María José', 'Laura', 'Carlos', 'Ana', 'Pedro'];
-        
-        let aseoData = { tareas: [], chat: [] };
-        let aseoTabActual = 'tareas';
-        let aseoResponsableSeleccionado = null;
-        let aseoTareasSugeridas = [];
-
-        const abrirAseo = () => {
-            document.getElementById('aseoModal').classList.add('visible');
-            cargarAseoData();
-            actualizarFechaAseo();
-            cambiarTabAseo('tareas');
-            iniciarAutoRefreshAseo();
-        };
-
-        const cerrarAseo = () => {
-            document.getElementById('aseoModal').classList.remove('visible');
-            detenerAutoRefreshAseo();
-        };
-
-        const actualizarFechaAseo = () => {
-            const hoy = new Date();
-            const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
-            const fecha = hoy.toLocaleDateString('es-ES', opciones);
-            document.getElementById('aseoFecha').textContent = fecha.charAt(0).toUpperCase() + fecha.slice(1);
-        };
-
-        const cargarAseoData = async () => {
-            try {
-                if (!localStorage.getItem('paluf_aseo_bin')) {
-                    // Crear bin si no existe
-                    await crearBinAseo();
-                    return;
-                }
-
-                const binId = localStorage.getItem('paluf_aseo_bin');
-                const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-                    headers: { 'X-Master-Key': JSONBIN_KEY }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.record) {
-                        aseoData = data.record;
-                    }
-                }
-            } catch (err) {
-                console.log('Error cargando datos de aseo:', err);
-            }
-        };
-
-        const crearBinAseo = async () => {
-            try {
-                const response = await fetch('https://api.jsonbin.io/v3/b', {
-                    method: 'POST',
-                    headers: {
-                        'X-Master-Key': JSONBIN_KEY,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ tareas: [], chat: [], historial: [] })
-                });
-                const data = await response.json();
-                if (data.metadata && data.metadata.id) {
-                    localStorage.setItem('paluf_aseo_bin', data.metadata.id);
-                }
-            } catch (err) {
-                console.log('Error creando bin:', err);
-            }
-        };
-
-        const guardarAseoData = async () => {
-            const binId = localStorage.getItem('paluf_aseo_bin');
-            if (!binId) return;
-
-            try {
-                await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'X-Master-Key': JSONBIN_KEY,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(aseoData)
-                });
-            } catch (err) {
-                console.log('Error guardando datos de aseo:', err);
-            }
-        };
-
-        const cambiarTabAseo = (tab) => {
-            aseoTabActual = tab;
-            document.querySelectorAll('.aseo-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-            
-            if (tab === 'tareas') renderTareasAseo();
-            else if (tab === 'chat') renderChatAseo();
-            else if (tab === 'historial') renderHistorialAseo();
-        };
-
-        // ==================== TAREAS DEL DÍA ====================
-        const renderTareasAseo = () => {
-            const container = document.getElementById('aseoContent');
-            const hoy = new Date().toISOString().split('T')[0];
-            const tareasHoy = aseoData.tareas.filter(t => t.fecha === hoy);
-            const responsable = tareasHoy.find(t => t.responsable)?.responsable || null;
-
-            // Verificar si ya se crearon las tareas del día
-            if (tareasHoy.length === 0) {
-                container.innerHTML = renderCrearTareasAseo();
-            } else {
-                container.innerHTML = renderListaTareasAseo(tareasHoy);
-            }
-        };
-
-        const renderCrearTareasAseo = () => {
-            return `
-                <div class="aseo-crear-tarea">
-                    <h4>🗓️ Crear Tareas del Día</h4>
-                    
-                    <p style="font-size:13px;color:var(--gris);margin-bottom:15px;">Selecciona el responsable y las tareas a realizar:</p>
-                    
-                    <h5 style="color:var(--verde-oscuro);margin-bottom:10px;">👤 Responsable:</h5>
-                    <div class="aseo-Responsable-select" id="aseoResponsableSelect">
-                        ${PERSONAS_ANTIVIRALES.map(p => `
-                            <div class="aseo-persona-chip" onclick="seleccionarResponsableAseo('${p}')" id="responsable_${p.replace(/ /g, '_')}">
-                                ${p}
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    <h5 style="color:var(--verde-oscuro);margin-bottom:10px;">✨ Sugerencias rápidas:</h5>
-                    <div class="aseo-sugerencias">
-                        <p style="font-size:12px;color:#27ae60;margin-bottom:10px;">Selecciona las tareas que necesitas hoy:</p>
-                        ${TAREAS_ASEO_COMUNES.map(t => `
-                            <div class="aseo-sugerencia-item">
-                                <input type="checkbox" id="sug_${t.nombre.replace(/ /g, '_')}" onchange="toggleSugerenciaAseo('${t.nombre}', '${t.lugar}')">
-                                <label for="sug_${t.nombre.replace(/ /g, '_')}">${t.nombre} <span style="color:var(--gris);font-size:11px;">(${t.lugar})</span></label>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    <button class="btn btn-success" style="width:100%;padding:15px;font-size:16px;" onclick="crearTareasAseo()">
-                        ✅ Crear Tareas del Día
-                    </button>
-                </div>
-            `;
-        };
-
-        const seleccionarResponsableAseo = (persona) => {
-            aseoResponsableSeleccionado = persona;
-            document.querySelectorAll('.aseo-persona-chip').forEach(chip => chip.classList.remove('responsable'));
-            document.getElementById('responsable_' + persona.replace(/ /g, '_')).classList.add('responsable');
-        };
-
-        const toggleSugerenciaAseo = (nombre, lugar) => {
-            const idx = aseoTareasSugeridas.findIndex(t => t.nombre === nombre);
-            if (idx >= 0) {
-                aseoTareasSugeridas.splice(idx, 1);
-            } else {
-                aseoTareasSugeridas.push({ nombre, lugar });
-            }
-        };
-
-        const crearTareasAseo = async () => {
-            if (!aseoResponsableSeleccionado) {
-                toast('Por favor selecciona un responsable', 'error');
-                return;
-            }
-
-            if (aseoTareasSugeridas.length === 0) {
-                toast('Selecciona al menos una tarea', 'error');
-                return;
-            }
-
-            const hoy = new Date().toISOString().split('T')[0];
-            const nuevasTareas = aseoTareasSugeridas.map(t => ({
-                id: Date.now() + Math.random(),
-                fecha: hoy,
-                nombre: t.nombre,
-                lugar: t.lugar,
-                responsable: aseoResponsableSeleccionado,
-                estado: 'pendiente',
-                evidencia: [],
-                faltantes: '',
-                creadoPor: usuarioActual
-            }));
-
-            aseoData.tareas.push(...nuevasTareas);
-            await guardarAseoData();
-
-            // Resetear selección
-            aseoResponsableSeleccionado = null;
-            aseoTareasSugeridas = [];
-
-            toast('Tareas creadas exitosamente', 'success');
-            renderTareasAseo();
-        };
-
-        const renderListaTareasAseo = (tareas) => {
-            const completadas = tareas.filter(t => t.estado === 'completada').length;
-            const faltantes = tareas.filter(t => t.estado === 'faltante').length;
-            const responsable = tareas[0]?.responsable || '';
-
-            let html = `
-                <div class="aseo-encabezado">
-                    <div class="aseo-encabezado-fecha">📅 Tareas de hoy</div>
-                    <div class="aseo-encabezado-Responsable">👤 Responsable: ${responsable}</div>
-                    <div class="aseo-encabezado-stats">
-                        <div class="aseo-encabezado-stat">
-                            <div class="value">${tareas.length}</div>
-                            <div class="label">Total</div>
-                        </div>
-                        <div class="aseo-encabezado-stat">
-                            <div class="value" style="color:#27ae60;">${completadas}</div>
-                            <div class="label">Completadas</div>
-                        </div>
-                        <div class="aseo-encabezado-stat">
-                            <div class="value" style="color:#e74c3c;">${faltantes}</div>
-                            <div class="label">Faltantes</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            tareas.forEach(t => {
-                const statusClass = t.estado === 'completada' ? 'completada' : t.estado === 'faltante' ? 'faltante' : 'pendiente';
-                const statusText = t.estado === 'completada' ? '✓ Completa' : t.estado === 'faltante' ? '✗ Faltante' : '⏳ Pendiente';
-
-                html += `
-                    <div class="tarea-aseo-item ${statusClass}">
-                        <div class="tarea-aseo-header">
-                            <div>
-                                <div class="tarea-aseo-nombre">${t.nombre}</div>
-                                <div class="tarea-aseo-lugar">📍 ${t.lugar}</div>
-                            </div>
-                            <span class="tarea-aseo-status ${statusClass}">${statusText}</span>
-                        </div>
-                `;
-
-                // Mostrar evidencia
-                if (t.evidencia && t.evidencia.length > 0) {
-                    html += `<div class="tarea-aseo-evidencia">`;
-                    t.evidencia.forEach((img, idx) => {
-                        html += `<img src="${img}" class="tarea-aseo-foto" onclick="mostrarImagePreview('${img}')" alt="Evidencia">`;
-                    });
-                    html += `</div>`;
-                }
-
-                // Mostrar faltantes
-                if (t.faltantes) {
-                    html += `
-                        <div style="background:#f8d7da;padding:10px;border-radius:8px;margin-top:10px;font-size:13px;">
-                            <strong style="color:#721c24;">⚠️ Faltante:</strong> ${t.faltantes}
-                        </div>
-                    `;
-                }
-
-                // Botones de acción
-                if (t.estado === 'pendiente') {
-                    html += `
-                        <div class="tarea-aseo-acciones">
-                            <button class="tarea-aseo-btn foto" onclick="subirEvidenciaAseo('${t.id}')">📷 Foto</button>
-                            <button class="tarea-aseo-btn completo" onclick="completarTareaAseo('${t.id}')">✓ Completa</button>
-                            <button class="tarea-aseo-btn faltante" onclick="marcarFaltanteAseo('${t.id}')">⚠️ Faltante</button>
-                        </div>
-                    `;
-                }
-
-                html += `</div>`;
-            });
-
-            // Agregar sección de faltantes generales
-            const faltantesTexto = tareas.filter(t => t.estado === 'faltante').map(t => t.nombre).join(', ');
-            if (faltantesTexto) {
-                html += `
-                    <div class="aseo-faltantes">
-                        <h5>⚠️ Resumen de Faltantes</h5>
-                        <textarea id="aseoFaltantesGeneral" placeholder="Describe qué faltó y por qué...">${faltantesTexto}</textarea>
-                        <button class="btn btn-danger" style="margin-top:10px;" onclick="guardarFaltantesGenerales()">💾 Guardar Nota</button>
-                    </div>
-                `;
-            }
-
-            return html;
-        };
-
-        const subirEvidenciaAseo = (tareaId) => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = async (evt) => {
-                    const tarea = aseoData.tareas.find(t => t.id == tareaId);
-                    if (tarea) {
-                        if (!tarea.evidencia) tarea.evidencia = [];
-                        tarea.evidencia.push(evt.target.result);
-                        await guardarAseoData();
-                        renderTareasAseo();
-                        toast('Evidencia subida', 'success');
-                    }
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
-        };
-
-        const completarTareaAseo = async (tareaId) => {
-            const tarea = aseoData.tareas.find(t => t.id == tareaId);
-            if (tarea) {
-                tarea.estado = 'completada';
-                await guardarAseoData();
-                renderTareasAseo();
-                toast('Tarea completada', 'success');
-            }
-        };
-
-        const marcarFaltanteAseo = (tareaId) => {
-            const tarea = aseoData.tareas.find(t => t.id == tareaId);
-            if (tarea) {
-                const faltante = prompt('¿Qué faltó por hacer?', '');
-                if (faltante !== null) {
-                    tarea.estado = 'faltante';
-                    tarea.faltantes = faltante;
-                    guardarAseoData();
-                    renderTareasAseo();
-                    toast('Marcado como faltante', 'success');
-                }
-            }
-        };
-
-        const guardarFaltantesGenerales = async () => {
-            const texto = document.getElementById('aseoFaltantesGeneral').value;
-            if (texto) {
-                const hoy = new Date().toISOString().split('T')[0];
-                const entrada = {
-                    fecha: hoy,
-                    responsable: aseoData.tareas.find(t => t.fecha === hoy)?.responsable,
-                    faltantes: texto,
-                    usuario: usuarioActual
-                };
-                if (!aseoData.historial) aseoData.historial = [];
-                aseoData.historial.push(entrada);
-                await guardarAseoData();
-                toast('Nota guardada', 'success');
-            }
-        };
-
-        // ==================== CHAT DEL GRUPO ====================
-        const renderChatAseo = () => {
-            const container = document.getElementById('aseoContent');
-            
-            let html = `<div class="aseo-chat">
-                <div class="aseo-chat-messages" id="aseoChatMessages" style="flex:1;overflow-y:auto;padding:10px;background:#f0f2f5;">
-            `;
-
-            if (!aseoData.chat || aseoData.chat.length === 0) {
-                html += `
-                    <div style="text-align:center;padding:40px;color:var(--gris);">
-                        <div style="font-size:48px;margin-bottom:10px;">💬</div>
-                        <p>No hay mensajes aún</p>
-                        <p style="font-size:12px;">¡Coordina con tu equipo aquí!</p>
-                    </div>
-                `;
-            } else {
-                aseoData.chat.forEach(msg => {
-                    const esMio = msg.autor === usuarioActual;
-                    html += `
-                        <div class="chat-bubble-container ${esMio ? 'mio' : 'otro'}" style="margin-bottom:10px;">
-                            <div class="chat-bubble ${esMio ? 'mio' : 'otro'}" style="max-width:85%;padding:10px 14px;border-radius:18px;">
-                                ${!esMio ? `<div class="chat-bubble-sender" style="font-size:11px;opacity:0.7;margin-bottom:3px;">${msg.autor}</div>` : ''}
-                                <div class="chat-bubble-text">${msg.texto}</div>
-                                ${msg.imagen ? `<img src="${msg.imagen}" style="max-width:100%;border-radius:10px;margin-top:8px;cursor:pointer;" onclick="mostrarImagePreview('${msg.imagen}')">` : ''}
-                                <div class="chat-bubble-time" style="font-size:10px;opacity:0.7;text-align:right;margin-top:5px;">${msg.hora}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            html += `
-                </div>
-                <div class="aseo-chat-input">
-                    <textarea id="aseoChatInput" placeholder="Escribe un mensaje al grupo..." rows="1" style="flex:1;padding:12px;border:2px solid #ddd;border-radius:25px;resize:none;font-family:inherit;" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();enviarMensajeAseo()}"></textarea>
-                    <button onclick="enviarMensajeAseo()">➤</button>
-                </div>
-            </div>`;
-
-            container.innerHTML = html;
-            
-            // Scroll al final
-            setTimeout(() => {
-                const messages = document.getElementById('aseoChatMessages');
-                if (messages) messages.scrollTop = messages.scrollHeight;
-            }, 100);
-        };
-
-        const enviarMensajeAseo = async () => {
-            const input = document.getElementById('aseoChatInput');
-            const texto = input.value.trim();
-            if (!texto) return;
-
-            const ahora = new Date();
-            const msg = {
-                id: Date.now(),
-                autor: usuarioActual,
-                texto: texto,
-                fecha: ahora.toISOString().split('T')[0],
-                hora: ahora.toTimeString().slice(0, 5),
-                timestamp: ahora.getTime()
-            };
-
-            if (!aseoData.chat) aseoData.chat = [];
-            aseoData.chat.push(msg);
-            await guardarAseoData();
-            renderChatAseo();
-        };
-
-        // ==================== HISTORIAL ====================
-        const renderHistorialAseo = () => {
-            const container = document.getElementById('aseoContent');
-            
-            const historial = aseoData.historial || [];
-            const tareas = aseoData.tareas || [];
-            
-            // Crear historial combinando datos
-            const diasUnicos = [...new Set(tareas.map(t => t.fecha))].sort().reverse().slice(0, 30);
-
-            if (diasUnicos.length === 0 && historial.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align:center;padding:40px;color:var(--gris);">
-                        <div style="font-size:48px;margin-bottom:10px;">📜</div>
-                        <p>No hay historial aún</p>
-                        <p style="font-size:12px;">El historial se crea automáticamente</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = '';
-            diasUnicos.forEach(dia => {
-                const tareasDia = tareas.filter(t => t.fecha === dia);
-                const completadas = tareasDia.filter(t => t.estado === 'completada').length;
-                const faltantes = tareasDia.filter(t => t.estado === 'faltante').length;
-                const responsable = tareasDia[0]?.responsable || '';
-                const faltantesDia = historial.find(h => h.fecha === dia);
-
-                const fechaFormateada = new Date(dia + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-
-                html += `
-                    <div class="aseo-historial-item">
-                        <div class="aseo-historial-fecha">
-                            📅 ${fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1)}
-                        </div>
-                        <div style="margin-bottom:8px;font-size:13px;">
-                            👤 Responsable: <strong>${responsable || 'No asignado'}</strong>
-                        </div>
-                        <div class="aseo-historial-resumen">
-                            <span>📋 Total: ${tareasDia.length}</span>
-                            <span class="completadas">✓ ${completadas}</span>
-                            <span class="faltantes">⚠️ ${faltantes}</span>
-                        </div>
-                        ${faltantesDia?.faltantes ? `
-                            <div style="background:#f8d7da;padding:10px;border-radius:8px;margin-top:10px;font-size:12px;color:#721c24;">
-                                <strong>⚠️ Nota:</strong> ${faltantesDia.faltantes}
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        };
-
-        // Auto-refresh
-        let aseoInterval = null;
-        const iniciarAutoRefreshAseo = () => {
-            if (aseoInterval) clearInterval(aseoInterval);
-            aseoInterval = setInterval(async () => {
-                if (document.getElementById('aseoModal').classList.contains('visible')) {
-                    await cargarAseoData();
-                    if (aseoTabActual === 'tareas') renderTareasAseo();
-                    else if (aseoTabActual === 'chat') renderChatAseo();
-                    else if (aseoTabActual === 'historial') renderHistorialAseo();
-                }
-            }, 5000);
-        };
-        const detenerAutoRefreshAseo = () => {
-            if (aseoInterval) {
-                clearInterval(aseoInterval);
-                aseoInterval = null;
             }
         };
 
