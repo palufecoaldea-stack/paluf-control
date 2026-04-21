@@ -376,7 +376,7 @@
         }
 
         /* CONTENT */
-        .content { flex: 1; padding: 20px; overflow-x: auto; }
+        .content { flex: 1; padding: 20px; overflow: auto; }
 
         /* FILTERS */
         .filters {
@@ -716,7 +716,8 @@
         .attendance-table { 
             background: var(--blanco); 
             border-radius: 20px; 
-            overflow: hidden; 
+            overflow-x: auto;
+            overflow-y: visible;
             box-shadow: 0 8px 30px var(--sombra-media);
             border: 3px solid var(--verde-oscuro);
         }
@@ -755,6 +756,7 @@
         /* Weekdays header row */
         .weekdays-header {
             display: flex;
+            flex-wrap: nowrap;
             margin-bottom: 5px;
             padding-left: 150px;
         }
