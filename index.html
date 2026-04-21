@@ -328,7 +328,13 @@
             overflow-y: auto;
             max-height: calc(100vh - 70px);
             box-shadow: 4px 0 20px var(--sombra-suave);
+            transition: all 0.3s ease;
         }
+        .sidebar.collapsed {
+            width: 60px;
+            padding: 20px 5px;
+        }
+        .sidebar.collapsed h3 { font-size: 14px; }
 
         .sidebar h3 { 
             color: var(--verde-oscuro); 
@@ -751,7 +757,7 @@
             color: var(--verde-bosque); 
             font-weight: bold;
         }
-        .header-cell.weekend { background: rgba(255,255,255,0.15); }
+        .header-cell.weekend { background: rgba(220,53,69,0.2); color: var(--rojo); }
         
         /* Weekdays header row */
         .weekdays-header {
@@ -1537,8 +1543,8 @@
 
     <!-- MAIN -->
     <div class="main-container" id="mainContainer" style="display:none;">
-        <div class="sidebar">
-            <h3>👥 Personal <span class="comment-badge" id="commentsBadge">0</span></h3>
+        <div class="sidebar" id="sidebarPersonal">
+            <h3>👥 <span id="sidebarTitle">Personal</span> <button onclick="togglePersonal()" id="btnTogglePersonal" style="float:right;background:none;border:none;cursor:pointer;font-size:14px;">◀</button></h3>
             <div id="personList"></div>
             
             <!-- COMMENTS -->
@@ -2122,6 +2128,24 @@
         };
 
         // ==================== RENDER ====================
+        const togglePersonal = () => {
+            const sidebar = document.getElementById('sidebarPersonal');
+            const btn = document.getElementById('btnTogglePersonal');
+            const title = document.getElementById('sidebarTitle');
+            const list = document.getElementById('personList');
+            if (sidebar.classList.contains('collapsed')) {
+                sidebar.classList.remove('collapsed');
+                list.style.display = 'block';
+                btn.textContent = '◀';
+                title.textContent = 'Personal';
+            } else {
+                sidebar.classList.add('collapsed');
+                list.style.display = 'none';
+                btn.textContent = '▶';
+                title.textContent = '👥';
+            }
+        };
+
         const renderLogin = () => {
             const avatares = ['fa-user-tie', 'fa-user-edit', 'fa-user-cog', 'fa-user-nurse', 'fa-user-hard-hat', 'fa-user', 'fa-user-check', 'fa-user-tag', 'fa-user-astronaut', 'fa-user-shield'];
             document.getElementById('userSelect').innerHTML = PERSONAS.map((p, i) => `
