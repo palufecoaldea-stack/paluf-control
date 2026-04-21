@@ -1265,6 +1265,7 @@
             font-size: 11px;
         }
         .notif-item .mark-btn:hover { background: var(--verde-medio); }
+        .notif-item.completado { background: #e8f5e9; text-decoration: line-through; }
         .notif-empty {
             text-align: center;
             padding: 40px;
@@ -1716,11 +1717,49 @@
                 <button class="modal-close" onclick="cerrarModalNotificaciones()">×</button>
             </div>
             <div style="padding: 20px;">
+                <button onclick="abrirCrearRecordatorio()" style="width:100%;padding:12px;background:linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));color:white;border:none;border-radius:10px;cursor:pointer;font-size:14px;margin-bottom:15px;">➕ Crear Recordatorio</button>
                 <div class="notif-tabs">
                     <button class="notif-tab active" onclick="cambiarTabNotif('pendientes')" id="tabPendientes">⚠️ Pendientes</button>
                     <button class="notif-tab" onclick="cambiarTabNotif('recordatorios')" id="tabRecordatorios">🔔 Recordatorios</button>
+                    <button class="notif-tab" onclick="cambiarTabNotif('misRecordatorios')" id="tabMisRecordatorios">📝 Mis Recordatorios</button>
                 </div>
                 <div class="notif-content" id="notifContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CREAR RECORDATORIO -->
+    <div class="modal" id="modalCrearRecordatorio">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2>📝 Crear Recordatorio</h2>
+                <button class="modal-close" onclick="cerrarModalCrearRecordatorio()">×</button>
+            </div>
+            <div style="padding: 20px;">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="recTitulo" placeholder="¿Qué necesitas recordar?" style="width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;font-size:14px;">
+                </div>
+                <div class="form-group">
+                    <label>Descripción (opcional)</label>
+                    <textarea id="recDescripcion" placeholder="Detalles adicionales..." style="width:100%;min-height:80px;padding:12px;border-radius:10px;border:2px solid #ddd;font-size:14px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de recordatorio</label>
+                    <select id="recTipo" onchange="actualizarFechaRecordatorio()" style="width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;font-size:14px;">
+                        <option value="dia">📅 Del día (para hoy)</option>
+                        <option value="semana">📅 De la semana</option>
+                        <option value="mes">📅 Del mes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" id="recFecha" style="width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;font-size:14px;">
+                </div>
+                <div style="display:flex;gap:10px;margin-top:20px;">
+                    <button onclick="cerrarModalCrearRecordatorio()" style="flex:1;padding:12px;background:#ddd;border:none;border-radius:10px;cursor:pointer;">Cancelar</button>
+                    <button onclick="guardarNuevoRecordatorio()" style="flex:1;padding:12px;background:var(--verde-oscuro);color:white;border:none;border-radius:10px;cursor:pointer;font-weight:600;">💾 Guardar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1914,6 +1953,7 @@
         let asistencia = {};
         let notasTarea = {}; // { "persona_tareaId_fecha": "nota" }
         let comentarios = [];
+        let misRecordatorios = []; // { id, titulo, descripcion, tipo: 'dia'|'semana'|'mes', fecha, completado }
         let tareaEditando = null;
 
         // Funciones default - 152 funciones completas
@@ -2088,6 +2128,129 @@
         const estaBloqueado = (d) => d < HOY;
         const generarId = () => 'T' + Date.now().toString(36).toUpperCase();
         const esFinde = (d) => d.getDay() === 0 || d.getDay() === 5 || d.getDay() === 6;
+        const generarIdRec = () => 'REC' + Date.now().toString(36);
+
+        // ==================== RECORDATORIOS ====================
+        const cargarMisRecordatorios = () => {
+            try {
+                const guardados = JSON.parse(localStorage.getItem('paluf_recordatorios') || '[]');
+                misRecordatorios = guardados.filter(r => r.persona === usuarioActual);
+            } catch {
+                misRecordatorios = [];
+            }
+        };
+
+        const guardarMisRecordatorios = () => {
+            localStorage.setItem('paluf_recordatorios', JSON.stringify(misRecordatorios));
+        };
+
+        const abrirCrearRecordatorio = () => {
+            cerrarModalNotificaciones();
+            const hoy = new Date();
+            document.getElementById('recTitulo').value = '';
+            document.getElementById('recDescripcion').value = '';
+            document.getElementById('recTipo').value = 'dia';
+            document.getElementById('recFecha').value = formatFecha(hoy);
+            document.getElementById('modalCrearRecordatorio').classList.add('visible');
+        };
+
+        const cerrarModalCrearRecordatorio = () => {
+            document.getElementById('modalCrearRecordatorio').classList.remove('visible');
+        };
+
+        const actualizarFechaRecordatorio = () => {
+            const tipo = document.getElementById('recTipo').value;
+            const hoy = new Date();
+            let fecha = new Date(hoy);
+            
+            if (tipo === 'semana') {
+                fecha.setDate(hoy.getDate() + (8 - hoy.getDay()) % 7 || 7);
+            } else if (tipo === 'mes') {
+                fecha = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+            }
+            
+            document.getElementById('recFecha').value = formatFecha(fecha);
+        };
+
+        const guardarNuevoRecordatorio = () => {
+            const titulo = document.getElementById('recTitulo').value.trim();
+            const descripcion = document.getElementById('recDescripcion').value.trim();
+            const tipo = document.getElementById('recTipo').value;
+            const fecha = document.getElementById('recFecha').value;
+            
+            if (!titulo || !fecha) {
+                toast('Completa el título y la fecha', 'error');
+                return;
+            }
+            
+            const nuevo = {
+                id: generarIdRec(),
+                persona: usuarioActual,
+                titulo,
+                descripcion,
+                tipo,
+                fecha,
+                completado: false
+            };
+            
+            misRecordatorios.unshift(nuevo);
+            guardarMisRecordatorios();
+            cerrarModalCrearRecordatorio();
+            toast('📝 Recordatorio creado', 'success');
+        };
+
+        const renderMisRecordatorios = () => {
+            cargarMisRecordatorios();
+            const container = document.getElementById('notifContent');
+            
+            if (misRecordatorios.length === 0) {
+                container.innerHTML = `
+                    <div class="notif-empty">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>No tienes recordatorios creados.</p>
+                        <p style="font-size:12px;">Crea uno con el botón de arriba.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const hoy = formatFecha(new Date());
+            container.innerHTML = misRecordatorios.map(r => {
+                const esHoy = r.fecha === hoy;
+                const tipoIcon = r.tipo === 'dia' ? '📅' : r.tipo === 'semana' ? '📆' : '📅';
+                return `
+                    <div class="notif-item ${r.completado ? 'completado' : ''}" style="opacity:${r.completado ? '0.6' : '1'}">
+                        <div class="icon">${tipoIcon}</div>
+                        <div class="content" style="flex:1;">
+                            <strong>${r.titulo}</strong>
+                            <span>${r.tipo === 'dia' ? 'Del día' : r.tipo === 'semana' ? 'De la semana' : 'Del mes'} - ${r.fecha}</span>
+                            ${r.descripcion ? `<p style="font-size:12px;margin:5px 0 0 0;color:#666;">${r.descripcion}</p>` : ''}
+                        </div>
+                        <button onclick="toggleCompletadoRec('${r.id}')" style="padding:8px 12px;background:${r.completado ? 'var(--verde-check)' : '#ddd'};color:white;border:none;border-radius:8px;cursor:pointer;font-size:12px;">
+                            ${r.completado ? '✓ Hecho' : 'Marcar'}
+                        </button>
+                        <button onclick="eliminarRecordatorio('${r.id}')" style="padding:8px 12px;background:var(--rojo);color:white;border:none;border-radius:8px;cursor:pointer;font-size:12px;margin-left:5px;">🗑️</button>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        const toggleCompletadoRec = (id) => {
+            const rec = misRecordatorios.find(r => r.id === id);
+            if (rec) {
+                rec.completado = !rec.completado;
+                guardarMisRecordatorios();
+                renderMisRecordatorios();
+            }
+        };
+
+        const eliminarRecordatorio = (id) => {
+            if (!confirm('¿Eliminar este recordatorio?')) return;
+            misRecordatorios = misRecordatorios.filter(r => r.id !== id);
+            guardarMisRecordatorios();
+            renderMisRecordatorios();
+            toast('🗑️ Eliminado', 'success');
+        };
 
         // ==================== STORAGE ====================
         const VERSION = 3;
@@ -2707,6 +2870,8 @@
                         </div>
                     `).join('');
                 }
+            } else if (tabNotifActual === 'misRecordatorios') {
+                renderMisRecordatorios();
             }
         };
 
