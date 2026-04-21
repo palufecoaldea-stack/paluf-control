@@ -1265,7 +1265,6 @@
             font-size: 11px;
         }
         .notif-item .mark-btn:hover { background: var(--verde-medio); }
-        .notif-item.completado { background: #e8f5e9; text-decoration: line-through; }
         .notif-empty {
             text-align: center;
             padding: 40px;
@@ -1662,30 +1661,16 @@
                     </div>
                     <div class="form-group" style="flex:1;">
                         <label>Frecuencia</label>
-                        <select id="tareaFrecuencia" onchange="mostrarDiasSemana()">
+                        <select id="tareaFrecuencia">
                             <option value="Diaria">Diaria</option>
                             <option value="Semanal">Semanal</option>
                             <option value="Mensual">Mensual</option>
-                            <option value="Sabados">Sábados</option>
+                            <option value="Sabados">Sabados</option>
                             <option value="Viernes">Viernes</option>
                             <option value="Domingo">Domingo</option>
                             <option value="Fin de semana">Fin de semana</option>
-                            <option value="Dias especifica">Días específicos</option>
                             <option value="Cuando aplica">Cuando aplica</option>
                         </select>
-                    </div>
-                </div>
-                <div id="diasSemanaContainer" style="display:none;margin-top:10px;padding:10px;background:#f5f5f5;border-radius:10px;">
-                    <label style="font-weight:600;display:block;margin-bottom:10px;">Seleccionar días de la semana:</label>
-                    <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="1"> Lunes</label>
-                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="2"> Martes</label>
-                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="3"> Miércoles</label>
-                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="4"> Jueves</label>
-                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="5"> Viernes</label>
-                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="6"> Sábado</label>
-                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="0"> Domingo</label>
-                    </div>
                     </div>
                     <div class="form-group" style="flex:1;">
                         <label>Tiempo</label>
@@ -1731,49 +1716,11 @@
                 <button class="modal-close" onclick="cerrarModalNotificaciones()">×</button>
             </div>
             <div style="padding: 20px;">
-                <button onclick="abrirCrearRecordatorio()" style="width:100%;padding:12px;background:linear-gradient(135deg, var(--verde-oscuro), var(--verde-medio));color:white;border:none;border-radius:10px;cursor:pointer;font-size:14px;margin-bottom:15px;">➕ Crear Recordatorio</button>
                 <div class="notif-tabs">
                     <button class="notif-tab active" onclick="cambiarTabNotif('pendientes')" id="tabPendientes">⚠️ Pendientes</button>
                     <button class="notif-tab" onclick="cambiarTabNotif('recordatorios')" id="tabRecordatorios">🔔 Recordatorios</button>
-                    <button class="notif-tab" onclick="cambiarTabNotif('misRecordatorios')" id="tabMisRecordatorios">📝 Mis Recordatorios</button>
                 </div>
                 <div class="notif-content" id="notifContent"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL CREAR RECORDATORIO -->
-    <div class="modal" id="modalCrearRecordatorio">
-        <div class="modal-content" style="max-width: 450px;">
-            <div class="modal-header">
-                <h2>📝 Crear Recordatorio</h2>
-                <button class="modal-close" onclick="cerrarModalCrearRecordatorio()">×</button>
-            </div>
-            <div style="padding: 20px;">
-                <div class="form-group">
-                    <label>Título</label>
-                    <input type="text" id="recTitulo" placeholder="¿Qué necesitas recordar?" style="width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;font-size:14px;">
-                </div>
-                <div class="form-group">
-                    <label>Descripción (opcional)</label>
-                    <textarea id="recDescripcion" placeholder="Detalles adicionales..." style="width:100%;min-height:80px;padding:12px;border-radius:10px;border:2px solid #ddd;font-size:14px;"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Tipo de recordatorio</label>
-                    <select id="recTipo" onchange="actualizarFechaRecordatorio()" style="width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;font-size:14px;">
-                        <option value="dia">📅 Del día (para hoy)</option>
-                        <option value="semana">📅 De la semana</option>
-                        <option value="mes">📅 Del mes</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Fecha</label>
-                    <input type="date" id="recFecha" style="width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;font-size:14px;">
-                </div>
-                <div style="display:flex;gap:10px;margin-top:20px;">
-                    <button onclick="cerrarModalCrearRecordatorio()" style="flex:1;padding:12px;background:#ddd;border:none;border-radius:10px;cursor:pointer;">Cancelar</button>
-                    <button onclick="guardarNuevoRecordatorio()" style="flex:1;padding:12px;background:var(--verde-oscuro);color:white;border:none;border-radius:10px;cursor:pointer;font-weight:600;">💾 Guardar</button>
-                </div>
             </div>
         </div>
     </div>
@@ -1951,7 +1898,7 @@
 
     <script>
         // ==================== DATA ====================
-        const PERSONAS = ['Luisa Torres', 'Julieth Melo', 'María Paula', 'Jaidy', 'Fernando', 'Voluntarios Aseo', 'Voluntario Caja', 'Voluntario Marketing', 'Mantenimiento', 'Juan'];
+        const PERSONAS = ['Luisa Torres', 'Julieth Melo', 'María Paula', 'Jaidy', 'Fernando', 'Voluntarios Aseo', 'Voluntario Caja', 'Voluntario Marketing', 'Voluntario Holístico', 'Mantenimiento', 'Juan'];
         const FRECUENCIAS = ['Todas', 'Diaria', 'Semanal', 'Mensual', 'Sabados', 'Viernes', 'Domingo', 'Fin de semana', 'Cuando aplica'];
         const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         const DIAS_SEMANA = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
@@ -1967,7 +1914,6 @@
         let asistencia = {};
         let notasTarea = {}; // { "persona_tareaId_fecha": "nota" }
         let comentarios = [];
-        let misRecordatorios = []; // { id, titulo, descripcion, tipo: 'dia'|'semana'|'mes', fecha, completado }
         let tareaEditando = null;
 
         // Funciones default - 152 funciones completas
@@ -2111,6 +2057,15 @@
             { id: "VOL-MKT-008", func: "Actualizar pagina web", persona: "Voluntario Marketing", area: "MARKETING", prioridad: "Media", frecuencia: "Mensual", tiempo: "1 hora" },
             { id: "VOL-MKT-009", func: "Hacer flyers", persona: "Voluntario Marketing", area: "MARKING", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "2 horas" },
             { id: "VOL-MKT-010", func: "Enviar videos grupos WhatsApp", persona: "Voluntario Marketing", area: "MARKETING", prioridad: "Alta", frecuencia: "Fin de semana", tiempo: "1 hora" },
+            // VOLUNTARIO HOLÍSTICO - 8 funciones
+            { id: "VOL-HOL-001", func: "Apoyo en terapias (fines de semana/entre semana)", persona: "Voluntario Holístico", area: "TERAPIAS", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "2 horas" },
+            { id: "VOL-HOL-002", func: "Creación huerta muisca", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
+            { id: "VOL-HOL-003", func: "Creación talleres virtuales", persona: "Voluntario Holístico", area: "MARKETING", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "3 horas" },
+            { id: "VOL-HOL-004", func: "Creación productos artesanales", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Media", frecuencia: "Viernes", tiempo: "2 horas" },
+            { id: "VOL-HOL-005", func: "Apoyo en creación de caminos/armonización espacios (materiales reciclables)", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "3 horas" },
+            { id: "VOL-HOL-006", func: "Apoyo en ceremonias (sábados)", persona: "Voluntario Holístico", area: "TERAPIAS", prioridad: "Alta", frecuencia: "Sabados", tiempo: "4 horas" },
+            { id: "VOL-HOL-007", func: "Apoyo en cierres espirituales (domingos) - preguntar experiencia pacientes", persona: "Voluntario Holístico", area: "TERAPIAS", prioridad: "Alta", frecuencia: "Domingo", tiempo: "2 horas" },
+            { id: "VOL-HOL-008", func: "Guía de alojamiento, baños, wifi y templos (sábados)", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Sabados", tiempo: "2 horas" },
             // MANTENIMIENTO - 8 funciones
             { id: "MANT-001", func: "Llenar tanques de agua", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
             { id: "MANT-002", func: "Arreglar lenia templos", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "2 horas" },
@@ -2142,129 +2097,6 @@
         const estaBloqueado = (d) => d < HOY;
         const generarId = () => 'T' + Date.now().toString(36).toUpperCase();
         const esFinde = (d) => d.getDay() === 0 || d.getDay() === 5 || d.getDay() === 6;
-        const generarIdRec = () => 'REC' + Date.now().toString(36);
-
-        // ==================== RECORDATORIOS ====================
-        const cargarMisRecordatorios = () => {
-            try {
-                const guardados = JSON.parse(localStorage.getItem('paluf_recordatorios') || '[]');
-                misRecordatorios = guardados.filter(r => r.persona === usuarioActual);
-            } catch {
-                misRecordatorios = [];
-            }
-        };
-
-        const guardarMisRecordatorios = () => {
-            localStorage.setItem('paluf_recordatorios', JSON.stringify(misRecordatorios));
-        };
-
-        const abrirCrearRecordatorio = () => {
-            cerrarModalNotificaciones();
-            const hoy = new Date();
-            document.getElementById('recTitulo').value = '';
-            document.getElementById('recDescripcion').value = '';
-            document.getElementById('recTipo').value = 'dia';
-            document.getElementById('recFecha').value = formatFecha(hoy);
-            document.getElementById('modalCrearRecordatorio').classList.add('visible');
-        };
-
-        const cerrarModalCrearRecordatorio = () => {
-            document.getElementById('modalCrearRecordatorio').classList.remove('visible');
-        };
-
-        const actualizarFechaRecordatorio = () => {
-            const tipo = document.getElementById('recTipo').value;
-            const hoy = new Date();
-            let fecha = new Date(hoy);
-            
-            if (tipo === 'semana') {
-                fecha.setDate(hoy.getDate() + (8 - hoy.getDay()) % 7 || 7);
-            } else if (tipo === 'mes') {
-                fecha = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
-            }
-            
-            document.getElementById('recFecha').value = formatFecha(fecha);
-        };
-
-        const guardarNuevoRecordatorio = () => {
-            const titulo = document.getElementById('recTitulo').value.trim();
-            const descripcion = document.getElementById('recDescripcion').value.trim();
-            const tipo = document.getElementById('recTipo').value;
-            const fecha = document.getElementById('recFecha').value;
-            
-            if (!titulo || !fecha) {
-                toast('Completa el título y la fecha', 'error');
-                return;
-            }
-            
-            const nuevo = {
-                id: generarIdRec(),
-                persona: usuarioActual,
-                titulo,
-                descripcion,
-                tipo,
-                fecha,
-                completado: false
-            };
-            
-            misRecordatorios.unshift(nuevo);
-            guardarMisRecordatorios();
-            cerrarModalCrearRecordatorio();
-            toast('📝 Recordatorio creado', 'success');
-        };
-
-        const renderMisRecordatorios = () => {
-            cargarMisRecordatorios();
-            const container = document.getElementById('notifContent');
-            
-            if (misRecordatorios.length === 0) {
-                container.innerHTML = `
-                    <div class="notif-empty">
-                        <i class="fas fa-clipboard-list"></i>
-                        <p>No tienes recordatorios creados.</p>
-                        <p style="font-size:12px;">Crea uno con el botón de arriba.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const hoy = formatFecha(new Date());
-            container.innerHTML = misRecordatorios.map(r => {
-                const esHoy = r.fecha === hoy;
-                const tipoIcon = r.tipo === 'dia' ? '📅' : r.tipo === 'semana' ? '📆' : '📅';
-                return `
-                    <div class="notif-item ${r.completado ? 'completado' : ''}" style="opacity:${r.completado ? '0.6' : '1'}">
-                        <div class="icon">${tipoIcon}</div>
-                        <div class="content" style="flex:1;">
-                            <strong>${r.titulo}</strong>
-                            <span>${r.tipo === 'dia' ? 'Del día' : r.tipo === 'semana' ? 'De la semana' : 'Del mes'} - ${r.fecha}</span>
-                            ${r.descripcion ? `<p style="font-size:12px;margin:5px 0 0 0;color:#666;">${r.descripcion}</p>` : ''}
-                        </div>
-                        <button onclick="toggleCompletadoRec('${r.id}')" style="padding:8px 12px;background:${r.completado ? 'var(--verde-check)' : '#ddd'};color:white;border:none;border-radius:8px;cursor:pointer;font-size:12px;">
-                            ${r.completado ? '✓ Hecho' : 'Marcar'}
-                        </button>
-                        <button onclick="eliminarRecordatorio('${r.id}')" style="padding:8px 12px;background:var(--rojo);color:white;border:none;border-radius:8px;cursor:pointer;font-size:12px;margin-left:5px;">🗑️</button>
-                    </div>
-                `;
-            }).join('');
-        };
-
-        const toggleCompletadoRec = (id) => {
-            const rec = misRecordatorios.find(r => r.id === id);
-            if (rec) {
-                rec.completado = !rec.completado;
-                guardarMisRecordatorios();
-                renderMisRecordatorios();
-            }
-        };
-
-        const eliminarRecordatorio = (id) => {
-            if (!confirm('¿Eliminar este recordatorio?')) return;
-            misRecordatorios = misRecordatorios.filter(r => r.id !== id);
-            guardarMisRecordatorios();
-            renderMisRecordatorios();
-            toast('🗑️ Eliminado', 'success');
-        };
 
         // ==================== STORAGE ====================
         const VERSION = 3;
@@ -2401,14 +2233,14 @@
                 const notaKey = `${personaSeleccionada}_${t.id}`;
                 const tieneNota = notasTarea[notaKey];
                 html += `<div class="attendance-row">
-                    <div class="header-cell task-cell" style="display:flex;align-items:center;gap:8px;">
-                        <button onclick="editarTarea('${t.id}')" style="padding:5px 10px;background:var(--verde-oscuro);color:white;border:none;border-radius:8px;cursor:pointer;font-size:11px;" title="Editar tarea">✏️</button>
-                        <div>
+                    <div class="header-cell task-cell">
+                        <span class="tarea-id-badge">${t.id}</span>
+                        <div class="tarea-content">
                             <div class="tarea-nombre">${t.func}</div>
                             <div class="tarea-meta">
                                 <span class="meta-tag ${prio}">${t.prioridad}</span>
                                 <span>⏱️ ${t.tiempo || '-'}</span>
-                                <span><i class="fas fa-clock"></i> ${t.frecuencia === 'Dias especifica' && t.diasSemana ? 'Días: ' + t.diasSemana.map(d => ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][d]).join(', ') : t.frecuencia}</span>
+                                <span><i class="fas fa-clock"></i> ${t.frecuencia}</span>
                                 <button class="btn-nota ${tieneNota ? 'has-note' : ''}" onclick="abrirNota('${t.id}', '${t.func}')" title="${tieneNota ? 'Ver nota' : 'Agregar nota'}">
                                     <i class="fas fa-sticky-note"></i> ${tieneNota ? '✓' : ''}
                                 </button>
@@ -2858,7 +2690,7 @@
                 const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
                 
                 let recordatorios = [];
-                funcionesData.filter(f => f.persona === usuarioActual && esAplicaFrecuencia(f.frecuencia, hoy, f)).forEach(t => {
+                funcionesData.filter(f => f.persona === usuarioActual && esAplicaFrecuencia(f.frecuencia, hoy)).forEach(t => {
                     const key = `${usuarioActual}_${t.id}_${hoyStr}`;
                     if (!asistencia[key]) {
                         recordatorios.push(t);
@@ -2884,19 +2716,11 @@
                         </div>
                     `).join('');
                 }
-            } else if (tabNotifActual === 'misRecordatorios') {
-                renderMisRecordatorios();
             }
         };
 
-        const esAplicaFrecuencia = (frecuencia, fecha, tarea = null) => {
+        const esAplicaFrecuencia = (frecuencia, fecha) => {
             const dia = fecha.getDay();
-            
-            // Si tiene días específicos configurados
-            if (tarea && tarea.diasSemana && tarea.diasSemana.length > 0) {
-                return tarea.diasSemana.includes(dia);
-            }
-            
             switch (frecuencia) {
                 case 'Diaria': return true;
                 case 'Semanal': return dia === 1;
@@ -2905,7 +2729,6 @@
                 case 'Viernes': return dia === 5;
                 case 'Domingo': return dia === 0;
                 case 'Fin de semana': return dia === 0 || dia === 6;
-                case 'Dias especifica': return true;
                 case 'Cuando aplica': return true;
                 default: return false;
             }
@@ -3106,7 +2929,7 @@
             const statsMiembros = [];
             
             PERSONAS.forEach(persona => {
-                const tareasPersona = funcionesData.filter(f => f.persona === persona && esAplicaFrecuencia(f.frecuencia, hoy, f));
+                const tareasPersona = funcionesData.filter(f => f.persona === persona && esAplicaFrecuencia(f.frecuencia, hoy));
                 let completadas = 0;
                 let total = 0;
                 
@@ -3385,17 +3208,6 @@
             document.getElementById('tareaPrioridad').value = t.prioridad;
             document.getElementById('tareaFrecuencia').value = t.frecuencia;
             document.getElementById('tareaTiempo').value = t.tiempo || '';
-            
-            // Mostrar días específicos si aplica
-            mostrarDiasSemana();
-            if (t.diasSemana && t.diasSemana.length > 0) {
-                document.querySelectorAll('.dia-semana').forEach(cb => {
-                    cb.checked = t.diasSemana.includes(parseInt(cb.value));
-                });
-            } else {
-                document.querySelectorAll('.dia-semana').forEach(cb => cb.checked = false);
-            }
-            
             document.getElementById('btnEliminar').style.display = 'inline-block';
             document.getElementById('btnDuplicar').style.display = 'inline-block';
             document.getElementById('modalTarea').classList.add('visible');
@@ -3847,26 +3659,13 @@
 
         document.getElementById('formTarea').onsubmit = (e) => {
             e.preventDefault();
-            const frecuencia = document.getElementById('tareaFrecuencia').value;
-            let diasSemana = null;
-            
-            if (frecuencia === 'Dias especifica') {
-                const checkboxes = document.querySelectorAll('.dia-semana:checked');
-                if (checkboxes.length === 0) {
-                    toast('Selecciona al menos un día', 'error');
-                    return;
-                }
-                diasSemana = Array.from(checkboxes).map(cb => parseInt(cb.value));
-            }
-            
             const data = {
                 id: document.getElementById('tareaId').value || generarId(),
                 func: document.getElementById('tareaNombre').value,
                 persona: document.getElementById('tareaPersona').value,
                 area: document.getElementById('tareaArea').value,
                 prioridad: document.getElementById('tareaPrioridad').value,
-                frecuencia: frecuencia,
-                diasSemana: diasSemana,
+                frecuencia: document.getElementById('tareaFrecuencia').value,
                 tiempo: document.getElementById('tareaTiempo').value
             };
             if (tareaEditando) {
@@ -3880,11 +3679,6 @@
             renderPersonas();
             renderTareas();
             toast('✓ Tarea guardada');
-        };
-
-        const mostrarDiasSemana = () => {
-            const freq = document.getElementById('tareaFrecuencia').value;
-            document.getElementById('diasSemanaContainer').style.display = freq === 'Dias especifica' ? 'block' : 'none';
         };
 
         // ==================== DASHBOARD ====================
