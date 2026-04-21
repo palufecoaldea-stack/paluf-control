@@ -2351,36 +2351,6 @@
                     <h4>🏢 Estadísticas por Área (${MESES[mesActual]} ${anioActual})</h4>
                     ${renderAreaStats(porPersona, funcionesData)}
                 </div>
-                <!-- PODIUM TOP 3 -->
-                <div class="chart-card podium-card">
-                    <h4>🏆 Podio de Honor (${MESES[mesActual]} ${anioActual})</h4>
-                    <div class="podium">
-                        ${top3.length > 1 ? `
-                        <div class="podium-item second">
-                            <div class="medal-display">🥈</div>
-                            <div class="podium-name">${top3[1].split(' ')[0]}</div>
-                            <div class="podium-percent">${porPersona[top3[1]].porcentaje}%</div>
-                            <div class="podium-bar" style="height:${Math.max(40, porPersona[top3[1]].porcentaje * 0.8)}px"></div>
-                        </div>
-                        ` : ''}
-                        ${top3.length > 0 ? `
-                        <div class="podium-item first">
-                            <div class="medal-display">🥇</div>
-                            <div class="podium-name">${top3[0].split(' ')[0]}</div>
-                            <div class="podium-percent">${porPersona[top3[0]].porcentaje}%</div>
-                            <div class="podium-bar" style="height:${Math.max(60, porPersona[top3[0]].porcentaje)}px"></div>
-                        </div>
-                        ` : ''}
-                        ${top3.length > 2 ? `
-                        <div class="podium-item third">
-                            <div class="medal-display">🥉</div>
-                            <div class="podium-name">${top3[2].split(' ')[0]}</div>
-                            <div class="podium-percent">${porPersona[top3[2]].porcentaje}%</div>
-                            <div class="podium-bar" style="height:${Math.max(30, porPersona[top3[2]].porcentaje * 0.6)}px"></div>
-                        </div>
-                        ` : ''}
-                    </div>
-                </div>
                 <div class="chart-card">
                     <h4><i class="fas fa-users"></i> Detalle por Persona</h4>
                     ${personasOrdenadas.map((p, idx) => {
@@ -2389,7 +2359,7 @@
                         return `
                         <div class="bar-chart-item ${!tieneTareas ? 'no-tasks' : ''}">
                             <div class="bar-chart-label">
-                                <span>${getMedal(idx)} ${p.split(' ')[0]}</span>
+                                <span>${p.split(' ')[0]}</span>
                                 <span>${porPersona[p].hechas}/${porPersona[p].total} (${porPersona[p].porcentaje}%)</span>
                             </div>
                             <div class="bar-chart-bar">
