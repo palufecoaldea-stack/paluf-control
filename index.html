@@ -1661,14 +1661,15 @@
                     </div>
                     <div class="form-group" style="flex:1;">
                         <label>Frecuencia</label>
-                        <select id="tareaFrecuencia">
+                        <select id="tareaFrecuencia" onchange="mostrarDiasSemana()">
                             <option value="Diaria">Diaria</option>
                             <option value="Semanal">Semanal</option>
                             <option value="Mensual">Mensual</option>
-                            <option value="Sabados">Sabados</option>
+                            <option value="Sabados">Sábados</option>
                             <option value="Viernes">Viernes</option>
                             <option value="Domingo">Domingo</option>
                             <option value="Fin de semana">Fin de semana</option>
+                            <option value="Dias especifica">Días específicos</option>
                             <option value="Cuando aplica">Cuando aplica</option>
                         </select>
                     </div>
@@ -1677,6 +1678,17 @@
                         <input type="text" id="tareaTiempo" placeholder="Ej: 1 hora">
                     </div>
                 </div>
+                <div id="diasSemanaContainer" style="display:none;margin-top:10px;padding:10px;background:#f5f5f5;border-radius:10px;">
+                    <label style="font-weight:600;display:block;margin-bottom:10px;">Seleccionar días de la semana:</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="1"> Lunes</label>
+                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="2"> Martes</label>
+                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="3"> Miércoles</label>
+                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="4"> Jueves</label>
+                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="5"> Viernes</label>
+                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="6"> Sábado</label>
+                        <label style="display:flex;align-items:center;gap:5px;padding:8px 12px;background:white;border-radius:8px;cursor:pointer;"><input type="checkbox" class="dia-semana" value="0"> Domingo</label>
+                    </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" id="btnEliminar" style="display:none;" onclick="eliminarTarea()">🗑️ Eliminar</button>
                     <button type="button" class="btn btn-secondary" id="btnDuplicar" style="display:none;" onclick="duplicarTarea()"><i class="fas fa-copy"></i> Duplicar</button>
@@ -1899,7 +1911,7 @@
     <script>
         // ==================== DATA ====================
         const PERSONAS = ['Luisa Torres', 'Julieth Melo', 'María Paula', 'Jaidy', 'Fernando', 'Voluntarios Aseo', 'Voluntario Caja', 'Voluntario Marketing', 'Voluntario Holístico', 'Mantenimiento', 'Juan'];
-        const FRECUENCIAS = ['Todas', 'Diaria', 'Semanal', 'Mensual', 'Sabados', 'Viernes', 'Domingo', 'Fin de semana', 'Cuando aplica'];
+        const FRECUENCIAS = ['Todas', 'Diaria', 'Semanal', 'Mensual', 'Sabados', 'Viernes', 'Domingo', 'Fin de semana', 'Dias especifica', 'Cuando aplica'];
         const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         const DIAS_SEMANA = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
         const HOY = new Date(2026, 3, 14);
@@ -2060,12 +2072,12 @@
             // VOLUNTARIO HOLÍSTICO - 8 funciones
             { id: "VOL-HOL-001", func: "Apoyo en terapias (fines de semana/entre semana)", persona: "Voluntario Holístico", area: "TERAPIAS", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "2 horas" },
             { id: "VOL-HOL-002", func: "Creación huerta muisca", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "2 horas" },
-            { id: "VOL-HOL-003", func: "Creación talleres virtuales", persona: "Voluntario Holístico", area: "MARKETING", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "3 horas" },
-            { id: "VOL-HOL-004", func: "Creación productos artesanales", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Media", frecuencia: "Viernes", tiempo: "2 horas" },
-            { id: "VOL-HOL-005", func: "Apoyo en creación de caminos/armonización espacios (materiales reciclables)", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "3 horas" },
+            { id: "VOL-HOL-003", func: "Creación talleres virtuales", persona: "Voluntario Holístico", area: "MARKETING", prioridad: "Media", frecuencia: "Dias especifica", diasSemana: [2, 4, 6], tiempo: "3 horas" },
+            { id: "VOL-HOL-004", func: "Creación productos artesanales (2 viernes mes)", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Media", frecuencia: "Dias especifica", diasSemana: [5], tiempo: "2 horas" },
+            { id: "VOL-HOL-005", func: "Apoyo en creación de caminos/armonización espacios", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "3 horas" },
             { id: "VOL-HOL-006", func: "Apoyo en ceremonias (sábados)", persona: "Voluntario Holístico", area: "TERAPIAS", prioridad: "Alta", frecuencia: "Sabados", tiempo: "4 horas" },
-            { id: "VOL-HOL-007", func: "Apoyo en cierres espirituales (domingos) - preguntar experiencia pacientes", persona: "Voluntario Holístico", area: "TERAPIAS", prioridad: "Alta", frecuencia: "Domingo", tiempo: "2 horas" },
-            { id: "VOL-HOL-008", func: "Guía de alojamiento, baños, wifi y templos (sábados)", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Sabados", tiempo: "2 horas" },
+            { id: "VOL-HOL-007", func: "Apoyo en cierres espirituales - preguntar experiencia", persona: "Voluntario Holístico", area: "TERAPIAS", prioridad: "Alta", frecuencia: "Domingo", tiempo: "2 horas" },
+            { id: "VOL-HOL-008", func: "Guía de alojamiento, baños, wifi y templos", persona: "Voluntario Holístico", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Sabados", tiempo: "2 horas" },
             // MANTENIMIENTO - 8 funciones
             { id: "MANT-001", func: "Llenar tanques de agua", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Alta", frecuencia: "Diaria", tiempo: "1 hora" },
             { id: "MANT-002", func: "Arreglar lenia templos", persona: "Mantenimiento", area: "OPERACIONES", prioridad: "Media", frecuencia: "Cuando aplica", tiempo: "2 horas" },
@@ -2690,7 +2702,7 @@
                 const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
                 
                 let recordatorios = [];
-                funcionesData.filter(f => f.persona === usuarioActual && esAplicaFrecuencia(f.frecuencia, hoy)).forEach(t => {
+                funcionesData.filter(f => f.persona === usuarioActual && esAplicaFrecuencia(f.frecuencia, hoy, f)).forEach(t => {
                     const key = `${usuarioActual}_${t.id}_${hoyStr}`;
                     if (!asistencia[key]) {
                         recordatorios.push(t);
@@ -2719,8 +2731,14 @@
             }
         };
 
-        const esAplicaFrecuencia = (frecuencia, fecha) => {
+        const esAplicaFrecuencia = (frecuencia, fecha, tarea = null) => {
             const dia = fecha.getDay();
+            
+            // Si tiene días específicos configurados
+            if (tarea && tarea.diasSemana && tarea.diasSemana.length > 0) {
+                return tarea.diasSemana.includes(dia);
+            }
+            
             switch (frecuencia) {
                 case 'Diaria': return true;
                 case 'Semanal': return dia === 1;
@@ -2729,9 +2747,15 @@
                 case 'Viernes': return dia === 5;
                 case 'Domingo': return dia === 0;
                 case 'Fin de semana': return dia === 0 || dia === 6;
+                case 'Dias especifica': return true;
                 case 'Cuando aplica': return true;
                 default: return false;
             }
+        };
+        
+        const mostrarDiasSemana = () => {
+            const freq = document.getElementById('tareaFrecuencia').value;
+            document.getElementById('diasSemanaContainer').style.display = freq === 'Dias especifica' ? 'block' : 'none';
         };
 
         const marcarPendiente = (tareaId) => {
@@ -2929,7 +2953,7 @@
             const statsMiembros = [];
             
             PERSONAS.forEach(persona => {
-                const tareasPersona = funcionesData.filter(f => f.persona === persona && esAplicaFrecuencia(f.frecuencia, hoy));
+                const tareasPersona = funcionesData.filter(f => f.persona === persona && esAplicaFrecuencia(f.frecuencia, hoy, f));
                 let completadas = 0;
                 let total = 0;
                 
@@ -3193,6 +3217,8 @@
             document.getElementById('btnDuplicar').style.display = 'none';
             document.getElementById('tareaPersona').innerHTML = '<option value="">Seleccionar...</option>' + PERSONAS.map(p => `<option value="${p}">${p}</option>`).join('');
             if (personaSeleccionada) document.getElementById('tareaPersona').value = personaSeleccionada;
+            document.getElementById('diasSemanaContainer').style.display = 'none';
+            document.querySelectorAll('.dia-semana').forEach(cb => cb.checked = false);
             document.getElementById('modalTarea').classList.add('visible');
         };
 
@@ -3208,6 +3234,17 @@
             document.getElementById('tareaPrioridad').value = t.prioridad;
             document.getElementById('tareaFrecuencia').value = t.frecuencia;
             document.getElementById('tareaTiempo').value = t.tiempo || '';
+            
+            // Mostrar días específicos si aplica
+            mostrarDiasSemana();
+            if (t.diasSemana && t.diasSemana.length > 0) {
+                document.querySelectorAll('.dia-semana').forEach(cb => {
+                    cb.checked = t.diasSemana.includes(parseInt(cb.value));
+                });
+            } else {
+                document.querySelectorAll('.dia-semana').forEach(cb => cb.checked = false);
+            }
+            
             document.getElementById('btnEliminar').style.display = 'inline-block';
             document.getElementById('btnDuplicar').style.display = 'inline-block';
             document.getElementById('modalTarea').classList.add('visible');
@@ -3659,13 +3696,26 @@
 
         document.getElementById('formTarea').onsubmit = (e) => {
             e.preventDefault();
+            const frecuencia = document.getElementById('tareaFrecuencia').value;
+            let diasSemana = null;
+            
+            if (frecuencia === 'Dias especifica') {
+                const checkboxes = document.querySelectorAll('.dia-semana:checked');
+                if (checkboxes.length === 0) {
+                    alert('Selecciona al menos un día');
+                    return;
+                }
+                diasSemana = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            }
+            
             const data = {
                 id: document.getElementById('tareaId').value || generarId(),
                 func: document.getElementById('tareaNombre').value,
                 persona: document.getElementById('tareaPersona').value,
                 area: document.getElementById('tareaArea').value,
                 prioridad: document.getElementById('tareaPrioridad').value,
-                frecuencia: document.getElementById('tareaFrecuencia').value,
+                frecuencia: frecuencia,
+                diasSemana: diasSemana,
                 tiempo: document.getElementById('tareaTiempo').value
             };
             if (tareaEditando) {
